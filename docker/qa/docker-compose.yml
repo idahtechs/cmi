@@ -1,0 +1,39 @@
+services:
+  app:
+    image: cmi:latest
+    container_name: cmi
+    command: php think swoole
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    build: 
+      context: ../../
+      dockerfile: ./docker/qa/Dockerfile
+    ports:
+      - 80:80
+
+  mysql:
+    image: mysql:5.7
+    command: --sql_mode="NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION"
+    volumes:
+      - ./data/mysql:/var/lib/mysql
+    # ports:
+    #   - 3306:3306
+    env_file:
+      - docker-compose.env
+    healthcheck:
+      test: mysqladmin ping -h localhost --password=$$MYSQL_ROOT_PASSWORD
+      start_period: 0s
+      start_interval: 1s
+      interval: 1s
+      timeout: 1s
+      retries: 3 
+
+  redis:
+    image: redis:alpine
+    volumes:
+      - ./data/redis:/var/lib/redis/data
+    # ports:
+    #   - 6379:6379

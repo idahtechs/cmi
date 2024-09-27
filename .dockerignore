@@ -1,0 +1,7 @@
+runtime
+.history
+.git
+.platform
+Dockerrun.aws.json.*
+*.zip
+dokcer/qa/mysql

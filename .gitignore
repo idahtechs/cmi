@@ -1,0 +1,17 @@
+/.git
+/.idea
+/.vscode
+*.log
+*.DS_Store
+
+/docker/dev/mysql
+/docker/dev/redis
+
+# 安装后的文件
+/runtime
+/.env
+/install/install.lock
+/.constant
+
+docker/qa/php.env
+docker/qa/docker-compose.env

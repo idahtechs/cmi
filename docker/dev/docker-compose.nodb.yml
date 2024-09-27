@@ -1,0 +1,12 @@
+services:
+  app:
+    image: cmi:latest
+    container_name: cmi
+    command: php think swoole
+    build: 
+      context: ../../
+      dockerfile: ./docker/dev/Dockerfile
+    ports:
+      - 8324:80
+    volumes:
+      - ../../:/var/www
