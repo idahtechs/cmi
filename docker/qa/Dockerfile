@@ -1,5 +1,7 @@
 FROM php:7.4-fpm-alpine3.16 AS base
 
+RUN sed -i 's#https\?://dl-cdn.alpinelinux.org/alpine#https://mirrors.tuna.tsinghua.edu.cn/alpine#g' /etc/apk/repositories
+
 # 宝塔的PHP installed extensions
 # Core date libxml openssl pcre sqlite3 zlib bcmath ctype curl dom filter ftp gd gettext hash iconv intl json mbstring SPL session pcntl standard PDO mysqlnd pdo_sqlite Phar posix Reflection pdo_mysql shmop SimpleXML soap sockets sodium mysqli sysvsem tokenizer xml xmlreader xmlrpc xmlwriter igbinary redis fileinfo swoole
 
