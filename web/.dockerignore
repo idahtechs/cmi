@@ -4,4 +4,4 @@ runtime
 .platform
 Dockerrun.aws.json.*
 *.zip
-dokcer/qa/mysql
+dokcer/qa/data/*

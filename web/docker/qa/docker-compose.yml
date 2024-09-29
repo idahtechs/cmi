@@ -12,7 +12,9 @@ services:
       context: ../../
       dockerfile: ./docker/qa/Dockerfile
     ports:
-      - 80:80
+      - 80:8324
+    # volumes:
+    #   - ./data/runtime:/var/www/runtime
 
   mysql:
     image: mysql:5.7
