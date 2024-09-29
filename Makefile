@@ -10,24 +10,21 @@ sync:
 	@echo "---git pull completed."
 .PHONY: sync
 
-deploy-qa:
+deploy-web-qa:
 	@echo "---QA Deploying..."
-	ssh $(HOST) "cd $(TARGET) && docker-compose -f ./docker/qa/docker-compose.yml build && docker-compose -f ./docker/qa/docker-compose.yml up -d"
+	ssh $(HOST) "cd $(TARGET) && docker-compose -f ./web/docker/qa/docker-compose.yml build && docker-compose -f ./web/docker/qa/docker-compose.yml up -d"
 	@echo "---QA Deploy completed."
 
-build-dev:
-	docker-compose -f ./docker/dev/docker-compose.yml build
-.PHONY: build-dev
+build-web-dev:
+	docker-compose -f ./web/docker/dev/docker-compose.yml build
+.PHONY: build-web-dev
 
-dev:
-	rm -f ./runtime/swoole.pid
-	docker-compose -f ./docker/dev/docker-compose.yml up
-.PHONY: dev
+web-dev:
+	rm -f ./web/runtime/swoole.pid
+	docker-compose -f ./web/docker/dev/docker-compose.yml up
+.PHONY: web-dev
 
-dev-nodb:
-	rm -f ./runtime/swoole.pid
-	docker-compose -f ./docker/dev/docker-compose.nodb.yml up
-.PHONY: dev-nodb
-
-rebuild-dev: build dev
-.PHONY: rebuild-dev
+web-dev-nodb:
+	rm -f ./web/runtime/swoole.pid
+	docker-compose -f ./web/docker/dev/docker-compose.nodb.yml up
+.PHONY: web-dev-nodb
