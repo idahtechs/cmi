@@ -12,7 +12,7 @@ services:
       context: ../../
       dockerfile: ./docker/dev/Dockerfile
     ports:
-      - 8324:80
+      - 8324:8324
     volumes:
       - ../../:/var/www
 
