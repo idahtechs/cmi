@@ -1,58 +1,28 @@
 {
-  "miniprogramRoot": "unpackage/dist/build/mp-weixin/",
-  "description": "项目配置文件，详见文档：https://developers.weixin.qq.com/miniprogram/dev/devtools/projectconfig.html",
+  "appid": "wxfab5b949d7cb279e",
+  "compileType": "miniprogram",
+  "libVersion": "3.6.0",
   "packOptions": {
     "ignore": [],
     "include": []
   },
   "setting": {
-    "urlCheck": true,
-    "es6": true,
-    "enhance": false,
-    "postcss": true,
-    "preloadBackgroundData": false,
-    "minified": true,
-    "newFeature": false,
     "coverView": true,
-    "nodeModules": false,
-    "autoAudits": false,
+    "es6": true,
+    "postcss": true,
+    "minified": true,
+    "enhance": true,
     "showShadowRootInWxmlPanel": true,
-    "scopeDataCheck": false,
-    "uglifyFileName": false,
-    "checkInvalidKey": true,
-    "checkSiteMap": true,
-    "uploadWithSourceMap": true,
-    "compileHotReLoad": true,
-    "lazyloadPlaceholderEnable": false,
-    "useMultiFrameRuntime": true,
-    "useApiHook": true,
-    "useApiHostProcess": true,
+    "packNpmRelationList": [],
     "babelSetting": {
       "ignore": [],
       "disablePlugins": [],
       "outputPath": ""
-    },
-    "enableEngineNative": false,
-    "useIsolateContext": false,
-    "userConfirmedBundleSwitch": false,
-    "packNpmManually": false,
-    "packNpmRelationList": [],
-    "minifyWXSS": true,
-    "disableUseStrict": false,
-    "minifyWXML": true,
-    "showES6CompileOption": false,
-    "useCompilerPlugins": false
+    }
   },
-  "compileType": "miniprogram",
-  "libVersion": "2.14.3",
-  "appid": "wx5fb1cc8edb3f8baa",
-  "projectname": "crmeb_merchant_h5",
-  "simulatorType": "wechat",
-  "simulatorPluginLibVersion": {},
-  "srcMiniprogramRoot": "unpackage/dist/build/mp-weixin/",
+  "condition": {},
   "editorSetting": {
     "tabIndent": "insertSpaces",
     "tabSize": 2
-  },
-  "condition": {}
+  }
 }
