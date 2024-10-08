@@ -10,17 +10,17 @@ yarn install
 ```
 .env
 ```
-2. 本地配置文件，不会提交，覆盖`.env`\
+2. 本地配置文件，不会提交，覆盖`.env`
 ```
 .env.local
 ``` 
 
-3. QA配置文件，会提交，覆盖`.env`\
+3. QA配置文件，会提交，覆盖`.env`
 ```
 .env.qa
 ``` 
 
-4. PROD配置文件，会提交，覆盖`.env`\
+4. PROD配置文件，会提交，覆盖`.env`
 ```
 .env.production
 ``` 
