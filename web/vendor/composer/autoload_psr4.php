@@ -8,6 +8,7 @@ $baseDir = dirname($vendorDir);
 return array(
     'think\\trace\\' => array($vendorDir . '/topthink/think-trace/src'),
     'think\\swoole\\' => array($vendorDir . '/topthink/think-swoole/src'),
+    'think\\migration\\' => array($vendorDir . '/topthink/think-migration/src'),
     'think\\' => array($vendorDir . '/topthink/framework/src/think', $vendorDir . '/topthink/think-factory/src', $vendorDir . '/topthink/think-helper/src', $vendorDir . '/topthink/think-image/src', $vendorDir . '/topthink/think-orm/src', $vendorDir . '/topthink/think-queue/src'),
     'crmeb\\' => array($baseDir . '/crmeb'),
     'app\\' => array($baseDir . '/app'),
@@ -46,6 +47,7 @@ return array(
     'Psr\\Container\\' => array($vendorDir . '/psr/container/src'),
     'Psr\\Cache\\' => array($vendorDir . '/psr/cache/src'),
     'PhpOffice\\PhpSpreadsheet\\' => array($vendorDir . '/phpoffice/phpspreadsheet/src/PhpSpreadsheet'),
+    'Phinx\\' => array($vendorDir . '/topthink/think-migration/phinx'),
     'Payment\\' => array($vendorDir . '/riverslei/payment/src'),
     'Overtrue\\Socialite\\' => array($vendorDir . '/overtrue/socialite/src'),
     'OneSm\\' => array($vendorDir . '/lizhichao/one-sm/src'),

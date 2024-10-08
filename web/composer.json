@@ -55,7 +55,8 @@
         "swoole/ide-helper": "^4.8",
         "alibabacloud/dysmsapi-20170525": "2.0.9",
         "fastknife/ajcaptcha": "^1.1",
-        "async-aws/s3": "^1.13"
+        "async-aws/s3": "^1.13",
+        "topthink/think-migration": "^3.1"
     },
     "require-dev": {
         "symfony/var-dumper": "^4.2",
