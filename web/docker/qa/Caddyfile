@@ -1,0 +1,7 @@
+:80 {
+    handle_path /crawler-api/* {
+		reverse_proxy crawler:5000
+	}
+
+    reverse_proxy app:8324
+}
