@@ -360,6 +360,11 @@ Route::group('api/', function () {
             Route::post('deleate/:id', 'PointsOrder/del');
         })->prefix('api.store.order.');
 
+        //AI工具
+        Route::group('ai/tools', function () {
+            Route::post('extractCopyByUrl', 'Tools/extractCopyByUrl');
+        })->prefix('api.ai.');
+
     })->middleware(UserTokenMiddleware::class, true);
 
     //非强制登录
