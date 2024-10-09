@@ -1,0 +1,7 @@
+Flask
+Flask-Caching
+requests
+redis
+python-dotenv
+openai==1.46.0
+pydantic

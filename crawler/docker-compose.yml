@@ -1,0 +1,16 @@
+name: cmi-crawler-dev
+
+services:
+  api:
+    build: .
+    restart: always
+    ports:
+      - "8082:5000"
+    env_file:
+      - .env
+  
+  redis:
+    image: redis
+    restart: always
+    ports:
+      - "6379:6379"

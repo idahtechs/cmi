@@ -1,3 +1,5 @@
+name: cmi-dev
+
 services:
   app:
     image: cmi:latest
