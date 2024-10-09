@@ -17,8 +17,6 @@ let openPlantGrass = '-openPlantGrass-'
 // let httpApi = 'http://192.168.31.106:8324' //测试
 let httpApi = process.env.VUE_APP_API_BASE //生产
 
-console.log('env: ', process.env)
-
 // 聊天接口修改此字符 小程序聊天要求wss 例如：wss://mer.crmeb.net
 // let wsApi = 'ws://192.168.3.20:8324'
 let wsApi = process.env.VUE_APP_WS_BASE

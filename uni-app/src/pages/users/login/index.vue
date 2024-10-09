@@ -398,10 +398,7 @@
 						that.$store.commit("SETUID", data.result.user.uid);
 						that.$store.commit('UPDATE_USERINFO', data.result.user);
 						let method
-						let indexPat = ['/pages/index/index', '/pages/order_addcart/order_addcart', '/pages/goods_cate/goods_cate',
-							'/pages/user/index','/pages/plant_grass/index'
-						]
-						if (indexPat.includes(this.getPath(backUrl))) {
+						if (this.$util.isTabbarPage(this.getPath(backUrl))) {
 							method = 'switchTab'
 						} else {
 							method = 'navigateTo'
@@ -484,10 +481,7 @@
 						that.$store.commit("SETUID", data.result.user.uid);
 						that.$store.commit('UPDATE_USERINFO', data.result.user);
 						let method
-						let indexPat = ['/pages/index/index', '/pages/order_addcart/order_addcart', '/pages/goods_cate/goods_cate',
-							'/pages/user/index','/pages/plant_grass/index'
-						]
-						if (indexPat.includes(this.getPath(backUrl))) {
+						if (this.$util.isTabbarPage(this.getPath(backUrl))) {
 							method = 'switchTab'
 						} else {
 							method = 'navigateTo'
@@ -580,10 +574,7 @@
 					that.$store.commit('UPDATE_USERINFO', data.user);
 
 					let method
-					let indexPat = ['/pages/index/index', '/pages/order_addcart/order_addcart', '/pages/goods_cate/goods_cate',
-						'/pages/user/index'
-					]
-					if (indexPat.includes(this.getPath(backUrl))) {
+					if (this.$util.isTabbarPage(this.getPath(backUrl))) {
 						method = 'switchTab'
 					} else {
 						method = 'navigateTo'
@@ -751,10 +742,7 @@
 						that.$store.commit('UPDATE_USERINFO', data.user);
 
 						let method
-						let indexPat = ['/pages/index/index', '/pages/order_addcart/order_addcart', '/pages/goods_cate/goods_cate',
-							'/pages/user/index'
-						]
-						if (indexPat.includes(this.getPath(backUrl))) {
+						if (this.$util.isTabbarPage(this.getPath(backUrl))) {
 							method = 'switchTab'
 						} else {
 							method = 'navigateTo'

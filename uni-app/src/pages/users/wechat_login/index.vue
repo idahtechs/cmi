@@ -47,7 +47,7 @@
 			</checkbox-group>
 		</view>
 		<block>
-		<editUserModal :isShow="isShow" @closeEdit="closeEdit" @editSuccess="editSuccess">
+		<editUserModal :isShow="showUserUpdateModal" @closeEdit="closeEdit" @editSuccess="editSuccess">
 		</editUserModal>
 		</block>
 		<!-- #ifdef MP -->
@@ -85,7 +85,7 @@
 				isHome: false,
 				isPhoneBox: false,
 				protocol: false,
-				isShow: false,
+				showUserUpdateModal: false,
 				logoUrl: '',
 				code: '',
 				codeVal: "",
@@ -205,7 +205,7 @@
 								Cache.set(USER_INFO,res.data.result.user,time);
 								if(res.data.result.user.isNew && self.mp_is_new && self.first_avatar_switch==1){
 									uni.hideLoading();
-									self.isShow = true;
+									self.showUserUpdateModal = true;
 								}else{
 									this.$util.Tips({
 										title: '授权成功',
@@ -240,10 +240,10 @@
 				this.$set(this, 'protocol', !this.protocol);
 			},
 			editSuccess() {
-				this.isShow = false
+				this.showUserUpdateModal = false
 			},
 			closeEdit() {
-				this.isShow = false
+				this.showUserUpdateModal = false
 				this.$util.Tips({
 					title: '登录成功',
 					icon: 'success'
@@ -284,7 +284,7 @@
 				this.isUp = false;
 				// #ifdef MP
 				if (new_user) {
-					this.isShow = true
+					this.showUserUpdateModal = true
 				}
 				// #endif
 			},
@@ -325,7 +325,6 @@
 								}).then(({
 									data
 								}) => {
-									const backUrl = that.$Cache.get('login_back_url') || "/pages/index/index";
 									that.$Cache.clear('login_back_url');
 									that.$store.commit("LOGIN", {
 										'token': data.token,
@@ -333,24 +332,17 @@
 									});
 									that.$store.commit("SETUID", data.user.uid);
 									that.$store.commit('UPDATE_USERINFO', data.user);
-									let method
-									let indexPat = ['/pages/index/index', '/pages/order_addcart/order_addcart', '/pages/goods_cate/goods_cate',
-										'/pages/user/index','/pages/plant_grass/index'
-									]
-									if (indexPat.includes(that.getPath(backUrl))) {
-										method = 'switchTab'
+
+									if (data.user.isNew && that.mp_is_new && that.first_avatar_switch == 1) {
+										that.showUserUpdateModal = true;
 									} else {
-										method = 'navigateTo'
-									}
-									if (that.getPath(backUrl) === '/pages/users/login/index') {
-										uni.switchTab({
-											url: '/pages/index/index'
+										this.$util.Tips({
+											title: '授权成功',
+											icon: 'success'
+										}, {
+											tab: 3
 										});
-										return
-									}
-									uni[method]({
-										url: backUrl
-									});
+									}	
 								})
 								.catch(res => {
 									that.$util.Tips({
@@ -386,7 +378,7 @@
 					that.$store.commit('SETUID', res.data.uid);
 					that.$store.commit('UPDATE_USERINFO', res.data);
 					if (new_user) {
-						this.isShow = true
+						this.showUserUpdateModal = true
 					} else {
 						// #ifdef MP
 						that.$util.Tips({
