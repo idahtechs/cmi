@@ -13,5 +13,4 @@
 /install/install.lock
 /.constant
 
-docker/qa/php.env
-docker/qa/docker-compose.env
+docker/qa/*.env

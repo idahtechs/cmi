@@ -6,10 +6,11 @@ skip:
 
 sync:
 	@echo "---git pulling..."
-	ssh $(HOST) "cd $(TARGET) && git pull"
+	ssh $(HOST) "cd $(TARGET) && git checkout -- . && git clean -df && git pull"
 	@echo "---git pull completed."
 .PHONY: sync
 
+############# web #############
 deploy-web-qa:
 	@echo "---QA Deploying..."
 	ssh $(HOST) "cd $(TARGET) && docker-compose -f ./web/docker/qa/docker-compose.yml build && docker-compose -f ./web/docker/qa/docker-compose.yml up -d"
@@ -28,7 +29,9 @@ web-dev-nodb:
 	rm -f ./web/runtime/swoole.pid
 	docker-compose -f ./web/docker/dev/docker-compose.nodb.yml up
 .PHONY: web-dev-nodb
+############# web #############
 
+############# uni-app #############
 dev-h5:
 	cd ./uni-app; \
 	yarn install; \
@@ -60,3 +63,4 @@ build-mp-weixin:
 	yarn install --frozen-lockfile; \
 	yarn build:mp-weixin
 .PHONY: build-mp-weixin
+############# uni-app #############

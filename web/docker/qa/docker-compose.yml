@@ -1,7 +1,8 @@
+name: cmi-qa
+
 services:
   app:
     image: cmi:latest
-    container_name: cmi
     command: php think swoole
     depends_on:
       mysql:
@@ -12,9 +13,20 @@ services:
       context: ../../
       dockerfile: ./docker/qa/Dockerfile
     ports:
+      - 8081:8324
       - 80:8324
     # volumes:
     #   - ./data/runtime:/var/www/runtime
+
+  # 先暂时把 crawler 放在 web 文件夹下面, 后面有需要再改
+  crawler:
+    build: 
+      context: ../../../crawler
+    restart: always
+    ports:
+      - "8082:5000"
+    env_file:
+      - crawler.env
 
   mysql:
     image: mysql:5.7
@@ -24,7 +36,7 @@ services:
     # ports:
     #   - 3306:3306
     env_file:
-      - docker-compose.env
+      - mysql.env
     healthcheck:
       test: mysqladmin ping -h localhost --password=$$MYSQL_ROOT_PASSWORD
       start_period: 0s
