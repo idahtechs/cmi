@@ -1,0 +1,51 @@
+<?php
+
+namespace app\common\repositories\ai\tools;
+
+use app\common\dao\ai\tools\ExtractCopyDao as dao;
+use app\common\repositories\ai\ToolsRepository;
+use app\common\repositories\BaseRepository;
+use think\exception\ValidateException;
+
+class ExtractCopyRepository extends BaseRepository
+{
+    /**
+     * @var ExtractCopyDao
+     */
+    public $dao;
+
+    public function __construct(dao $dao)
+    {
+        $this->dao = $dao;
+    }
+
+    public function byUrl($data)
+    {
+        $toolsRepository = app()->make(ToolsRepository::class);
+        $expires = $toolsRepository->validateVIPExpired($data['uid']);
+
+        $videoInfo = $toolsRepository->validateUrl($data['url'], $data['platform']);
+
+        $duration = $videoInfo['duration'];
+
+        $integral = $toolsRepository->calculateIntegral($duration);
+  
+        $remain = $toolsRepository->getRemain($data['uid'], $integral);
+
+        $data['integral'] = $integral;
+
+        $contentRes = $toolsRepository->extractContent($data);
+        $data['content'] = $contentRes['text'];
+
+        $data = $this->dao->create($data);
+
+        $res = [
+            'content' => $data['content'],
+            'used' => $data['integral'],
+            'remain' => $remain,
+            'expires' => $expires,
+        ];
+
+        return $res;
+    }
+}
