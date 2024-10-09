@@ -18,6 +18,11 @@ class Tools extends BaseController
         $this->uid = $this->request->uid();
     }
 
+    /**
+     * 通过视频url提取文案
+     * @param ExtractCopyValidate $validate
+     * @return mixed
+     */
     public function extractCopyByUrl(ExtractCopyValidate $validate)
     {
         $data = $this->request->params(['url', 'platform']);

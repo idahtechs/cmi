@@ -35,7 +35,7 @@ class CreateExtractCopy extends Migrator
         ->addColumn('platform', 'string', ['limit' => 16, 'null' => false, 'comment' => '视频平台'])
         ->addColumn('url', 'string', ['limit' => 255, 'null' => false, 'comment' => '视频链接'])
         ->addColumn('content', 'text', ['null' => false, 'comment' => '文案内容'])
-        ->addColumn('times', 'integer', ['limit' => 11, 'signed' => false, 'null' => false, 'comment' => '扣减次数'])
+        ->addColumn('integral', 'integer', ['limit' => 11, 'signed' => false, 'null' => false, 'comment' => '扣减积分'])
         ->addColumn('create_time', 'timestamp', ['null' => false, 'default' => 'CURRENT_TIMESTAMP', 'comment' => '创建时间'])
         ->addIndex('uid')
         ->create();
