@@ -1,3 +1,26 @@
+// base
+button {
+	border: 1rpx solid transparent;
+	border-radius: 80rpx;
+	line-height: 48rpx;
+	padding: 16rpx 30rpx;
+	font-size: 28rpx;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+
+	&[type="primary"] {
+		background-color: var(--view-theme);
+
+		&[plain] {
+			border-color: var(--view-theme);
+			background-color: #fff;
+			color: var(--view-theme)
+		}
+	}
+}
+
+// components
 .font-bg-red,.font_bg-red{
 	display: inline-block;
 	align-items: center;

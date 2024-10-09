@@ -52,5 +52,8 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-
+  .c-page {
+    position: relative;
+    min-height: calc(100vh - var(--window-bottom));
+  }
 </style>

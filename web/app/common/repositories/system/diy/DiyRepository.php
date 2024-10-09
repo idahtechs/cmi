@@ -78,9 +78,9 @@ class DiyRepository extends BaseRepository
             ],
             'blue' => [
                 'type' => 'blue',
-                'theme_color' => '#1DB0FC',
+                'theme_color' => '#2196F3',
                 'assist_color' => '#FFB200',
-                'theme' => '--view-theme: #1DB0FC;--view-assist:#FFB200;--view-priceColor:#FFB200;--view-bgColor:rgba(255, 178, 0,.1);--view-minorColor:rgba(29, 176, 252,.1);--view-bntColor11:#FFD652;--view-bntColor12:#FEB60F;--view-bntColor21:#40D1F4;--view-bntColor22:#1DB0FC;'
+                'theme' => '--view-theme: #2196F3;--view-assist:#FFB200;--view-priceColor:#FFB200;--view-bgColor:rgba(255, 178, 0,.1);--view-minorColor:rgba(29, 176, 252,.1);--view-bntColor11:#FFD652;--view-bntColor12:#FEB60F;--view-bntColor21:#40D1F4;--view-bntColor22:#2196F3;'
             ],
         ];
         return $var[$type] ?? $var['default'];

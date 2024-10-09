@@ -237,7 +237,7 @@
 	@import "@/plugin/animate/animate.min.css";
 	@import 'static/css/base.css';
 	@import 'static/iconfont/iconfont.css';
-	@import 'static/css/style.scss';
+	@import '@/style.scss';
 	.bg-color-red {
 		background-color: #e93323 !important;
 	}
