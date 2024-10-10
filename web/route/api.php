@@ -364,6 +364,7 @@ Route::group('api/', function () {
         Route::group('ai/tools', function () {
             Route::post('extractCopyByUrl', 'Tools/extractCopyByUrl');
             Route::post('script/rewrite', 'Tools/scriptRewrite');
+            Route::delete('script/delete/:id', 'Tools/scriptDelete');
         })->prefix('api.ai.');
 
     })->middleware(UserTokenMiddleware::class, true);

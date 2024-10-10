@@ -44,4 +44,9 @@ class ScriptRewriteRepository extends BaseRepository
 
         return $res;
     }
+
+    public function destroy($id)
+    {
+        return $this->dao->update($id, ['is_del' => 1]);
+    }
 }

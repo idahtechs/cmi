@@ -63,4 +63,23 @@ class Tools extends BaseController
 
         return app('json')->success($res);
     }
+
+    /**
+     * 删除保存的文案
+     * @param $id
+     * @param ExtractCopyValidate $validate
+     * @return mixed
+     */
+    public function scriptDelete($id)
+    {
+        $scriptRewriteRepository = app()->make(ScriptRewriteRepository::class);
+
+        $res = $scriptRewriteRepository->destroy($id);
+
+        if (!$res) {
+            return app('json')->fail('无效的删除操作');
+        }
+
+        return app('json')->success('删除成功');
+    }
 }
