@@ -1220,7 +1220,7 @@ const util = {
 		})
 	},
 
-	gotoPage: ({ url, redirect = false, fallbackPage = '/pages/index/index' }) => {
+	gotoPage: ({ url, redirect = false, fallbackPage }) => {
 		let targetUrl = url
 		if (/https?:\/\//.test(url.trim())) {
 			targetUrl = `/pages/webview/webview?url=${encodeURIComponent(url)}`
@@ -1233,7 +1233,7 @@ const util = {
 		} else {
 			uni[redirect ? 'redirectTo': 'navigateTo']({
 				url: targetUrl,
-				fail: () => uni.switchTab({ url: fallbackPage })
+				fail: () => fallbackPage && uni.switchTab({ url: fallbackPage })
 			})
 		}
 	},

@@ -36,6 +36,37 @@ export default {
 		'fixed',
 	],
 
+	props: {
+		showTitle: {
+			type: Boolean,
+			default: true
+		},
+		iconColor: {
+			type: String,
+			default: '#000'
+		},
+		textColor: {
+			type: String,
+			default: '#000'
+		},
+		bgColor: {
+			type: String,
+			default: '#fff'
+		},
+		hideBackBtn: {
+			type: Boolean,
+			default: false
+		},
+		hideHomeBtn: {
+			type: Boolean,
+			default: true
+		},
+		fixed: {
+			type: Boolean,
+			default: false
+		},
+	},
+
 	data() {
 		return {
 			canNavigateBack: true,
@@ -45,7 +76,7 @@ export default {
 
 	computed: {
 		statusBarHeight() {
-			return uni.getSystemInfoSync().statusBarHeight + 'px'
+			return uni.getWindowInfo().statusBarHeight + 'px'
 		},
 
 		buttons({ hideBackBtn, hideHomeBtn, canNavigateBack }) {

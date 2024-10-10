@@ -1,5 +1,5 @@
 <template>
-	<view class="c-page" :style="viewColor" v-show="completed">
+	<view :class="pageClass" :style="pageStyle" v-show="completed">
 		<slot name="nav"></slot>
 		<view class="c-page-body">
       <slot></slot>
@@ -16,7 +16,12 @@ import { mapGetters } from 'vuex'
 export default {
 
   props: {
-    loginRequired: Boolean
+    loginRequired: Boolean,
+    flex: Boolean,
+    bgTheme: {
+      typeof: String,
+      default: 'light'
+    }
   },
 
 	data() {
@@ -27,6 +32,27 @@ export default {
 
   computed: {
     ...mapGetters(['isLogin', 'viewColor']),
+
+    pageClass() {
+      return [
+        'c-page',
+        this.flex && 'c-page-flex',
+      ].filter(Boolean).join(' ')
+    },
+
+    pageStyle({ viewColor, bgTheme }) {
+      const bgThemes = {
+        'none': '--page-bg: transparent',
+        'light': '--page-bg: #F5FCFF'
+      }
+
+      const bg = bgThemes[bgTheme]
+
+      const styles = [
+        bg
+      ].filter(Boolean).join(';')
+      return `${viewColor};${styles}`
+    }
   },
 
 	watch: {
@@ -55,5 +81,19 @@ export default {
   .c-page {
     position: relative;
     min-height: calc(100vh - var(--window-bottom));
+    background-color: var(--page-bg, transparent);
+
+    &-flex {
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - var(--window-bottom));
+
+      .c-page-body {
+        flex: auto;
+        min-height: 1px;
+        overflow: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+    }
   }
 </style>

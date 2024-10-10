@@ -1,0 +1,84 @@
+<template>
+  <!-- #ifdef H5 -->
+  <button :class="buttonClass" class="copy-button" :id="elId" :data-clipboard-text="text">
+    <slot>复制</slot>
+  </button>
+  <!-- #endif -->
+  <!-- #ifndef H5 -->
+  <button :class="buttonClass" :id="elId" @click="copyText">
+    <slot>复制</slot>
+  </button>
+  <!-- #endif -->
+</template>
+
+<script>
+// #ifdef H5
+import ClipboardJS from "@/plugin/clipboard/clipboard.js";
+// #endif
+let id = 1;
+
+export default {
+  props: {
+    text: {
+      type: String,
+      default: ''
+    },
+    successText: {
+      type: String,
+      default: '复制成功'
+    },
+    errorText: {
+      type: String,
+      default: '复制失败'
+    },
+    buttonClass: {
+      type: String,
+      default: ''
+    }
+  },
+
+  data() {
+    return {
+      elId: `copy_button_${id++}`
+    }
+  },
+
+  mounted() {
+    // #ifdef H5
+    var clipboard = new ClipboardJS(`#${this.elId}`);
+    clipboard.on('success', (e) => {
+      uni.showToast({
+        title: this.successText,
+        icon: 'none'
+      })
+    });
+    clipboard.on('error', (e) => {
+      uni.showToast({
+        title: this.errorText,
+        icon: 'none'
+      })
+    });
+    // #endif 
+  },
+
+  methods: {
+    copyText() {
+      uni.setClipboardData({
+        data: this.text,
+        success: () => {
+          uni.showToast({
+            title: this.successText,
+            icon: 'none'
+          })
+        },
+        fail: () => {
+          uni.showToast({
+            title: this.errorText,
+            icon: 'none'
+          })
+        }
+      })
+    }
+  }
+}
+</script>
