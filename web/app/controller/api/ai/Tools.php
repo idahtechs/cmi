@@ -5,7 +5,9 @@ namespace app\controller\api\ai;
 use think\App;
 use crmeb\basic\BaseController;
 use app\validate\api\ai\tools\ExtractCopyValidate;
+use app\validate\api\ai\tools\ScriptRewriteValidate;
 use app\common\repositories\ai\tools\ExtractCopyRepository;
+use app\common\repositories\ai\tools\ScriptRewriteRepository;
 
 class Tools extends BaseController
 {
@@ -38,6 +40,26 @@ class Tools extends BaseController
         $data['uid'] = $this->uid;
 
         $res = $extractCopyRepository->byUrl($data);
+
+        return app('json')->success($res);
+    }
+
+    /**
+     * 脚本仿写
+     * @param ScriptRewriteValidate $validate
+     * @return mixed
+     */
+    public function scriptRewrite(ScriptRewriteValidate $validate)
+    {
+        $data = $this->request->params(['original', 'prompt']);
+
+        $validate->check($data);
+
+        $scriptRewriteRepository = app()->make(ScriptRewriteRepository::class);
+
+        $data['uid'] = $this->uid;
+
+        $res = $scriptRewriteRepository->rewrite($data);
 
         return app('json')->success($res);
     }

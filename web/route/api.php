@@ -363,6 +363,7 @@ Route::group('api/', function () {
         //AI工具
         Route::group('ai/tools', function () {
             Route::post('extractCopyByUrl', 'Tools/extractCopyByUrl');
+            Route::post('script/rewrite', 'Tools/scriptRewrite');
         })->prefix('api.ai.');
 
     })->middleware(UserTokenMiddleware::class, true);

@@ -5,7 +5,6 @@ namespace app\common\repositories\ai\tools;
 use app\common\dao\ai\tools\ExtractCopyDao as dao;
 use app\common\repositories\ai\ToolsRepository;
 use app\common\repositories\BaseRepository;
-use think\exception\ValidateException;
 
 class ExtractCopyRepository extends BaseRepository
 {
@@ -40,6 +39,7 @@ class ExtractCopyRepository extends BaseRepository
         $data = $this->dao->create($data);
 
         $res = [
+            'id' => $data[$this->dao->getPk()],
             'content' => $data['content'],
             'used' => $data['integral'],
             'remain' => $remain,

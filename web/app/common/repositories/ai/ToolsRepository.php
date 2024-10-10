@@ -8,12 +8,14 @@ use think\exception\ValidateException;
 
 class ToolsRepository extends BaseRepository
 {
-    
+    public $apiHeader;
+
     public function __construct()
     {
+        $this->apiHeader = ['x-api-key:' . env('AI_API_KEY')];
     }
 
-    public function getAiApi($platform, $url, $type = 'preview_info')
+    public function getExtractContentApi($platform, $url, $type = 'preview_info')
     {
         $apiDomain = env('AI_API_DOMAIN');
 
@@ -37,6 +39,16 @@ class ToolsRepository extends BaseRepository
             default:
                 throw new ValidateException('不支持的类型：' . $type);
         }
+
+        return $apiUrl;
+    }
+
+    public function getRewriteApi($original, $prompt)
+    {
+        $apiDomain = env('AI_API_DOMAIN');
+        $apiPre ='rewrite';
+        // TODO: 仿写链接
+        $apiUrl = $apiDomain. '/'. $apiPre . '?original=' . $original . '&prompt=' . $prompt;
 
         return $apiUrl;
     }
@@ -70,9 +82,9 @@ class ToolsRepository extends BaseRepository
      */
     public function validateUrl($url, $platform)
     {
-        $checkApi = $this->getAiApi($platform, $url, 'preview_info');
+        $checkApi = $this->getExtractContentApi($platform, $url, 'preview_info');
 
-        $res = HttpService::request($checkApi, 'get', [], ['x-api-key:' . env('AI_API_KEY')]);
+        $res = HttpService::request($checkApi, 'get', [], $this->apiHeader);
 
         if (!$res) {
             throw new ValidateException('验证失败，请联系管理员！');
@@ -118,7 +130,7 @@ class ToolsRepository extends BaseRepository
         $remain = random_int(0, 5);
 
         if ($remain < $integral) {
-            throw new ValidateException('您的次数已不足，本次提取所需次数：' . $integral . '，剩余次数：' . $remain);
+            throw new ValidateException('积分不足，本次所需积分：' . $integral . '，剩余积分：' . $remain);
         }
 
         return $remain - $integral;
@@ -132,8 +144,8 @@ class ToolsRepository extends BaseRepository
      */
     public function extractContent($data)
     {
-        $apiUrl = $this->getAiApi($data['platform'], $data['url'], 'to_text');
-        $res = HttpService::request($apiUrl, 'get', [], ['x-api-key:' . env('AI_API_KEY')]);
+        $apiUrl = $this->getExtractContentApi($data['platform'], $data['url'], 'to_text');
+        $res = HttpService::request($apiUrl, 'get', [], $this->apiHeader);
 
         if (!$res) {
             throw new ValidateException('提取失败，请联系管理员！');
@@ -143,6 +155,31 @@ class ToolsRepository extends BaseRepository
 
         if ($result['code'] != 0) {
             throw new ValidateException('请填写正确的视频链接后重试！');
+        }
+
+        return $result;
+    }
+
+    /**
+     * 调用API仿写文案
+     * @param array $data
+     * @throws \think\exception\ValidateException
+     * @return mixed
+     */
+    public function rewriteContent($data)
+    {
+        // TODO: 调用API仿写文案
+        $apiUrl = $this->getRewriteApi($data['original'], $data['prompt'], 'rewrite');
+        $res = HttpService::request($apiUrl, 'get', [], $this->apiHeader);
+
+        if (!$res) {
+            throw new ValidateException('仿写失败，请联系管理员！');
+        }
+
+        $result = json_decode($res, true);
+
+        if ($result['code'] != 0) {
+            throw new ValidateException('未知错误，请稍后再试！');
         }
 
         return $result;
