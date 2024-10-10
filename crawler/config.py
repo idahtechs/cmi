@@ -23,6 +23,12 @@ class Config:
         self.API_KEY = get_env("API_KEY")
         self.TIKHUB_API = get_env("TIKHUB_API")
         self.TIKHUB_KEY = get_env("TIKHUB_KEY")
+        self.COZE_GET_PUBLIC_ACCOUNT_ARTICLE_CONTENT_WORKFLOW_ID = get_env(
+            "COZE_GET_PUBLIC_ACCOUNT_ARTICLE_CONTENT_WORKFLOW_ID"
+        )
+        self.COZE_GET_PUBLIC_ACCOUNT_ARTICLE_CONTENT_KEY = get_env(
+            "COZE_GET_PUBLIC_ACCOUNT_ARTICLE_CONTENT_KEY"
+        )
         self.AUDIO_DURATION_LIMIT = int(get_env("AUDIO_DURATION_LIMIT"))
         self.AZURE_ENDPOINT = get_env("AZURE_ENDPOINT")
         self.AZURE_API_KEY = get_env("AZURE_API_KEY")

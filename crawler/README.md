@@ -8,12 +8,14 @@
 - 小红书作品视频转换成文字 API `/xhs_to_text`
 - B站作品预览 API `/bilibili_preview_info`
 - B站作品视频转换成文字 API `/bilibili_to_text`
+- 微信公众号文章提取文字 API `/wechat_public_account_article_to_text`
 
 ## 用到的服务
 
 - [TikHub](https://tikhub.io/)
 - Azure Whisper
 - Redis
+- Coze
 
 ## 开发
 
