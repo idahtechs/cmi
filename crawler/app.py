@@ -49,7 +49,7 @@ def ping():
     return "pong"
 
 
-@app.route("/douyin_preview_info")
+@app.post("/douyin_preview_info")
 @api_key_required
 @parse_json_body
 def douyin_preview_info():
@@ -60,7 +60,7 @@ def douyin_preview_info():
     )
 
 
-@app.route("/douyin_to_text")
+@app.post("/douyin_to_text")
 @api_key_required
 @parse_json_body
 def douyin_to_text():
@@ -83,7 +83,7 @@ def douyin_to_text():
     return dict(text=text, info=info.model_dump(), code=0)
 
 
-@app.route("/xhs_preview_info")
+@app.post("/xhs_preview_info")
 @api_key_required
 @parse_json_body
 def xhs_preview_info():
@@ -98,7 +98,7 @@ def xhs_preview_info():
     )
 
 
-@app.route("/xhs_to_text")
+@app.post("/xhs_to_text")
 @api_key_required
 @parse_json_body
 def xhs_to_text():
@@ -127,7 +127,7 @@ def xhs_to_text():
     return dict(text=text, info=info.model_dump(), code=0)
 
 
-@app.route("/bilibili_preview_info")
+@app.post("/bilibili_preview_info")
 @api_key_required
 @parse_json_body
 def bilibili_preview_info():
@@ -142,7 +142,7 @@ def bilibili_preview_info():
     )
 
 
-@app.route("/bilibili_to_text")
+@app.post("/bilibili_to_text")
 @api_key_required
 @parse_json_body
 def bilibili_to_text():
@@ -171,7 +171,7 @@ def bilibili_to_text():
     return dict(text=text, info=info.model_dump(), code=0)
 
 
-@app.route("/wechat_public_account_article_to_text")
+@app.post("/wechat_public_account_article_to_text")
 @api_key_required
 @parse_json_body
 def wechat_public_account_article_to_text():
