@@ -4,6 +4,7 @@ import shutil
 import subprocess
 
 import requests
+from flask import current_app
 
 
 def remove_files(paths: str | list):
@@ -53,7 +54,7 @@ def extract_audio_from_video(video_path: str):
             remove_files(output_path)
             raise Exception(stderr.decode())
     except Exception as e:
-        print("execute ffmpeg error: ", e)
+        current_app.logger.error("execute ffmpeg error: ", e)
 
     if not os.path.exists(output_path):
         return None

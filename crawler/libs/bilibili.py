@@ -42,7 +42,6 @@ def get_bilibili_info(bv_id: str):
     )
     audios = ret2["data"]["data"]["dash"]["audio"]
     for audio in audios:
-        print(audio["base_url"])
         if "akamaized" in audio["base_url"]:
             info.audio_url = audio["base_url"]
             break

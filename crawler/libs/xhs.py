@@ -2,6 +2,7 @@ import re
 
 import requests
 from extensions.ext_cache import cache
+from flask import current_app
 from libs import tikhub
 from models.xhs import XhsInfo
 
@@ -20,7 +21,7 @@ def get_xhs_note_id_from_url(url: str):
             )
             url = response.url
         except Exception as e:
-            print(f"Error fetching URL: {e}")
+            current_app.logger.error(f"Error fetching URL: {e}")
             return None
 
     # 从最终链接中提取 ID
@@ -40,13 +41,13 @@ def get_xhs_info(note_id: str):
     if info:
         return info
 
-    print(f"get_xhs_info {note_id=}")
+    current_app.logger.error(f"get_xhs_info {note_id=}")
     ret = tikhub.get("/api/v1/xiaohongshu/web/get_note_info_v2", {"note_id": note_id})
 
     # 不确定会不会有多个 note
     note = ret["data"]["data"][0]["note_list"][0]
     if note["model_type"] != "note" or note["type"] != "video":
-        print(f"非小红书视频类型笔记 {note_id=}")
+        current_app.logger.error(f"非小红书视频类型笔记 {note_id=}")
         raise Exception("非小红书视频类型笔记")
 
     stream = note["video"]["media"]["stream"]
@@ -64,7 +65,7 @@ def get_xhs_info(note_id: str):
             break
 
     if not info:
-        print(f"无法获取小红书视频 {note_id=}")
+        current_app.logger.error(f"无法获取小红书视频 {note_id=}")
         raise Exception("无法获取小红书视频")
 
     return info
