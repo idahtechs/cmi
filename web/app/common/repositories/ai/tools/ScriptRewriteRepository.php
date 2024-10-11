@@ -47,9 +47,9 @@ class ScriptRewriteRepository extends BaseRepository
 
     public function destroy($id, $uid)
     {
-        $res = $this->detail($id, $uid);
+        $exists = $this->exists($id, $uid);
 
-        return $res ? $this->dao->update($id, ['is_del' => 1]) : false;
+        return $exists ? $this->dao->update($id, ['is_del' => 1]) : false;
     }
 
     public function lst(array $where, $page, $limit)
@@ -64,9 +64,9 @@ class ScriptRewriteRepository extends BaseRepository
 
     public function polish($data)
     {
-        $res = $this->detail($data['rewrite_id'], $data['uid']);
+        $exists = $this->exists($data['rewrite_id'], $data['uid']);
 
-        if (!$res) {
+        if (!$exists) {
             return null;
         }
 
@@ -79,7 +79,7 @@ class ScriptRewriteRepository extends BaseRepository
         $remain = $toolsRepository->getRemain($data['uid'], $integral);
 
         $contentRes = $toolsRepository->rewriteContent([
-            'original' => $res['original'],
+            'original' => $exists['original'],
             'prompt' => $data['prompt'],
         ]);
         
@@ -87,7 +87,7 @@ class ScriptRewriteRepository extends BaseRepository
 
         $create = $this->dao->create([
             'uid' => $data['uid'],
-            'original' => $res['original'],
+            'original' => $exists['original'],
             'prompt' => $data['prompt'],
             'rewrite' => $contentRes['text'],
         ]);
@@ -103,13 +103,28 @@ class ScriptRewriteRepository extends BaseRepository
         return $res;
     }
 
-    public function detail($id, $uid)
+    public function exists($id, $uid)
     {
         $res = $this->dao->get($id);
-        return $res;
 
-        if($res && $res['is_del'] == 0 && $res['uid'] != $uid) {
+        if($res && $res['is_del'] == 0 && $res['uid'] == $uid) {
             return $res;
+        }
+
+        return null;
+    }
+
+    public function detail($id, $uid)
+    {
+        $exists = $this->exists($id, $uid);
+
+        if($exists) {
+           return [
+            'id' => $exists[$this->dao->getPk()],
+            'content' => $exists['rewrite'],
+            'prompt' => $exists['prompt'],
+            'createTime' => $exists['create_time'],
+           ]; 
         }
 
         return null;

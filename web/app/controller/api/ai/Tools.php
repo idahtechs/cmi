@@ -114,4 +114,17 @@ class Tools extends BaseController
 
         return app('json')->success($polish);
     }
+
+    public function scriptDetail($id)
+    {
+        $scriptRewriteRepository = app()->make(ScriptRewriteRepository::class);
+
+        $res = $scriptRewriteRepository->detail($id, $this->uid);
+
+        if (!$res) {
+            return app('json')->fail('脚本不存在');
+        }
+
+        return app('json')->success($res);
+    }
 }
