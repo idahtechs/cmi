@@ -10,7 +10,7 @@ class ExtractCopyValidate extends Validate
 
     protected $rule = [
         'url|视频链接' => 'require|url',
-        'platform|平台' => 'in:douyin,xhs,bilibili,channels',
+        'platform|平台' => 'in:douyin,xhs,bilibili,wechat_public_account_article',
     ];
 
     protected $message = [

@@ -23,12 +23,8 @@ class ExtractCopyRepository extends BaseRepository
         $toolsRepository = app()->make(ToolsRepository::class);
         $expires = $toolsRepository->validateVIPExpired($data['uid']);
 
-        $videoInfo = $toolsRepository->validateUrl($data['url'], $data['platform']);
+        $integral = $toolsRepository->getIntegralRequire($data['url'], $data['platform']);
 
-        $duration = $videoInfo['duration'];
-
-        $integral = $toolsRepository->calculateIntegral($duration);
-  
         $remain = $toolsRepository->getRemain($data['uid'], $integral);
 
         $data['integral'] = $integral;
