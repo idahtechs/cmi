@@ -43,8 +43,7 @@
 			"path": "pages/user/index",
 			"style": {
 				"enablePullDownRefresh": true,
-				"navigationBarTitleText": "个人中心",
-				"navigationStyle": "custom"
+				"navigationBarTitleText": "个人中心"
 			}
 		},
 		{
@@ -163,7 +162,7 @@
 	},
 	"tabBar": {
 		"color": "#282828",
-		"selectedColor": "#E93323",
+		"selectedColor": "#2196F3",
 		"borderStyle": "white",
 		"backgroundColor": "#ffffff",
 		"list": [
