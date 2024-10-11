@@ -366,6 +366,7 @@ Route::group('api/', function () {
             Route::post('script/rewrite', 'Tools/scriptRewrite');
             Route::delete('script/delete/:id', 'Tools/scriptDelete');
             Route::get('script/lst', 'Tools/scriptLst');
+            Route::post('script/polish/:id', 'Tools/scriptPolish');
         })->prefix('api.ai.');
 
     })->middleware(UserTokenMiddleware::class, true);

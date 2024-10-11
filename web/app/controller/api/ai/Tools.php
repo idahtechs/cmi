@@ -5,6 +5,7 @@ namespace app\controller\api\ai;
 use think\App;
 use crmeb\basic\BaseController;
 use app\validate\api\ai\tools\ExtractCopyValidate;
+use app\validate\api\ai\tools\ScriptPolishValidate;
 use app\validate\api\ai\tools\ScriptRewriteValidate;
 use app\common\repositories\ai\tools\ExtractCopyRepository;
 use app\common\repositories\ai\tools\ScriptRewriteRepository;
@@ -74,7 +75,7 @@ class Tools extends BaseController
     {
         $scriptRewriteRepository = app()->make(ScriptRewriteRepository::class);
 
-        $res = $scriptRewriteRepository->destroy($id);
+        $res = $scriptRewriteRepository->destroy($id, $this->uid);
 
         if (!$res) {
             return app('json')->fail('无效的删除操作');
@@ -92,5 +93,25 @@ class Tools extends BaseController
         $res = $scriptRewriteRepository->lst($where, $page, $limit);
 
         return app('json')->success($res);
+    }
+
+    public function scriptPolish($id, ScriptPolishValidate $validate)
+    {
+        $data = $this->request->params(['prompt']);
+        
+        $validate->check($data);
+        
+        $scriptRewriteRepository = app()->make(ScriptRewriteRepository::class);
+
+        $data['uid'] = $this->uid;
+        $data['rewrite_id'] = $id;
+
+        $polish = $scriptRewriteRepository->polish($data);
+
+        if (!$polish) {
+            return app('json')->fail('无效的操作');
+        }
+
+        return app('json')->success($polish);
     }
 }

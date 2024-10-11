@@ -178,17 +178,17 @@ class ToolsRepository extends BaseRepository
      * @throws \think\exception\ValidateException
      * @return mixed
      */
-    public function rewriteContent($data)
+    public function rewriteContent($data, $type = 'rewrite')
     {
-        // TODO: 调用API仿写文案
-        $apiUrl = $this->getRewriteApi('rewrite');
+        // TODO: 调用API仿写/润色文案
+        $apiUrl = $this->getRewriteApi($type);
         $res = HttpService::request($apiUrl, 'post', [
             'original' => $data['original'],
             'prompt' => $data['prompt'],
         ], $this->apiHeader);
 
         if (!$res) {
-            throw new ValidateException('仿写失败，请联系管理员！');
+            throw new ValidateException('操作失败，请联系管理员！');
         }
 
         $result = json_decode($res, true);
