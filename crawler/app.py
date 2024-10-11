@@ -5,7 +5,7 @@ from config import config
 from extensions import ext_cache
 from extensions.ext_cache import cache
 from flask import Flask, g, request
-from libs import bilibili, douyin, utils, wechat, xhs
+from libs import bilibili, dify, douyin, utils, wechat, xhs
 from libs.azure import audio_to_text
 
 app = Flask(__name__)
@@ -39,7 +39,8 @@ def parse_json_body(func):
 
 @app.errorhandler(Exception)
 def handle_exception(e):
-    print(traceback.format_exc())
+    app.logger.error(traceback.format_exc())
+    app.logger.error(f"Request body: {request.get_data()}")
     return dict(err=str(e), code=1)
 
 
@@ -78,6 +79,7 @@ def douyin_to_text():
             audio_path=audio_path,
             prompt="以下是普通话的句子，这是一段抖音音频。",
         )
+        text = dify.correct_typo(text)
         cache.set(cache_key, text)
         utils.remove_files(audio_path)
     return dict(text=text, info=info.model_dump(), code=0)
@@ -122,6 +124,7 @@ def xhs_to_text():
             audio_path=audio_path,
             prompt="以下是普通话的句子，这是一段小红书音频。",
         )
+        text = dify.correct_typo(text)
         cache.set(cache_key, text)
         utils.remove_files([video_path, audio_path])
     return dict(text=text, info=info.model_dump(), code=0)
@@ -166,6 +169,7 @@ def bilibili_to_text():
             audio_path=mp3_path,
             prompt="以下是普通话的句子，这是一段B站音频。",
         )
+        text = dify.correct_typo(text)
         cache.set(cache_key, text)
         utils.remove_files([audio_path, mp3_path])
     return dict(text=text, info=info.model_dump(), code=0)
