@@ -82,4 +82,15 @@ class Tools extends BaseController
 
         return app('json')->success('删除成功');
     }
+
+    public function scriptLst()
+    {
+        $scriptRewriteRepository = app()->make(ScriptRewriteRepository::class);
+
+        [$page, $limit] = $this->getPage();
+        $where = ['uid' => $this->uid, 'is_del' => 0];
+        $res = $scriptRewriteRepository->lst($where, $page, $limit);
+
+        return app('json')->success($res);
+    }
 }

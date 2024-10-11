@@ -49,4 +49,14 @@ class ScriptRewriteRepository extends BaseRepository
     {
         return $this->dao->update($id, ['is_del' => 1]);
     }
+
+    public function lst(array $where, $page, $limit)
+    {
+        $query = $this->dao->search($where)
+            ->field('rewrite_id as id, rewrite as content, prompt, create_time as createTime')
+            ->order('create_time DESC');
+        $count = $query->count();
+        $list = $query->page($page, $limit)->select();
+        return compact('count', 'list');
+    }
 }
