@@ -360,6 +360,16 @@ Route::group('api/', function () {
             Route::post('deleate/:id', 'PointsOrder/del');
         })->prefix('api.store.order.');
 
+        //AI工具
+        Route::group('ai/tools', function () {
+            Route::post('extractCopyByUrl', 'Tools/extractCopyByUrl');
+            Route::post('script/rewrite', 'Tools/scriptRewrite');
+            Route::delete('script/delete/:id', 'Tools/scriptDelete');
+            Route::get('script/lst', 'Tools/scriptLst');
+            Route::post('script/polish/:id', 'Tools/scriptPolish');
+            Route::get('script/detail/:id', 'Tools/scriptDetail');
+        })->prefix('api.ai.');
+
     })->middleware(UserTokenMiddleware::class, true);
 
     //非强制登录
