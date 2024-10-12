@@ -9,12 +9,14 @@ use think\facade\Log;
 
 class ToolsRepository extends BaseRepository
 {
-    public $apiDomain;
+    public $apiCrawler;
+    public $apiDefault;
     public $apiHeader;
 
     public function __construct()
     {
-        $this->apiDomain = env('AI_API_DOMAIN');
+        $this->apiCrawler = env('AI_API_CRAWLER');
+        $this->apiDefault = env('AI_API_DEFAULT');
         $this->apiHeader = ['x-api-key:' . env('AI_API_KEY')];
     }
 
@@ -38,14 +40,14 @@ class ToolsRepository extends BaseRepository
             throw new ValidateException('不支持的类型：' . $type);
         }
 
-        return $this->apiDomain . '/' . $apiPre . '_' . $type;
+        return $this->apiCrawler . '/' . $apiPre . '_' . $type;
     }
 
     public function getRewriteApi($type = 'rewrite')
     {
         $apiPre = $type;
         // TODO: 仿写链接
-        $apiUrl = $this->apiDomain. '/'. $apiPre;
+        $apiUrl = $this->apiCrawler. '/'. $apiPre;
 
         return $apiUrl;
     }
