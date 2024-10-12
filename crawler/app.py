@@ -3,7 +3,7 @@ from functools import wraps
 
 from config import config
 from extensions import ext_cache
-from extensions.ext_cache import cache
+from extensions.ext_cache import get_cache, set_cache
 from flask import Flask, g, request
 from libs import bilibili, dify, douyin, utils, wechat, xhs
 from libs.azure import audio_to_text
@@ -71,16 +71,17 @@ def douyin_to_text():
     if info.duration // 1000 > config.AUDIO_DURATION_LIMIT:
         return dict(err="音频长度超过限制", code=1)
 
-    cache_key = f"douyin:{utils.md5(share_url)}:transcription"
-    text = cache.get(cache_key)
-    if not text or g.ignore_cache:
-        audio_path = utils.download_file(info.audio_url)
+    cache_key = f"douyin:transcription:{utils.md5(share_url)}"
+    text = get_cache(cache_key)
+    if not text:
+        valid_audio_url = utils.get_valid_url(info.audio_urls)
+        audio_path = utils.download_file(valid_audio_url)
         text = audio_to_text(
             audio_path=audio_path,
             prompt="以下是普通话的句子，这是一段抖音音频。",
         )
         text = dify.correct_typo(text)
-        cache.set(cache_key, text)
+        set_cache(cache_key, text)
         utils.remove_files(audio_path)
     return dict(text=text, info=info.model_dump(), code=0)
 
@@ -113,10 +114,11 @@ def xhs_to_text():
     if info.duration // 1000 > config.AUDIO_DURATION_LIMIT:
         return dict(err="音频长度超过限制", code=4)
 
-    cache_key = f"xhs:{note_id}:transcription"
-    text = cache.get(cache_key)
-    if not text or g.ignore_cache:
-        video_path = utils.download_file(info.video_url)
+    cache_key = f"xhs:transcription:{note_id}"
+    text = get_cache(cache_key)
+    if not text:
+        valid_video_url = utils.get_valid_url(info.video_urls)
+        video_path = utils.download_file(valid_video_url)
         audio_path = utils.extract_audio_from_video(video_path)
         if not audio_path:
             return dict(err="无法获取音频", code=5)
@@ -125,7 +127,7 @@ def xhs_to_text():
             prompt="以下是普通话的句子，这是一段小红书音频。",
         )
         text = dify.correct_typo(text)
-        cache.set(cache_key, text)
+        set_cache(cache_key, text)
         utils.remove_files([video_path, audio_path])
     return dict(text=text, info=info.model_dump(), code=0)
 
@@ -157,10 +159,11 @@ def bilibili_to_text():
     if info.duration // 1000 > config.AUDIO_DURATION_LIMIT:
         return dict(err="音频长度超过限制", code=4)
 
-    cache_key = f"bilibili:{bv_id}:transcription"
-    text = cache.get(cache_key)
-    if not text or g.ignore_cache:
-        audio_path = utils.download_file(info.audio_url)
+    cache_key = f"bilibili:transcription:{bv_id}"
+    text = get_cache(cache_key)
+    if not text:
+        valid_audio_url = utils.get_valid_url(info.audio_urls)
+        audio_path = utils.download_file(valid_audio_url)
         # 转换成mp3格式
         mp3_path = utils.extract_audio_from_video(video_path=audio_path)
         if not mp3_path:
@@ -170,7 +173,7 @@ def bilibili_to_text():
             prompt="以下是普通话的句子，这是一段B站音频。",
         )
         text = dify.correct_typo(text)
-        cache.set(cache_key, text)
+        set_cache(cache_key, text)
         utils.remove_files([audio_path, mp3_path])
     return dict(text=text, info=info.model_dump(), code=0)
 
@@ -180,9 +183,7 @@ def bilibili_to_text():
 @parse_json_body
 def wechat_public_account_article_to_text():
     share_url = g.get("share_url")
-    info = wechat.get_public_account_article_content(
-        share_url, ignore_cache=g.ignore_cache
-    )
+    info = wechat.get_public_account_article_content(share_url)
     if not info:
         return dict(err="无法获取公众号文章内容", code=3)
 

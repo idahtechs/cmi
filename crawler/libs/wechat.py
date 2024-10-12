@@ -1,16 +1,16 @@
 import json
 
-from extensions.ext_cache import cache
-from flask import current_app
+from extensions.ext_cache import get_cache, set_cache
+from flask import current_app, g
 from libs import coze, dify, utils
 from models.wechat import PublicAccountArticleInfo
 
 
-def get_public_account_article_content(share_url: str, ignore_cache: bool = False):
+def get_public_account_article_content(share_url: str):
     share_url = share_url.strip()
-    cache_key = f"wechat:public_account_content:{utils.md5(share_url)}:coze_resp"
-    info: PublicAccountArticleInfo = cache.get(cache_key)
-    if info and not ignore_cache:
+    cache_key = f"wechat:public_account_content_info:{utils.md5(share_url)}"
+    info: PublicAccountArticleInfo = get_cache(cache_key)
+    if info and not g.ignore_cache:
         return info
 
     ret = coze.run_get_public_account_article_content_workflow(share_url)
@@ -35,5 +35,5 @@ def get_public_account_article_content(share_url: str, ignore_cache: bool = Fals
         title=workflow_ret["data"]["title"],
         content=content,
     )
-    cache.set(cache_key, info)
+    set_cache(cache_key, info)
     return info
