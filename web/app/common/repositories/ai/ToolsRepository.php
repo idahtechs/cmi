@@ -88,7 +88,7 @@ class ToolsRepository extends BaseRepository
     {
         $checkApi = $this->getExtractContentApi($platform, 'preview_info');
 
-        $res = HttpService::request($checkApi, 'post', ['share_url' => $url], $this->apiHeader);
+        $res = HttpService::request($checkApi, 'post', json_encode(['share_url' => $url]), $this->apiHeader);
 
         if (!$res) {
             throw new ValidateException('验证失败，请联系管理员！');
@@ -149,7 +149,7 @@ class ToolsRepository extends BaseRepository
     public function extractContent($data)
     {
         $apiUrl = $this->getExtractContentApi($data['platform'], 'to_text');
-        $res = HttpService::request($apiUrl, 'post', ['url' => $data['url']], $this->apiHeader);
+        $res = HttpService::request($apiUrl, 'post', json_encode(['url' => $data['url']]), $this->apiHeader);
 
         if (!$res) {
             throw new ValidateException('提取失败，请联系管理员！');
@@ -178,14 +178,14 @@ class ToolsRepository extends BaseRepository
         }
 
         $apiUrl = $this->apiDefault;
-        $res = HttpService::request($apiUrl, 'post', [
+        $res = HttpService::request($apiUrl, 'post', json_encode([
             'inputs' => [
                 'content' => $data['original'],
                 'prompt' => $data['prompt']  // 确认prompt的key
             ],
             'response_mode' => 'blocking',
             'user' => env('AI_API_USER')
-        ], [
+        ]), [
             'Authorization: Bearer ' . env('AI_API_KEY_' . strtoupper($type)),
             'Content-Type: application/json'
         ]);
