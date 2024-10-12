@@ -1,5 +1,5 @@
 from config import config
-from flask import Flask
+from flask import Flask, g
 from flask_caching import Cache
 
 cache = Cache(
@@ -16,3 +16,14 @@ cache = Cache(
 
 def init_app(app: Flask):
     cache.init_app(app)
+
+
+def get_cache(key: str):
+    if g.ignore_cache:
+        return None
+    data = cache.get(key)
+    return data
+
+
+def set_cache(key: str, value):
+    cache.set(key, value)

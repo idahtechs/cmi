@@ -1,7 +1,8 @@
 import re
 
-from extensions.ext_cache import cache
-from libs import tikhub
+from extensions.ext_cache import get_cache, set_cache
+from flask import current_app
+from libs import tikhub, utils
 from models.bilibili import BilibiliInfo
 
 
@@ -15,8 +16,8 @@ def get_bilibili_bvid_from_url(url: str):
 
 
 def get_bilibili_info(bv_id: str):
-    cache_key = f"bilibili:{bv_id}:tikhub_resp"
-    info: BilibiliInfo = cache.get(cache_key)
+    cache_key = f"bilibili_info:{bv_id}"
+    info: BilibiliInfo = get_cache(cache_key)
     if info:
         return info
 
@@ -26,24 +27,32 @@ def get_bilibili_info(bv_id: str):
         {"bv_id": bv_id},
     )
     data1 = ret1["data"]["data"]
-    info = BilibiliInfo(
-        author=data1["owner"]["name"],
-        caption=data1["title"],
-        desc=data1["desc"],
-        cid=data1["cid"],
-        create_time=int(data1["ctime"]),
-        duration=int(data1["duration"]) * 1000,
-    )
+    cid = data1["cid"]
 
     # 用 bvid 和 cid 获取音频地址
     ret2 = tikhub.get(
         "/api/v1/bilibili/web/fetch_video_playurl",
-        {"bv_id": bv_id, "cid": info.cid},
+        {"bv_id": bv_id, "cid": cid},
     )
     audios = ret2["data"]["data"]["dash"]["audio"]
+    audio_urls = []
     for audio in audios:
-        if "akamaized" in audio["base_url"]:
-            info.audio_url = audio["base_url"]
-            break
-    cache.set(cache_key, info)
+        audio_urls = utils.append_or_extend(audio_urls, audio["base_url"])
+        audio_urls = utils.append_or_extend(audio_urls, audio["backup_url"])
+
+    info = BilibiliInfo(
+        author=data1["owner"]["name"],
+        caption=data1["title"],
+        desc=data1["desc"],
+        cid=cid,
+        audio_urls=sorted(list(set(audio_urls))),
+        create_time=int(data1["ctime"]),
+        duration=int(data1["duration"]) * 1000,
+    )
+
+    if len(info.audio_urls) == 0:
+        current_app.logger.error(f"无法获取B站视频信息 {bv_id=}")
+        raise Exception("无法获取B站视频信息")
+    set_cache(cache_key, info)
+
     return info

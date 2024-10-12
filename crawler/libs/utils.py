@@ -59,3 +59,18 @@ def extract_audio_from_video(video_path: str):
     if not os.path.exists(output_path):
         return None
     return output_path
+
+
+def append_or_extend(array, value):
+    if not array:
+        return [value]
+    if isinstance(value, list):
+        return array + value
+    return array + [value]
+
+
+def get_valid_url(urls: list[str]):
+    for url in urls:
+        resp = requests.get(url)
+        if resp.status_code == 200:
+            return url
