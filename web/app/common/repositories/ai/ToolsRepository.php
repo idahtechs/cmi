@@ -17,7 +17,7 @@ class ToolsRepository extends BaseRepository
     {
         $this->apiCrawler = env('AI_API_CRAWLER');
         $this->apiDefault = env('AI_API_DEFAULT');
-        $this->apiHeader = ['x-api-key:' . env('AI_API_KEY')];
+        $this->apiHeader = ['x-api-key:' . env('AI_API_KEY'), 'Content-Type: application/json'];
     }
 
     public function getExtractContentApi($platform, $type = 'preview_info')
