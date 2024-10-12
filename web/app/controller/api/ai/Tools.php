@@ -30,7 +30,7 @@ class Tools extends BaseController
     {
         $data = $this->request->params(['url', 'platform']);
 
-        if (empty($data['palatform'])) {
+        if (empty($data['platform'])) {
             $data['platform'] = 'douyin';
         }
 

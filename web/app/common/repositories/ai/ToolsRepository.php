@@ -22,16 +22,8 @@ class ToolsRepository extends BaseRepository
 
     public function getExtractContentApi($platform, $type = 'preview_info')
     {
-        switch ($platform) {
-            case 'douyin':
-            case 'xhs':
-            case 'bilibili':
-            case 'wechat_public_account_article':
-                $apiPre = $platform;
-                break;
-
-            default:
-                throw new ValidateException('暂不支持的此平台！');
+        if (!in_array($platform, ['douyin', 'xhs', 'bilibili', 'wechat_public_account_article'])) {
+            throw new ValidateException('暂不支持的此平台：' . $platform);
         }
 
         $canPreview = $type == 'preview_info' && $platform != 'wechat_public_account_article';
@@ -40,7 +32,7 @@ class ToolsRepository extends BaseRepository
             throw new ValidateException('不支持的类型：' . $type);
         }
 
-        return $this->apiCrawler . '/' . $apiPre . '_' . $type;
+        return $this->apiCrawler . '/' . $platform . '_' . $type;
     }
 
     public function getIntegralRequire($url, $platform)
