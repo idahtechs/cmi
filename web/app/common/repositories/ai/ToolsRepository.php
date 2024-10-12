@@ -149,7 +149,7 @@ class ToolsRepository extends BaseRepository
     public function extractContent($data)
     {
         $apiUrl = $this->getExtractContentApi($data['platform'], 'to_text');
-        $res = HttpService::request($apiUrl, 'post', json_encode(['url' => $data['url']]), $this->apiHeader);
+        $res = HttpService::request($apiUrl, 'post', json_encode(['share_url' => $data['url']]), $this->apiHeader);
 
         if (!$res) {
             throw new ValidateException('提取失败，请联系管理员！');
