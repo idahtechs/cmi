@@ -81,9 +81,7 @@ class ScriptRewriteRepository extends BaseRepository
         $contentRes = $toolsRepository->rewriteContent([
             'original' => $exists['original'],
             'prompt' => $data['prompt'],
-        ]);
-        
-        $contentRes = ['text' => 123];
+        ], 'polish');
 
         $create = $this->dao->create([
             'uid' => $data['uid'],

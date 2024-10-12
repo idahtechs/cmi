@@ -43,15 +43,6 @@ class ToolsRepository extends BaseRepository
         return $this->apiCrawler . '/' . $apiPre . '_' . $type;
     }
 
-    public function getRewriteApi($type = 'rewrite')
-    {
-        $apiPre = $type;
-        // TODO: 仿写链接
-        $apiUrl = $this->apiCrawler. '/'. $apiPre;
-
-        return $apiUrl;
-    }
-
     public function getIntegralRequire($url, $platform)
     {
         $isArticle = $platform == 'wechat_public_account_article';
@@ -182,12 +173,22 @@ class ToolsRepository extends BaseRepository
      */
     public function rewriteContent($data, $type = 'rewrite')
     {
-        // TODO: 调用API仿写/润色文案
-        $apiUrl = $this->getRewriteApi($type);
+        if (!in_array(strtoupper($type), ['REWRITE', 'POLISH'])) {
+            throw new ValidateException('暂不支持的类型：' . $type);
+        }
+
+        $apiUrl = $this->apiDefault;
         $res = HttpService::request($apiUrl, 'post', [
-            'original' => $data['original'],
-            'prompt' => $data['prompt'],
-        ], $this->apiHeader);
+            'inputs' => [
+                'content' => $data['original'],
+                'prompt' => $data['prompt']  // 确认prompt的key
+            ],
+            'response_mode' => 'blocking',
+            'user' => env('AI_API_USER')
+        ], [
+            'Authorization: Bearer ' . env('AI_API_KEY_' . strtoupper($type)),
+            'Content-Type: application/json'
+        ]);
 
         if (!$res) {
             throw new ValidateException('操作失败，请联系管理员！');
@@ -195,11 +196,11 @@ class ToolsRepository extends BaseRepository
 
         $result = json_decode($res, true);
 
-        if ($result['code'] != 0) {
+        if (!isset($result['data']) || $result['data']['error']) {
             Log::error("调用 $apiUrl 返回失败：" . $res);
             throw new ValidateException('未知错误，请稍后再试！');
         }
 
-        return $result;
+        return $result['data']['outputs'];
     }
 }
