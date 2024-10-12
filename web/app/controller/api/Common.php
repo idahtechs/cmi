@@ -563,4 +563,27 @@ class Common extends BaseController
         $data['config'] = systemConfig(['open_screen_switch','open_screen_time','open_screen_space']);
         return app('json')->success($data);
     }
+
+    public function getConfig($key)
+    {
+        $config = systemConfig($key);
+        if (!$config) return app('json')->fail('没有对应的配置');
+
+        return app('json')->success(['value' => $config]);
+    }
+
+    public function getGroupConfig($key) {
+        $groupData = app()->make(GroupDataRepository::class)->groupData($key, 0);
+        if (!$groupData) return false;
+
+        return $groupData;
+    }
+
+    public function groupConfig($key)
+    {
+        $groupData = $this->getGroupConfig($key);
+        if (!$groupData) return app('json')->fail('没有对应的配置');
+
+        return app('json')->success($groupData);
+    }
 }

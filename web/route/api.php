@@ -400,6 +400,8 @@ Route::group('api/', function () {
         Route::get('service/info/:id', 'api.store.service.Service/merchantInfo');
         //公共配置
         Route::get('config', 'api.Common/config');
+        Route::get('config/:key', 'api.Common/getConfig');
+        Route::get('config/group/:key', 'api.Common/groupConfig');
         Route::get('has_service/:id','api.store.service.Service/hasService');
         //专题
         Route::group('activity', function () {
