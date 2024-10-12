@@ -1,4 +1,4 @@
-:80 {
+qa-app.ddigi-home.cn {
     handle_path /crawler-api/* {
 		reverse_proxy crawler:5000
 	}
