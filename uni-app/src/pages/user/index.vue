@@ -34,7 +34,7 @@ export default {
       userMenus: [
         { text: '我的积分', url: '', postfix: '100分' },
         { text: '我的创作记录', url: '/pages/ai/records/index', postfix: '' },
-        { text: '联系客服', url: '', postfix: '' },
+        { text: '联系客服', url: '/pages/customer_service_qrcode/index', postfix: '' },
         { text: '设置', url: '/pages/users/user_setting/index', postfix: '' },
       ]
     }

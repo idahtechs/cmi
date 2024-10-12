@@ -46,6 +46,14 @@
 				"navigationBarTitleText": "个人中心"
 			}
 		},
+
+		{
+			"path": "pages/customer_service_qrcode/index",
+			"style": {
+				"navigationBarTitleText": "联系客服"
+			}
+		},
+
 		{
 			"path": "pages/error/index",
 			"style": {

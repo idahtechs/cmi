@@ -7,7 +7,7 @@
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
-import request from "@/utils/request.js";
+import request, { createCacheRequest } from "@/utils/request.js";
 import wechat from "@/libs/wechat.js";
 
 /**
@@ -122,3 +122,21 @@ export function getNavigation(data) {
 		noAuth: true
 	});
 }
+
+/**
+ * 根据key读配置
+ * @param {Object} key
+ */
+export function getConfigByKey(key) {
+	return request.get("config/" + key, {}, {noAuth: true});
+}
+
+/**
+ * 根据key获取组合数据
+ * @param {*} key 
+ * @returns 
+ */
+export const getConfigGroupWithCache = createCacheRequest((key) => {
+	return request.get("config/group/" + key, {}, {noAuth: true});
+})
+export const getConfigGroup = getConfigGroupWithCache.reload

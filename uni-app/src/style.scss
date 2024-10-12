@@ -17,6 +17,9 @@
 	position: sticky;
 }
 
+.z--1 {
+	z-index: -1;
+}
 .z-0 {
 	z-index: 0;
 }
@@ -196,7 +199,7 @@ $range: 0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 3
 	margin-bottom: auto;
 }
 
-$border-radius: 4, 8, 10, 12, 14, 16;
+$border-radius: 4, 8, 10, 12, 14, 16, 18, 20;
 @each $value in $border-radius {
 	.br-#{$value} {
 		border-radius: #{$value * 2}rpx;
@@ -403,10 +406,12 @@ $font-sizes: 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28;
 
 // components
 .cmi-btn {
+	display: block;
 	border-radius: 80rpx;
 	line-height: 48rpx;
 	padding: 20rpx 30rpx;
 	font-size: 28rpx;
+	text-align: center;
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;

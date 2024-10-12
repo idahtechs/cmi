@@ -1,6 +1,6 @@
 <template>
 	<div :style="viewColor">
-		<div class="register_main" :style="{ 'background-image': formItem == 1 ? `url(${domain}/static/images/logo_bgl.png)` : `url(${domain}/static/images/logo_bgh.png)`}">
+		<div class="register_main" :style="{ 'background-image': formItem == 1 ? `url(${domain}/static/images/logo_bgl.png)` : `url(${domain}/static/images/bg-login.png)`}">
 			<view class="system-height" :style="{ height: statusBarHeight }"></view>
 			<!-- #ifdef APP-PLUS -->
 			<view class="title-bar" style="height: 43px;">

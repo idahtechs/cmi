@@ -1,38 +1,38 @@
 <template>
 	<view :style="viewColor" class="wrapper">
 		<view class="bag">
-			<img :src="`${domain}/static/images/logo_bgh.png`" alt="" srcset="">
+			<image class="bg" src="/static/images/bg-login.png" mode="widthFix" />
 		</view>
 		<view class="system-height" :style="{ height: statusBarHeight }"></view>
 		<!-- #ifdef MP -->
-		<view class="title-bar" style="height: 43px;">
+		<!-- <view class="title-bar" style="height: 43px;">
 			<view class="icon" @click="back" v-if="!isHome">
 				<text class="iconfont icon-fanhui"></text>
 			</view>
 			<view class="icon" @click="home" v-else>
 				<text class="iconfont icon-shouye2"></text>
 			</view>
-			商城登录
-		</view>
+		</view> -->
 		<!-- #endif -->
 		<view class="merchant-msg">
 			<img :src="login_logo" />
 			<view class="name">
 				{{site_name}}
 			</view>
+			<view class="color-gray fs-20">你的创意助手，文案新玩法</view>
 		</view>
 		<view class="wechat_login">
 			<view class="btn-wrapper">
 				<!-- #ifdef H5 -->
-				<button hover-class="none" @click="wechatLogin" class="bg-theme btn1">微信登录</button>
+				<button hover-class="none" @click="wechatLogin" class="bg-theme btn1">微信登陆/注册</button>
 				<!-- #endif -->
 				<!-- #ifdef MP -->
 				<template>
 					<!--受否配置微信公众号-->
 					<button class="bg-theme btn1" v-if="wechat_phone_switch==1 && bindPhone" open-type="getPhoneNumber"
-						@getphonenumber="getphonenumber">授权登录</button>
+						@getphonenumber="getphonenumber">微信登陆/注册</button>
 					<button v-else class="bg-theme btn1" @click="getAuthLogin">
-						授权登录
+						微信登陆/注册
 					</button>
 				</template>
 				<!-- #endif -->
@@ -457,9 +457,9 @@
 			/* #ifdef H5 */
 			z-index: 0;
 			/* #endif */
-			img {
+
+			.bg {
 				width: 100%;
-				height: 838rpx;
 			}
 		}
 		.merchant-msg {
@@ -473,21 +473,20 @@
 			position: relative;
 			/* #endif */
 			img {
-				width: 152rpx;
-				height: 152rpx;
-				border-radius: 50%;
+				width: 230rpx;
+				height: 230rpx;
 			}
 			.name {
-				font-size: 40rpx;
+				font-size: 52rpx;
 				font-weight: 500;
 				color: #333333;
 				line-height: 56rpx;
-				margin-top: 32rpx;
+				margin: 72rpx 0 24rpx;
 			}
 		}
 	}
 	.wechat_login {
-		margin-top: 96rpx;
+		margin-top: 200rpx;
 		.img image {
 			width: 100%;
 		}
