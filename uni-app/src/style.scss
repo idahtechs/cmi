@@ -93,6 +93,10 @@
 }
 
 .flex-1 {
+	flex: 1;
+}
+
+.flex-auto {
 	flex: 1 1 auto;
 }
 
@@ -423,6 +427,7 @@ $font-sizes: 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28;
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
+	box-sizing: border-box;
 
 	&.cmi-btn-small {
 		padding: 12rpx 20rpx;

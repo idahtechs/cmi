@@ -1,9 +1,9 @@
 <template>
   <view class="relative mb-20" @touchstart="handleTouchStart" @touchmove="handleTouchMove">
     <view class="record-item relative z-1 bg-white px-12 py-10 br-12" :class="showActions ? 'active' : ''" @click="$emit('click', $event)">
-      <view class="mb-10 overflow-hidden" style="max-height: 120rpx;">{{ record.prompt }}</view>
+      <view class="mb-10 overflow-hidden" style="max-height: 120rpx;">{{ contentText }}</view>
       <view class="flex justify-content-between color-muted">
-        <text>{{ record.createTime }}</text>
+        <text>{{ record.updateTime }}</text>
       </view>
     </view>
     <view class="absolute top-0 right-0 w-full h-full flex align-items-center justify-content-end gap-9 pr-12">
@@ -24,6 +24,12 @@ export default {
   data() {
     return {
       showActions: false
+    }
+  },
+
+  computed: {
+    contentText() {
+      return this.record.content ? this.$util.markdownToPlainText(this.record.content) : ''
     }
   },
 

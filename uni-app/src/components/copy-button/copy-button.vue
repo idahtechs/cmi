@@ -1,13 +1,13 @@
 <template>
   <!-- #ifdef H5 -->
-  <button :class="buttonClass" class="copy-button" :id="elId" :data-clipboard-text="text">
+  <view :class="buttonClass" class="copy-button" :id="elId" :data-clipboard-text="text">
     <slot>复制</slot>
-  </button>
+  </view>
   <!-- #endif -->
   <!-- #ifndef H5 -->
-  <button :class="buttonClass" :id="elId" @click="copyText">
+  <view :class="buttonClass" :id="elId" @click="copyText">
     <slot>复制</slot>
-  </button>
+  </view>
   <!-- #endif -->
 </template>
 
@@ -82,3 +82,9 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.copy-button {
+  display: inline-block;
+}
+</style>

@@ -14,12 +14,10 @@
               <image src="/static/icons/swap-horizontal.svg" class="w-24 h-24 align-middle"/>
               提取视频脚本
             </view>
-            <!-- TODO: -->
-            <text class="color-muted absolute right-0" v-else>脚本来源：抖音</text>
           </view>
   
-          <more-or-less :threshold="32" :trigger-value="record.content" more-text="展开并编辑" :disabled="isNewRecord || !loaded">
-            <textarea class="cmi-input" placeholder="请输入脚本内容" v-model="record.content" :maxlength="-1" auto-height />
+          <more-or-less :threshold="32" :trigger-value="record.content" more-text="展开并编辑" :disabled="isNewRecord || !loaded" class="block bg-white br-16">
+            <textarea class="cmi-input" placeholder="请输入脚本内容" v-model="record.content" :maxlength="-1" auto-height style="min-height: 380rpx;" />
           </more-or-less>
         </view>
   
@@ -38,8 +36,8 @@
         </view>
   
         <!-- 生成结果 -->
-        <view class="flex flex-column" id="generated_versions">
-          <view v-for="(result, index) in generatedVersions" :key="result.id" class="mb-20">
+        <view class="flex flex-column gap-20" id="generated_versions">
+          <view v-for="(result, index) in generatedVersions" :key="result.id">
             <view class="flex mb-8">
               生成脚本
               <text class="color-muted ml-4 fs-12">{{ result.generateAt || '' }}</text>
@@ -50,7 +48,7 @@
     
               <view class="flex gap-8 mt-12">
                 <button class="cmi-btn flex-1" type="primary" plain @click="handlePolishRequest(index)">润色</button>
-                <copy-button class="flex-1" button-class="cmi-btn cmi-btn-primary flex-1" :text="result.contentPlainText">复制全文</copy-button>
+                <copy-button class="cmi-btn cmi-btn-primary flex-1" :text="result.contentPlainText">复制全文</copy-button>
               </view>
             </view>
           </view>
@@ -271,10 +269,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-.collapsable-container {
-  background-color: white;
-  border-radius: 16rpx;
-}
-</style>
