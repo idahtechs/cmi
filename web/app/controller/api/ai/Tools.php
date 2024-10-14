@@ -52,7 +52,11 @@ class Tools extends BaseController
      */
     public function scriptRewrite(ScriptRewriteValidate $validate)
     {
-        $data = $this->request->params(['original', 'prompt']);
+        $data = $this->request->params(['original', 'prompt', 'extract_copy_id']);
+
+        if (empty($data['extract_copy_id'])) {
+            $data['extract_copy_id'] = 0;
+        }
 
         $validate->check($data);
 
@@ -104,7 +108,7 @@ class Tools extends BaseController
         $scriptRewriteRepository = app()->make(ScriptRewriteRepository::class);
 
         $data['uid'] = $this->uid;
-        $data['rewrite_id'] = $id;
+        $data[$scriptRewriteRepository->getPk()] = $id;
 
         $polish = $scriptRewriteRepository->polish($data);
 

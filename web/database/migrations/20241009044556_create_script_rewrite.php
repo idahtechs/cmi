@@ -31,12 +31,14 @@ class CreateScriptRewrite extends Migrator
         $table = $this->table('script_rewrite', ['id' => 'rewrite_id', 'comment' => '脚本仿写表']);
 
         $table
+        ->addColumn('extract_copy_id', 'integer', ['limit' => 11, 'signed' => false, 'null' => false, 'comment' => '提取文案id'])
         ->addColumn('uid', 'integer', ['limit' => 11, 'signed' => false, 'null' => false, 'comment' => '用户id'])
         ->addColumn('original', 'text', ['null' => false, 'comment' => '用户提交的脚本内容'])
         ->addColumn('prompt', 'text', ['null' => false, 'comment' => '用户提交的提示词'])
         ->addColumn('rewrite', 'text', ['null' => false, 'comment' => '生成的脚本内容'])
         ->addColumn('is_del', 'boolean', ['null' => false, 'default' => 0, 'comment' => '是否删除'])
         ->addColumn('create_time', 'timestamp', ['null' => false, 'default' => 'CURRENT_TIMESTAMP', 'comment' => '创建时间'])
+        ->addIndex('extract_copy_id')
         ->addIndex('uid')
         ->create();
     }

@@ -28,7 +28,7 @@ class CreateExtractCopy extends Migrator
      */
     public function change()
     {
-        $table = $this->table('extract_copy', ['id' => 'copy_id', 'comment' => '提取文案表']);
+        $table = $this->table('extract_copy', ['id' => 'extract_copy_id', 'comment' => '提取文案表']);
 
         $table
         ->addColumn('uid', 'integer', ['limit' => 11, 'signed' => false, 'null' => false, 'comment' => '用户id'])

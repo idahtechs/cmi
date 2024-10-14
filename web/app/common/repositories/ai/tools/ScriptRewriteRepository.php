@@ -55,7 +55,7 @@ class ScriptRewriteRepository extends BaseRepository
     public function lst(array $where, $page, $limit)
     {
         $query = $this->dao->search($where)
-            ->field('rewrite_id as id, rewrite as content, prompt, create_time as createTime')
+            ->field($this->dao->getPk() . ' as id, rewrite as content, prompt, create_time as createTime')
             ->order('create_time DESC');
         $count = $query->count();
         $list = $query->page($page, $limit)->select();
@@ -64,7 +64,7 @@ class ScriptRewriteRepository extends BaseRepository
 
     public function polish($data)
     {
-        $exists = $this->exists($data['rewrite_id'], $data['uid']);
+        $exists = $this->exists($data[$this->dao->getPk()], $data['uid']);
 
         if (!$exists) {
             return null;

@@ -9,7 +9,7 @@ class ExtractCopy extends BaseModel
 {
     public static function tablePk(): string
     {
-        return 'copy_id';
+        return 'extract_copy_id';
     }
 
     public static function tableName(): string
