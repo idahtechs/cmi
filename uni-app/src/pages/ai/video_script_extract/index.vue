@@ -1,7 +1,7 @@
 <template>
   <c-page login-required>
     <template #nav>
-      <custom-nav bg-color="transparent"/>
+      <custom-nav bg-color="transparent" />
     </template>
 
     <view class="cmi-form">
@@ -9,19 +9,16 @@
         <view class="cmi-form-label relative">
           选择视频平台
           <view class="cmi-link absolute right-0" @click="handleManualInput">
-            <image src="/static/icons/swap-horizontal.svg" class="w-24 h-24 align-middle"/>
+            <image src="/static/icons/swap-horizontal.svg" class="w-24 h-24 align-middle" />
             使用文案脚本
           </view>
         </view>
-        <view class="cmi-picker-container" @click="handlePlatformPick">
-          <input class="cmi-input" placeholder="请选择视频链接所属平台" :value="form.platform"/>
-          <text class="cmi-picker-arrow iconfont icon-jiantou" />
-        </view>
+        <c-picker :options="platforms" v-model="form.platform" />
       </view>
 
       <view class="cmi-form-item required">
         <view class="cmi-form-label">视频链接</view>
-        <input class="cmi-input" v-model="form.videoUrl"  placeholder="请输入想要提取文案的视频链接" />
+        <input class="cmi-input" v-model="form.url" placeholder="请输入想要提取文案的视频链接" />
       </view>
 
       <view class="cmi-form-actions">
@@ -29,59 +26,51 @@
         <view class="color-gray text-center mt-4">剩余积分：100</view>
       </view>
     </view>
-
-    <c-popup-picker ref="popupPicker" title="选择视频链接平台" :columns="pickerColumns" />
   </c-page>
 </template>
 
 <script>
-  export default {
-    data() {
-      return {
-        pickerColumns: [[
-          {
-            label: '抖音',
-            value: '抖音',
-          },
-          {
-            label: '小红书',
-            value: '小红书',
-          },
-          {
-            label: 'Bilibili',
-            value: 'Bilibili',
-          },
-        ]],
+import { extractVideoScript } from '@/api/ai'
 
-        form: {
-          platform: '',
-          videoUrl: ''
-        }
-      }
+export default {
+  data() {
+    return {
+      platforms: [
+        { value: 'douyin', label: '抖音' }, 
+        { value: 'xhs', label: '小红书' }, 
+        { value: 'bilibili', label: 'B站' }, 
+        { value: 'wechat_public_account_article', label: '微信公众号' }
+      ],
+
+      form: {
+        platform: '',
+        url: ''
+      },
+    }
+  },
+
+  computed: {
+    buttonDisabled() {
+      return !this.form.platform || !this.form.url
+    },
+  },
+
+  methods: {
+    handleManualInput() {
+      uni.redirectTo({ url: '/pages/ai/video_script_generate/index' })
     },
 
-    computed: {
-      buttonDisabled() {
-        return !this.form.platform || !this.form.videoUrl
-      }
-    },
-
-    methods: {
-      handleManualInput() {
-        uni.redirectTo({ url: '/pages/ai/video_script_generate/index' })  
-      },
-
-      async handlePlatformPick() {
-        const res = await this.$refs.popupPicker.pick()
-        this.form.platform = res.selectedItems[0]?.value
-      },
-
-      handleSubmit() {
-
-      }
+    handleSubmit() {
+      uni.showLoading({ title: '正在提取文案' })
+      extractVideoScript(this.form).then(res => {
+        const extractStorageKey = `video_script_extract_${res.data.id}`
+        uni.setStorageSync(extractStorageKey, res.data)
+        uni.redirectTo({ url: `/pages/ai/video_script_generate/index?extractStorageKey=${extractStorageKey}` })
+        uni.hideLoading()
+      }).catch(err => {
+        uni.showToast({ title: err, icon: 'none' })
+      })
     }
   }
+}
 </script>
-
-
-

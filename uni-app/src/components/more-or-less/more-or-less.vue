@@ -30,6 +30,11 @@
         default: '收起'
       },
 
+      disabled: {
+        type: Boolean,
+        default: false
+      },
+
       // 触发内容长度检测的对象，只要变化，则触发重新检测（变相检测方法，因小程序不支持MutationObserver）
       triggerValue: {
         type: [ Number, String, Boolean, Object, Array ],
@@ -45,16 +50,16 @@
     },
 
     computed: {
-      enable({ threshold, contentHeight }) {
-        return contentHeight > threshold
+      enable({ disabled, threshold, contentHeight }) {
+        return !disabled && contentHeight > threshold
       },
 
-      className({ showMore }) {
-        if (showMore) {
-          return ''
-        } else {
-          return 'mol-less'
-        }
+      className({ showMore, enable }) {
+        const classes = [
+          showMore ? '' : 'mol-less',
+          enable ? '' : 'mol-disabled'
+        ]
+        return classes.filter(Boolean).join(' ')
       },
 
       containerStyles({ enable, showMore, threshold, contentHeight }) {
@@ -70,6 +75,12 @@
       triggerValue: {
         handler: 'detect',
         immediate: true
+      },
+
+      enable(enable) {
+        if (enable) {
+          this.detect()
+        }
       }
     },
 
@@ -115,7 +126,7 @@
     }
 
     &-less {
-      .mol-container .mol-content {
+      &:not(.mol-disabled) .mol-container .mol-content {
         pointer-events: none;
       }
       .mol-action {

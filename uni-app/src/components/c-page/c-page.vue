@@ -89,6 +89,7 @@ export default {
       height: calc(100vh - var(--window-bottom));
 
       .c-page-body {
+        position: relative;
         flex: auto;
         min-height: 1px;
         overflow: auto;

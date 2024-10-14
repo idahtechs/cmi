@@ -67,7 +67,7 @@
 			...uni.getStorageSync('GLOBAL_DATA') || {}
 		},
 		onLaunch: function(option) {
-			uni.hideTabBar();
+			// uni.hideTabBar();
 			this.globalData.statusBarHeight = uni.getSystemInfoSync().statusBarHeight + 'px';
 			this.globalData.uid = this.$store.state.app.uid
 			let that = this;

@@ -2,7 +2,7 @@
   <uni-popup ref="popup" type="bottom">
     <view class="c-popup-picker">
       <view class="c-popup-picker-title">{{ title }}</view>
-      <picker-view class="c-popup-picker-view" :indicator-style="indicatorStyle" :value="value" @change="handleChange">
+      <picker-view class="c-popup-picker-view" :indicator-style="indicatorStyle" :value="value" immediate-change @change="handleChange">
         <picker-view-column v-for="(col, index) in columns" :key="index">
           <view class="c-popup-picker-item" v-for="item in col" :key="item[valueKey]">{{ item[labelKey] }}</view>
         </picker-view-column>
@@ -22,6 +22,10 @@ export default {
     title: {
       type: String,
       default: '请选择'
+    },
+    selectedIndexes: {
+      type: Array,
+      default: () => []
     },
     columns: {
       type: Array,
@@ -62,15 +66,17 @@ export default {
   },
 
   watch: {
-      columns:  {
-        handler(columns) {
-          if (columns.length !== this.value.length) {
-            this.value = new Array(columns.length).fill(0)
-          }
-        },
-        immediate: true
-      }
-    },
+    selectedIndexes: {
+      handler(selectedIndexes) {
+        if (selectedIndexes.length !== 0) {
+          this.value = selectedIndexes
+        } else {
+          this.value = new Array(columns.length).fill(0)
+        }
+      },
+      immediate: true
+    }
+  },
 
 
   methods: {

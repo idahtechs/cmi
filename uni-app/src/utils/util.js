@@ -14,6 +14,7 @@ import {
 import store from '../store';
 import { toLogin } from '@/libs/login.js';
 import wechat from '@/libs/wechat';
+import { Remarkable } from 'remarkable'
 // #ifdef APP-PLUS
 import permision from "./permission.js"
 // #endif
@@ -1397,10 +1398,40 @@ const util = {
 		return util.unescapeHTML(textContent)
 	},
 
+	markdownToHtml(content) {	
+		if (!content || typeof content !== 'string') return ''
+
+		const md = new Remarkable({ html: true })
+		return md.render(content)
+	},
+
+	markdownToPlainText(content) {
+		if (!content || typeof content !== 'string') return ''
+
+		const md = new Remarkable({ html: true })
+		const html = md.render(content)
+		return util.stripHtmlTags(html)
+	},
+
 	extractURL(content) {
 		const regexp = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,4}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gi
 		const res = regexp.exec(content || '')
 		return res ? res[0] : ''
+	},
+
+	/**
+	 * error-first wrapper for Promise
+	 * util.er(Promise.resolve('ok')) => Promise.resolve([null, 'ok'])
+	 * util.er(Promise.reject('err')) => Promise.resolve([err, null])
+	**/
+	ef(promise) {
+		return new Promise((resolve) => {
+			promise.then((res) => {
+				resolve([null, res])
+			}).catch((err) => {
+				resolve([typeof err === 'string' ? new Error(err) : err, null])
+			})
+		})
 	}
 }
 

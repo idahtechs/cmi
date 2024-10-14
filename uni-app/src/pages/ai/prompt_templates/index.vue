@@ -5,9 +5,9 @@
     </template>
 
     <view class="prompt-templates">
-      <view class="prompt-template" v-for="template in templates" :key="template.id">
-        <view class="prompt-template-title">{{ template.title }}</view>
-        <view class="prompt-template-content">{{ template.content }}</view>
+      <view class="prompt-template" v-for="template in templates" :key="template.group_data_id">
+        <view class="prompt-template-title">{{ template.name }}</view>
+        <view class="prompt-template-content">{{ template.prompt }}</view>
         <button class="cmi-btn cmi-btn-xs" type="primary" @click="handleUseTemplate(template)">使用模版</button>
       </view> 
     </view>
@@ -15,22 +15,26 @@
 </template>
 
 <script>
+import { getConfigGroupWithCache } from '@/api/public'
+
 export default {
   data() {
     return {
-      templates: [
-        ...new Array(10).fill(0).map((_, index) => {
-          return {
-            id: index + 1,
-            title: `模版${index + 1}`,
-            content: `模板内容${index + 1}`
-          }
-        })
-      ]
+      templates: []
     }
   },
 
+  onLoad() {
+    this.loadPromptTemplates()
+  },
+
   methods: {
+    loadPromptTemplates() {
+      getConfigGroupWithCache('prompt_templates').then(res => {
+        this.templates = res.data
+      })
+    },
+
     handleUseTemplate(template) {
       uni.showModal({
         title: '是否使用模版覆盖现有提示词？',
@@ -38,7 +42,7 @@ export default {
         confirmText: '是',
         success: (res) => {
           if (res.confirm) {
-            uni.$emit('use_prompt_template', template.content)
+            uni.$emit('use_prompt_template', template.prompt)
             uni.navigateBack()
           }
         }
