@@ -24,7 +24,8 @@ class ScriptInitiationRepository extends BaseRepository
     {
         $toolsRepository = app()->make(ToolsRepository::class);
         $expires = $toolsRepository->validateVIPExpired($data['uid']);
-        $integral = 1;
+        // TODO: 仿写暂不扣积分
+        $integral = 0;
         $remain = $toolsRepository->getRemain($data['uid'], $integral);
         $contentRes = $toolsRepository->rewriteContent($data);
         $returnData = [

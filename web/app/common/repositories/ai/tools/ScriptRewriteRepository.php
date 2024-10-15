@@ -32,8 +32,8 @@ class ScriptRewriteRepository extends BaseRepository
         $toolsRepository = app()->make(ToolsRepository::class);
 
         $expires = $toolsRepository->validateVIPExpired($data['uid']);
-
-        $integral = 1;
+        // TODO: 重新生成暂不扣积分
+        $integral = 0;
 
         $remain = $toolsRepository->getRemain($data['uid'], $integral);
 
@@ -47,8 +47,9 @@ class ScriptRewriteRepository extends BaseRepository
         ];
 
         $res = Db::transaction(function () use ($data, $existsInitiation, $contentRes, $returnData, $scriptInitiationRepository) {
+            $initiation_id = (int) $existsInitiation['initiation_id'];
             $create = $this->dao->create([
-                'initiation_id' => $existsInitiation['initiation_id'],
+                'initiation_id' => $initiation_id,
                 'uid' => $data['uid'],
                 'original' => $data['original'],
                 'prompt' => $data['prompt'],
@@ -59,6 +60,8 @@ class ScriptRewriteRepository extends BaseRepository
             $scriptInitiationRepository->update($existsInitiation['initiation_id'], ['last_update_time' => $create['create_time']]);
 
             $returnData['id'] = (int) $create[$this->dao->getPk()];
+            $returnData['initiation_id'] = $initiation_id;
+            $returnData['createTime'] = $create['create_time'];
 
             return $returnData;
         });
@@ -91,8 +94,8 @@ class ScriptRewriteRepository extends BaseRepository
         $toolsRepository = app()->make(ToolsRepository::class);
 
         $expires = $toolsRepository->validateVIPExpired($data['uid']);
-
-        $integral = 1;
+        // TODO: 润色暂不扣积分
+        $integral = 0;
 
         $remain = $toolsRepository->getRemain($data['uid'], $integral);
 
@@ -109,8 +112,9 @@ class ScriptRewriteRepository extends BaseRepository
         ];
 
         $res = Db::transaction(function () use ($data, $exists, $contentRes, $returnData, $scriptInitiationRepository) {
+            $initiation_id = (int) $exists['initiation_id'];
             $create = $this->dao->create([
-                'initiation_id' => $exists['initiation_id'],
+                'initiation_id' => $initiation_id,
                 'uid' => $data['uid'],
                 'original' => $exists['original'],
                 'prompt' => $data['prompt'],
@@ -121,6 +125,8 @@ class ScriptRewriteRepository extends BaseRepository
             $scriptInitiationRepository->update($exists['initiation_id'], ['last_update_time' => $create['create_time']]);
 
             $returnData['id'] = (int) $create[$this->dao->getPk()];
+            $returnData['initiation_id'] = $initiation_id;
+            $returnData['createTime'] = $create['create_time'];
 
             return $returnData;
         });
