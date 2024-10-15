@@ -57,7 +57,11 @@ class ScriptRewriteRepository extends BaseRepository
                 'method' => 'recreate',
             ]);
 
-            $scriptInitiationRepository->update($existsInitiation['initiation_id'], ['last_update_time' => $create['create_time']]);
+            $scriptInitiationRepository->update($existsInitiation['initiation_id'], [
+                'original' => $data['original'],
+                'prompt' => $data['prompt'],
+                'last_update_time' => $create['create_time']
+            ]);
 
             $returnData['id'] = (int) $create[$this->dao->getPk()];
             $returnData['initiation_id'] = $initiation_id;
