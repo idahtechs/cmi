@@ -100,7 +100,7 @@ class ScriptRewriteRepository extends BaseRepository
         $remain = $toolsRepository->getRemain($data['uid'], $integral);
 
         $contentRes = $toolsRepository->rewriteContent([
-            'original' => $exists['original'],
+            'original' => $exists['rewrite'],
             'prompt' => $data['prompt'],
         ], 'POLISH');
 
@@ -116,7 +116,7 @@ class ScriptRewriteRepository extends BaseRepository
             $create = $this->dao->create([
                 'initiation_id' => $initiation_id,
                 'uid' => $data['uid'],
-                'original' => $exists['original'],
+                'original' => $exists['rewrite'],
                 'prompt' => $data['prompt'],
                 'rewrite' => $contentRes['text'],
                 'method' => 'polish',
