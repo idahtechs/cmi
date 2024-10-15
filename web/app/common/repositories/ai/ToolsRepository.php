@@ -57,7 +57,8 @@ class ToolsRepository extends BaseRepository
      */
     public function validateVIPExpired($uid)
     {
-        $random = '+' . random_int(0,1) . ' second';
+        // TODO:永不过期
+        $random = '+' . random_int(1,1) . ' second';
         $expires = date('Y-m-d H:i:s', strtotime($random));
 
         $now = date('Y-m-d H:i:s');
@@ -124,6 +125,8 @@ class ToolsRepository extends BaseRepository
     public function getRemain($uid, $integral)
     {
         $remain = random_int(0, 5);
+        // TODO: 无限积分
+        $remain = $integral * 2;
 
         if ($remain < $integral) {
             throw new ValidateException('积分不足，本次所需积分：' . $integral . '，剩余积分：' . $remain);
@@ -158,14 +161,15 @@ class ToolsRepository extends BaseRepository
     }
 
     /**
-     * 调用API仿写文案
+     * 调用API重写文案(仿写、重新生成、润色)
      * @param array $data
      * @throws \think\exception\ValidateException
      * @return mixed
      */
-    public function rewriteContent($data, $type = 'rewrite')
+    public function rewriteContent($data, $type = 'INITIATION')
     {
-        if (!in_array(strtoupper($type), ['REWRITE', 'POLISH'])) {
+        $type = strtoupper($type);
+        if (!in_array($type, ['INITIATION', 'REWRITE', 'POLISH'])) {
             throw new ValidateException('暂不支持的类型：' . $type);
         }
 
@@ -173,12 +177,12 @@ class ToolsRepository extends BaseRepository
         $res = HttpService::request($apiUrl, 'post', json_encode([
             'inputs' => [
                 'content' => $data['original'],
-                'prompt' => $data['prompt']  // 确认prompt的key
+                'prompt' => $data['prompt']
             ],
             'response_mode' => 'blocking',
             'user' => env('AI_API_USER')
         ]), [
-            'Authorization: Bearer ' . env('AI_API_KEY_' . strtoupper($type)),
+            'Authorization: Bearer ' . env('AI_API_KEY_' . $type),
             'Content-Type: application/json'
         ]);
 

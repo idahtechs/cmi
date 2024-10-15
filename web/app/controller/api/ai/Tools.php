@@ -5,9 +5,11 @@ namespace app\controller\api\ai;
 use think\App;
 use crmeb\basic\BaseController;
 use app\validate\api\ai\tools\ExtractCopyValidate;
+use app\validate\api\ai\tools\ScriptInitiationValidate;
 use app\validate\api\ai\tools\ScriptPolishValidate;
 use app\validate\api\ai\tools\ScriptRewriteValidate;
 use app\common\repositories\ai\tools\ExtractCopyRepository;
+use app\common\repositories\ai\tools\ScriptInitiationRepository;
 use app\common\repositories\ai\tools\ScriptRewriteRepository;
 
 class Tools extends BaseController
@@ -46,11 +48,12 @@ class Tools extends BaseController
     }
 
     /**
-     * 脚本仿写
-     * @param ScriptRewriteValidate $validate
+     * 仿写文案
+     * @param ScriptInitiationValidate $validate
      * @return mixed
      */
-    public function scriptRewrite(ScriptRewriteValidate $validate)
+
+    public function scriptInitiation(ScriptInitiationValidate $validate)
     {
         $data = $this->request->params(['original', 'prompt', 'extract_copy_id']);
 
@@ -60,13 +63,37 @@ class Tools extends BaseController
 
         $validate->check($data);
 
+        $scriptInitiationRepository = app()->make(ScriptInitiationRepository::class);
+
+        $data['uid'] = $this->uid;
+
+        $res = $scriptInitiationRepository->initiation($data);
+
+        return app('json')->success($res);
+    }
+
+    /**
+     * 重新生成文案
+     * @param ScriptRewriteValidate $validate
+     * @return mixed
+     */
+    public function scriptRecreate($id, ScriptRewriteValidate $validate)
+    {
+        $data = $this->request->params(['original', 'prompt']);
+
+        $validate->check($data);
+
         $scriptRewriteRepository = app()->make(ScriptRewriteRepository::class);
 
         $data['uid'] = $this->uid;
 
-        $res = $scriptRewriteRepository->rewrite($data);
+        $rewrite = $scriptRewriteRepository->recreate($id,$data);
 
-        return app('json')->success($res);
+        if (!$rewrite) {
+            return app('json')->fail('无效的操作');
+        }
+
+        return app('json')->success($rewrite);
     }
 
     /**
@@ -77,9 +104,9 @@ class Tools extends BaseController
      */
     public function scriptDelete($id)
     {
-        $scriptRewriteRepository = app()->make(ScriptRewriteRepository::class);
+        $scriptInitiationRepository = app()->make(ScriptInitiationRepository::class);
 
-        $res = $scriptRewriteRepository->destroy($id, $this->uid);
+        $res = $scriptInitiationRepository->destroy($id, $this->uid);
 
         if (!$res) {
             return app('json')->fail('无效的删除操作');
@@ -90,11 +117,23 @@ class Tools extends BaseController
 
     public function scriptLst()
     {
-        $scriptRewriteRepository = app()->make(ScriptRewriteRepository::class);
-
+        $scriptInitiationRepository = app()->make(ScriptInitiationRepository::class);
         [$page, $limit] = $this->getPage();
         $where = ['uid' => $this->uid, 'is_del' => 0];
-        $res = $scriptRewriteRepository->lst($where, $page, $limit);
+        $res = $scriptInitiationRepository->lst($where, $page, $limit);
+
+        return app('json')->success($res);
+    }
+
+    public function scriptDetail($id)
+    {
+        $scriptInitiationRepository = app()->make(ScriptInitiationRepository::class);
+
+        $res = $scriptInitiationRepository->detail($id, $this->uid);
+
+        if (!$res) {
+            return app('json')->fail('脚本不存在');
+        }
 
         return app('json')->success($res);
     }
@@ -108,9 +147,8 @@ class Tools extends BaseController
         $scriptRewriteRepository = app()->make(ScriptRewriteRepository::class);
 
         $data['uid'] = $this->uid;
-        $data[$scriptRewriteRepository->getPk()] = $id;
 
-        $polish = $scriptRewriteRepository->polish($data);
+        $polish = $scriptRewriteRepository->polish($id, $data);
 
         if (!$polish) {
             return app('json')->fail('无效的操作');
@@ -119,16 +157,16 @@ class Tools extends BaseController
         return app('json')->success($polish);
     }
 
-    public function scriptDetail($id)
+    public function scriptVersionDelete($id)
     {
         $scriptRewriteRepository = app()->make(ScriptRewriteRepository::class);
 
-        $res = $scriptRewriteRepository->detail($id, $this->uid);
+        $res = $scriptRewriteRepository->destroy($id, $this->uid);
 
         if (!$res) {
-            return app('json')->fail('脚本不存在');
+            return app('json')->fail('无效的删除操作');
         }
 
-        return app('json')->success($res);
+        return app('json')->success('删除成功');
     }
 }

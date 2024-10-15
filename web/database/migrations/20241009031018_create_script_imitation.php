@@ -3,7 +3,7 @@
 use think\migration\Migrator;
 use think\migration\db\Column;
 
-class CreateScriptRewrite extends Migrator
+class CreateScriptImitation extends Migrator
 {
     /**
      * Change Method.
@@ -28,17 +28,18 @@ class CreateScriptRewrite extends Migrator
      */
     public function change()
     {
-        $table = $this->table('script_rewrite', ['id' => 'rewrite_id', 'comment' => '脚本生成记录表']);
+        $table = $this->table('script_initiation', ['id' => 'initiation_id', 'comment' => '脚本仿写表']);
 
         $table
-        ->addColumn('initiation_id', 'integer', ['limit' => 11, 'signed' => false, 'null' => false, 'comment' => '仿写文案id'])
+        ->addColumn('extract_copy_id', 'integer', ['limit' => 11, 'signed' => false, 'null' => false, 'comment' => '提取记录id'])
+        ->addColumn('uid', 'integer', ['limit' => 11, 'signed' => false, 'null' => false, 'comment' => '用户id'])
         ->addColumn('original', 'text', ['null' => false, 'comment' => '用户提交的脚本内容'])
         ->addColumn('prompt', 'text', ['null' => false, 'comment' => '用户提交的提示词'])
-        ->addColumn('rewrite', 'text', ['null' => false, 'comment' => '生成的脚本内容'])
-        ->addColumn('method', 'string', ['null' => false, 'default' => 'create', 'comment' => '生成方式，create: 首次生成，polish: 润色，recreate: 重新生成'])
         ->addColumn('is_del', 'boolean', ['null' => false, 'default' => 0, 'comment' => '是否删除'])
-        ->addColumn('create_time', 'timestamp', ['null' => false, 'default' => 'CURRENT_TIMESTAMP', 'comment' => '创建时间'])
-        ->addIndex('initiation_id')
+        ->addColumn('create_time', 'timestamp', ['null' => false, 'default' => 'CURRENT_TIMESTAMP', 'comment' => '仿写时间'])
+        ->addColumn('last_update_time', 'timestamp', ['null' => false, 'default' => 'CURRENT_TIMESTAMP', 'update' => 'CURRENT_TIMESTAMP', 'comment' => '最后更新时间'])
+        ->addIndex('extract_copy_id')
+        ->addIndex('uid')
         ->create();
     }
 }

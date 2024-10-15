@@ -363,11 +363,13 @@ Route::group('api/', function () {
         //AI工具
         Route::group('ai/tools', function () {
             Route::post('extractCopyByUrl', 'Tools/extractCopyByUrl');
-            Route::post('script/rewrite', 'Tools/scriptRewrite');
+            Route::post('script/initiation', 'Tools/scriptInitiation');
             Route::delete('script/delete/:id', 'Tools/scriptDelete');
             Route::get('script/lst', 'Tools/scriptLst');
-            Route::post('script/polish/:id', 'Tools/scriptPolish');
             Route::get('script/detail/:id', 'Tools/scriptDetail');
+            Route::post('script/polish/:id', 'Tools/scriptPolish');
+            Route::post('script/recreate/:id', 'Tools/scriptRecreate');
+            Route::delete('script/version/delete/:id', 'Tools/scriptVersionDelete');
         })->prefix('api.ai.');
 
     })->middleware(UserTokenMiddleware::class, true);
