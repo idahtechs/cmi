@@ -35,6 +35,9 @@ class ScriptInitiationRepository extends BaseRepository
             'expires' => $expires,
         ];
         return Db::transaction(function() use ($data, $contentRes, $returnData) {
+            $createTime = date('Y-m-d H:i:s');
+            $data['create_time'] = $createTime;
+            $data['last_update_time'] = $createTime;
             $res = $this->dao->create($data);
             $initiation_id = (int) $res[$this->dao->getPk()];
 
@@ -44,11 +47,12 @@ class ScriptInitiationRepository extends BaseRepository
                 'original' => $data['original'],
                 'prompt' => $data['prompt'],
                 'rewrite' => $contentRes['text'],
+                'create_time' => $createTime,
             ]);
 
             $returnData['id'] = (int) $version[$scriptRewriteRepository->dao->getPk()];
             $returnData['initiation_id'] = $initiation_id;
-            $returnData['createTime'] = $version['create_time'];
+            $returnData['createTime'] = $createTime;
 
             return $returnData;
         });

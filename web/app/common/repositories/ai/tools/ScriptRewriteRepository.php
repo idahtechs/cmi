@@ -48,6 +48,7 @@ class ScriptRewriteRepository extends BaseRepository
 
         $res = Db::transaction(function () use ($data, $existsInitiation, $contentRes, $returnData, $scriptInitiationRepository) {
             $initiation_id = (int) $existsInitiation['initiation_id'];
+            $createTime = date('Y-m-d H:i:s');
             $create = $this->dao->create([
                 'initiation_id' => $initiation_id,
                 'uid' => $data['uid'],
@@ -55,6 +56,7 @@ class ScriptRewriteRepository extends BaseRepository
                 'prompt' => $data['prompt'],
                 'rewrite' => $contentRes['text'],
                 'method' => 'recreate',
+                'create_time' => $createTime,
             ]);
 
             $scriptInitiationRepository->update($existsInitiation['initiation_id'], [
@@ -65,7 +67,7 @@ class ScriptRewriteRepository extends BaseRepository
 
             $returnData['id'] = (int) $create[$this->dao->getPk()];
             $returnData['initiation_id'] = $initiation_id;
-            $returnData['createTime'] = $create['create_time'];
+            $returnData['createTime'] = $createTime;
 
             return $returnData;
         });

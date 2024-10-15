@@ -31,6 +31,7 @@ class ExtractCopyRepository extends BaseRepository
 
         $contentRes = $toolsRepository->extractContent($data);
         $data['content'] = $contentRes['text'];
+        $data['create_time'] = date('Y-m-d H:i:s');
 
         $data = $this->dao->create($data);
 
