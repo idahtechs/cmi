@@ -46,7 +46,7 @@ class ToolsRepository extends BaseRepository
 
         $videoInfo = $this->validateVideoUrl($url, $platform);
 
-        return $this->calculateIntegral($videoInfo['duration']);
+        return $this->calculateIntegral($videoInfo['duration'], $platform);
     }
 
     /**
@@ -107,9 +107,14 @@ class ToolsRepository extends BaseRepository
      * @throws \think\exception\ValidateException
      * @return integer
      */
-    public function calculateIntegral($duration)
+    public function calculateIntegral($duration, $platform)
     {
         $perUnit = 1000 * 60 * 2; // TODO: 每2分钟扣减1，不足2分钟算2分钟
+
+        if ($platform == 'bilibili') {
+            $perUnit = $perUnit * 2;
+        }
+
         $integral = ceil($duration / $perUnit);
 
         return $integral;
