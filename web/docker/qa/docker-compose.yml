@@ -14,8 +14,8 @@ services:
       dockerfile: ./docker/qa/Dockerfile
     expose:
       - 8324
-    # volumes:
-    #   - ./data/runtime:/var/www/runtime
+    volumes:
+      - ../../public/uploads:/var/www/public/uploads
 
   # 先暂时把 crawler 放在 web 文件夹下面, 后面有需要再改
   crawler:
