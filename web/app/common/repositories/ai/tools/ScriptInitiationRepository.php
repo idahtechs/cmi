@@ -38,14 +38,16 @@ class ScriptInitiationRepository extends BaseRepository
             $initiation_id = (int) $res[$this->dao->getPk()];
 
             $scriptRewriteRepository = app()->make(ScriptRewriteRepository::class);
-            $scriptRewriteRepository->create([
+            $version = $scriptRewriteRepository->create([
                 'initiation_id' => $initiation_id,
                 'original' => $data['original'],
                 'prompt' => $data['prompt'],
                 'rewrite' => $contentRes['text'],
             ]);
 
-            $returnData['id'] = $initiation_id;
+            $returnData['id'] = (int) $version[$scriptRewriteRepository->dao->getPk()];
+            $returnData['initiation_id'] = $initiation_id;
+            $returnData['createTime'] = $version['create_time'];
 
             return $returnData;
         });
