@@ -84,7 +84,7 @@ class ToolsRepository extends BaseRepository
         $res = HttpService::request($checkApi, 'post', json_encode(['share_url' => $url]), $this->apiHeader);
 
         if (!$res) {
-            throw new ValidateException('验证失败，请联系管理员！');
+            throw new ValidateException('验证失败，请重试！');
         }
 
         $result = json_decode($res, true);
@@ -152,7 +152,7 @@ class ToolsRepository extends BaseRepository
         $res = HttpService::request($apiUrl, 'post', json_encode(['share_url' => $data['url']]), $this->apiHeader);
 
         if (!$res) {
-            throw new ValidateException('提取失败，请联系管理员！');
+            throw new ValidateException('提取失败，请重试！');
         }
 
         $result = json_decode($res, true);
@@ -192,7 +192,7 @@ class ToolsRepository extends BaseRepository
         ]);
 
         if (!$res) {
-            throw new ValidateException('操作失败，请联系管理员！');
+            throw new ValidateException('操作失败，请重试！');
         }
 
         $result = json_decode($res, true);
