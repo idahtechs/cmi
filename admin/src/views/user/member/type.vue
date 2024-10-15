@@ -15,6 +15,7 @@
         <el-table-column prop="svip_number" label="有效期(天)" min-width="60" />
         <el-table-column prop="cost_price" label="原价" min-width="60" />
         <el-table-column prop="price" label="优惠价" min-width="60" />
+        <el-table-column prop="integral" label="赠送积分" min-width="60" />
         <el-table-column prop="sort" label="排序" min-width="60" />
         <el-table-column prop="status" label="是否开启" min-width="100">
           <template slot-scope="scope">

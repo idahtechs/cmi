@@ -382,6 +382,7 @@ class GroupDataRepository extends BaseRepository
                 ]),
             Elm::number('cost_price', '原价')->required(),
             Elm::number('price', '优惠价')->required(),
+            Elm::number('integral', '赠送积分')->required(),
             Elm::number('sort', '排序'),
             Elm::switches('status', '是否显示')->activeValue(1)->inactiveValue(0)->inactiveText('关')->activeText('开'),
         ];
