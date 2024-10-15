@@ -12,12 +12,14 @@ class ToolsRepository extends BaseRepository
     public $apiCrawler;
     public $apiDefault;
     public $apiHeader;
+    public $timeout;
 
     public function __construct()
     {
         $this->apiCrawler = env('AI_API_CRAWLER');
         $this->apiDefault = env('AI_API_DEFAULT');
         $this->apiHeader = ['x-api-key:' . env('AI_API_KEY'), 'Content-Type: application/json'];
+        $this->timeout = 60 * 5;
     }
 
     public function getExtractContentApi($platform, $type = 'preview_info')
@@ -81,7 +83,7 @@ class ToolsRepository extends BaseRepository
     {
         $checkApi = $this->getExtractContentApi($platform, 'preview_info');
 
-        $res = HttpService::request($checkApi, 'post', json_encode(['share_url' => $url]), $this->apiHeader);
+        $res = HttpService::request($checkApi, 'post', json_encode(['share_url' => $url]), $this->apiHeader, $this->timeout);
 
         if (!$res) {
             throw new ValidateException('验证失败，请重试！');
@@ -149,7 +151,7 @@ class ToolsRepository extends BaseRepository
     public function extractContent($data)
     {
         $apiUrl = $this->getExtractContentApi($data['platform'], 'to_text');
-        $res = HttpService::request($apiUrl, 'post', json_encode(['share_url' => $data['url']]), $this->apiHeader);
+        $res = HttpService::request($apiUrl, 'post', json_encode(['share_url' => $data['url']]), $this->apiHeader, $this->timeout);
 
         if (!$res) {
             throw new ValidateException('提取失败，请重试！');
@@ -189,7 +191,7 @@ class ToolsRepository extends BaseRepository
         ]), [
             'Authorization: Bearer ' . env('AI_API_KEY_' . $type),
             'Content-Type: application/json'
-        ]);
+        ], $this->timeout);
 
         if (!$res) {
             throw new ValidateException('操作失败，请重试！');
