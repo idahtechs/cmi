@@ -6,8 +6,23 @@ export const extractVideoScript = (data) => {
 }
 
 // 仿写视频脚本
-export const rewriteVideoScript = (data) => {
-  return request.post('ai/tools/script/rewrite', data)
+export const generateVideoScript = (data) => {
+  return request.post('ai/tools/script/initiation ', data)
+}
+
+// 重新仿写视频脚本
+export const regenerateVideoScript = (id,data) => {
+  return request.post(`ai/tools/script/recreate/${id}`, data)
+}
+
+// 删除视频脚本
+export const deleteVideoScript = (id) => {
+  return request.delete(`ai/tools/script/delete/${id}`)
+}
+
+// 删除视频脚本记录项
+export const deleteVideoScriptVersion = (id) => {
+  return request.delete(`ai/tools/script/version/delete/${id}`)
 }
 
 // 视频脚本润色

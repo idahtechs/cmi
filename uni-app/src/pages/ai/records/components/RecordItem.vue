@@ -1,7 +1,7 @@
 <template>
   <view class="relative mb-20" @touchstart="handleTouchStart" @touchmove="handleTouchMove">
     <view class="record-item relative z-1 bg-white px-12 py-10 br-12" :class="showActions ? 'active' : ''" @click="$emit('click', $event)">
-      <view class="mb-10 overflow-hidden" style="max-height: 120rpx;">{{ contentText }}</view>
+      <view class="mb-10 overflow-hidden record-item-content" style="max-height: 120rpx;">{{ contentText }}</view>
       <view class="flex justify-content-between color-muted">
         <text>{{ record.updateTime }}</text>
       </view>
@@ -66,6 +66,13 @@ export default {
 
     &.active {
       transform: translateX(-140rpx);
+    }
+
+    &-content {
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 3;
+      overflow: hidden;
     }
   }
 </style>

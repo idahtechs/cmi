@@ -4,7 +4,7 @@
       <image src="/static/images/bg-user-index.png" class="absolute left-0 top-0 w-full" mode="widthFix" />
       <view class="relative z-1 flex gap-8" @click="onUserCardClick">
         <image class="user-avatar" :src="userInfo && userInfo.avatar || '/static/images/f.png'"></image>
-        <view class="fs-15 font-bold mt-8">{{userInfo ? userInfo.nickname : '请点击登录'}}</view>
+        <view class="fs-15 font-bold mt-8">{{isLogin ? userInfo.nickname : '请点击登录'}}</view>
       </view>
     </view>
 
@@ -32,7 +32,7 @@ export default {
   data() {
     return {
       userMenus: [
-        { text: '我的积分', url: '', postfix: '100分' },
+        { text: '我的积分', url: '', postfix: this.isLogin ? '100分' : '' },
         { text: '我的创作记录', url: '/pages/ai/records/index', postfix: '' },
         { text: '联系客服', url: '/pages/customer_service_qrcode/index', postfix: '' },
         { text: '设置', url: '/pages/users/user_info/index', postfix: '' },

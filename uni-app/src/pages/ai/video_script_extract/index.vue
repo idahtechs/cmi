@@ -51,7 +51,7 @@ export default {
 
   computed: {
     buttonDisabled() {
-      return !this.form.platform || !this.form.url
+      return !this.form.platform || !this.$util.extractURL(this.form.url)
     },
   },
 
@@ -62,7 +62,11 @@ export default {
 
     handleSubmit() {
       uni.showLoading({ title: '正在提取文案' })
-      extractVideoScript(this.form).then(res => {
+      const data = {
+        ...this.form,
+        url: this.$util.extractURL(this.form.url)
+      }
+      extractVideoScript(data).then(res => {
         const extractStorageKey = `video_script_extract_${res.data.id}`
         uni.setStorageSync(extractStorageKey, res.data)
         uni.redirectTo({ url: `/pages/ai/video_script_generate/index?extractStorageKey=${extractStorageKey}` })

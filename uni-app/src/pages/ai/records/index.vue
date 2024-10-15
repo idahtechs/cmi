@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import { getVideoScriptList } from '@/api/ai'
+import { getVideoScriptList, deleteVideoScript } from '@/api/ai'
 import RecordItem from './components/RecordItem.vue'
 
 export default {
@@ -22,6 +22,13 @@ export default {
       loading: false,
       finished: false
     }
+  },
+
+  onPullDownRefresh() {
+    this.page = 0
+    this.records = []
+    this.finished = false
+    this.loadData().finally(() => uni.stopPullDownRefresh())
   },
 
   onReachBottom() {
@@ -41,12 +48,19 @@ export default {
       const limit = 10
       this.loading = true
 
-      const res = await getVideoScriptList({ page, limit })
+      const [err,res] = await this.$util.ef(getVideoScriptList({ page, limit }))
+      this.loading = false
+
+      if (err) {
+        return uni.showToast({
+          title: err.message,
+          icon: 'none'
+        })
+      } 
 
       this.records = [...this.records, ...res.data.list]
       this.page = page
       this.finished = res.data.list.length < limit
-      this.loading = false
     },
 
     handleClick(record) {
@@ -62,13 +76,20 @@ export default {
         confirmText: '是',
         success: (res) => {
           if (res.confirm) {
-            // TODO: 调用删除脚本接口
-
-            this.records = this.records.filter(item => item.id !== record.id)
-            uni.showToast({
-              title: '删除成功',
-              icon: 'none'
+            deleteVideoScript(record.id).then(() => {
+              this.records = this.records.filter(item => item.id !== record.id)
+              uni.showToast({
+                title: '已成功删除',
+                icon: 'none'
+              })
+            }).catch(e => {
+              console.log(e)
+              uni.showToast({
+                title: '删除失败，请重试',
+                icon: 'none'
+              })
             })
+           
           }
         }
       })
