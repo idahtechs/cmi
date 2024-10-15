@@ -1,38 +1,38 @@
 <template>
 	<view :style="viewColor" class="wrapper">
 		<view class="bag">
-			<img :src="`${domain}/static/images/logo_bgh.png`" alt="" srcset="">
+			<image class="bg" src="/static/images/bg-login.png" mode="widthFix" />
 		</view>
 		<view class="system-height" :style="{ height: statusBarHeight }"></view>
 		<!-- #ifdef MP -->
-		<view class="title-bar" style="height: 43px;">
+		<!-- <view class="title-bar" style="height: 43px;">
 			<view class="icon" @click="back" v-if="!isHome">
 				<text class="iconfont icon-fanhui"></text>
 			</view>
 			<view class="icon" @click="home" v-else>
 				<text class="iconfont icon-shouye2"></text>
 			</view>
-			商城登录
-		</view>
+		</view> -->
 		<!-- #endif -->
 		<view class="merchant-msg">
 			<img :src="login_logo" />
 			<view class="name">
 				{{site_name}}
 			</view>
+			<view class="color-gray fs-20">你的创意助手，文案新玩法</view>
 		</view>
 		<view class="wechat_login">
 			<view class="btn-wrapper">
 				<!-- #ifdef H5 -->
-				<button hover-class="none" @click="wechatLogin" class="bg-theme btn1">微信登录</button>
+				<button hover-class="none" @click="wechatLogin" class="bg-theme btn1">微信登陆/注册</button>
 				<!-- #endif -->
 				<!-- #ifdef MP -->
 				<template>
 					<!--受否配置微信公众号-->
 					<button class="bg-theme btn1" v-if="wechat_phone_switch==1 && bindPhone" open-type="getPhoneNumber"
-						@getphonenumber="getphonenumber">授权登录</button>
+						@getphonenumber="getphonenumber">微信登陆/注册</button>
 					<button v-else class="bg-theme btn1" @click="getAuthLogin">
-						授权登录
+						微信登陆/注册
 					</button>
 				</template>
 				<!-- #endif -->
@@ -47,7 +47,7 @@
 			</checkbox-group>
 		</view>
 		<block>
-		<editUserModal :isShow="isShow" @closeEdit="closeEdit" @editSuccess="editSuccess">
+		<editUserModal :isShow="showUserUpdateModal" @closeEdit="closeEdit" @editSuccess="editSuccess">
 		</editUserModal>
 		</block>
 		<!-- #ifdef MP -->
@@ -85,7 +85,7 @@
 				isHome: false,
 				isPhoneBox: false,
 				protocol: false,
-				isShow: false,
+				showUserUpdateModal: false,
 				logoUrl: '',
 				code: '',
 				codeVal: "",
@@ -205,7 +205,7 @@
 								Cache.set(USER_INFO,res.data.result.user,time);
 								if(res.data.result.user.isNew && self.mp_is_new && self.first_avatar_switch==1){
 									uni.hideLoading();
-									self.isShow = true;
+									self.showUserUpdateModal = true;
 								}else{
 									this.$util.Tips({
 										title: '授权成功',
@@ -240,10 +240,10 @@
 				this.$set(this, 'protocol', !this.protocol);
 			},
 			editSuccess() {
-				this.isShow = false
+				this.showUserUpdateModal = false
 			},
 			closeEdit() {
-				this.isShow = false
+				this.showUserUpdateModal = false
 				this.$util.Tips({
 					title: '登录成功',
 					icon: 'success'
@@ -284,7 +284,7 @@
 				this.isUp = false;
 				// #ifdef MP
 				if (new_user) {
-					this.isShow = true
+					this.showUserUpdateModal = true
 				}
 				// #endif
 			},
@@ -325,7 +325,6 @@
 								}).then(({
 									data
 								}) => {
-									const backUrl = that.$Cache.get('login_back_url') || "/pages/index/index";
 									that.$Cache.clear('login_back_url');
 									that.$store.commit("LOGIN", {
 										'token': data.token,
@@ -333,24 +332,17 @@
 									});
 									that.$store.commit("SETUID", data.user.uid);
 									that.$store.commit('UPDATE_USERINFO', data.user);
-									let method
-									let indexPat = ['/pages/index/index', '/pages/order_addcart/order_addcart', '/pages/goods_cate/goods_cate',
-										'/pages/user/index','/pages/plant_grass/index'
-									]
-									if (indexPat.includes(that.getPath(backUrl))) {
-										method = 'switchTab'
+
+									if (data.user.isNew && that.mp_is_new && that.first_avatar_switch == 1) {
+										that.showUserUpdateModal = true;
 									} else {
-										method = 'navigateTo'
-									}
-									if (that.getPath(backUrl) === '/pages/users/login/index') {
-										uni.switchTab({
-											url: '/pages/index/index'
+										this.$util.Tips({
+											title: '授权成功',
+											icon: 'success'
+										}, {
+											tab: 3
 										});
-										return
-									}
-									uni[method]({
-										url: backUrl
-									});
+									}	
 								})
 								.catch(res => {
 									that.$util.Tips({
@@ -386,7 +378,7 @@
 					that.$store.commit('SETUID', res.data.uid);
 					that.$store.commit('UPDATE_USERINFO', res.data);
 					if (new_user) {
-						this.isShow = true
+						this.showUserUpdateModal = true
 					} else {
 						// #ifdef MP
 						that.$util.Tips({
@@ -465,9 +457,9 @@
 			/* #ifdef H5 */
 			z-index: 0;
 			/* #endif */
-			img {
+
+			.bg {
 				width: 100%;
-				height: 838rpx;
 			}
 		}
 		.merchant-msg {
@@ -481,21 +473,20 @@
 			position: relative;
 			/* #endif */
 			img {
-				width: 152rpx;
-				height: 152rpx;
-				border-radius: 50%;
+				width: 230rpx;
+				height: 230rpx;
 			}
 			.name {
-				font-size: 40rpx;
+				font-size: 52rpx;
 				font-weight: 500;
 				color: #333333;
 				line-height: 56rpx;
-				margin-top: 32rpx;
+				margin: 72rpx 0 24rpx;
 			}
 		}
 	}
 	.wechat_login {
-		margin-top: 96rpx;
+		margin-top: 200rpx;
 		.img image {
 			width: 100%;
 		}

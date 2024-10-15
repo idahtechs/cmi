@@ -1,5 +1,5 @@
 <template>
-	<view :style="viewColor">
+	<view :style="viewColor" class="pb-24">
 		<form>
 			<view class='personal-data'>
 				<view class="wrapper" v-if="switchUserInfo.length>0">
@@ -77,6 +77,7 @@
 							<text class='iconfont icon-you'></text>
 						</navigator>
 					</view>
+					<!-- 
 					<view class='item acea-row row-between-wrapper'>
 						<view>登录密码</view>
 						<view class='input acea-row row-between-wrapper' @click="changePwd">
@@ -104,7 +105,7 @@
 							<input type='text' placeholder="账号注销后不能恢复" disabled='true' class='id'></input>
 							<text class='iconfont icon-you'></text>
 						</view>
-					</view>
+					</view> -->
 					<!--#ifdef APP-PLUS-->
 					<view class='item acea-row row-between-wrapper'>
 						<view>当前版本</view>
@@ -200,6 +201,7 @@
 						that.$util.Tips({
 							title:res.message,
 						})
+						that.getUserInfo();
 					})	
 				});		
 			}, 		
@@ -214,6 +216,7 @@
 			},	
 			// 微信头像获取
 			onChooseAvatar(e) {
+				let that = this
 				const {avatarUrl} = e.detail
 				this.$util.uploadImgs('upload/image', avatarUrl, (res) => {
 					this.userInfo.avatar = res.data.path
@@ -221,6 +224,7 @@
 						that.$util.Tips({
 							title:res.message,
 						})
+						that.getUserInfo();
 					})
 				}, (err) => {
 					console.log(err)
@@ -361,7 +365,7 @@
 		width: 35rpx;
 		height: 35rpx;
 		border-radius: 50%;
-		border: 1px solid rgb(187, 43, 5);
+		border: 1px solid var(--view-theme);
 		line-height: 25rpx;
 		text-align: center;
 		position: absolute;
@@ -371,7 +375,7 @@
 	.iconfonta{
 		border-radius: 50%;
 		font-size: 20rpx;
-		color: red;
+		color: var(--view-theme);
 	}
 	.avatar {
 		width: 120rpx;
@@ -529,10 +533,10 @@
 		text-align: center;
 		width: 690rpx;
 		height: 90rpx;
-		border-radius: 45rpx;
+		border-radius: 24rpx;
 		margin: 30rpx auto 0 auto;
-		color: var(--view-theme);
-		border: 1px solid var(--view-theme);
+		color: $uni-color-error;
+		background-color: white;
 	}
 	.avatar-box {
 		width: 96rpx;

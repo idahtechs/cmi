@@ -12,18 +12,23 @@ import {
 	HTTP_REQUEST_URL
 } from '../config/app.js';
 import store from '../store';
-import {
-	pathToBase64
-} from '@/plugin/image-tools/index.js';
+import { toLogin } from '@/libs/login.js';
+import wechat from '@/libs/wechat';
+import { Remarkable } from 'remarkable'
 // #ifdef APP-PLUS
 import permision from "./permission.js"
 // #endif
-export default {
+
+import pagesConf from "!!json5-loader!@/pages.json"
+
+const simpleMemCache = {}
+
+const util = {
 	/**
 	 * 字符串截取
 	 * @obj 传入的数据
 	 * @state 0 某个参数之前 1某个参数之后
-	 * 
+	 *
 	 *
 	 * **/
 	stringIntercept: function(obj, state, type) {
@@ -135,7 +140,7 @@ export default {
 	 * @param int index 需要移除的数组的键值
 	 * @param string | int 值
 	 * @return array
-	 * 
+	 *
 	 */
 	ArrayRemove: function(array, index, value) {
 		const valueArray = [];
@@ -154,7 +159,7 @@ export default {
 	 * 生成海报获取文字
 	 * @param string text 为传入的文本
 	 * @param int num 为单行显示的字节长度
-	 * @return array 
+	 * @return array
 	 */
 	textByteLength: function(text, num) {
 		let strLength = 0;
@@ -182,14 +187,40 @@ export default {
 		arr.push(text.slice(str, text.length));
 		return [strLength, arr, rows] //  [处理文字的总字节长度，每行显示内容的数组，行数]
 	},
+
+	/**
+	 * 封装showModal为promise形式
+	 * @param {*} options 透传参数给uni.showModal
+	 * @returns
+	 */
+	showModal({ success, fail, ...opts }) {
+		return new Promise((resole, reject) => {
+			uni.showModal({
+        confirmText: '确认',
+				cancelText: '取消',
+        confirmColor: '#DD5544',
+        cancelColor: '#8E8E93',
+        ...opts,
+        success: (res) => {
+          success && success(res);
+					resole(res);
+        },
+				fail: (err) => {
+					fail && fail(err);
+					reject(err);
+				}
+      })
+		})
+	},
+
 /**
 	 * 获取分享海报
 	 * @param array arr2 海报素材
 	 * @param string store_name 素材文字
 	 * @param string price 价格
 	 * @param function successFn 回调函数
-	 * 
-	 * 
+	 *
+	 *
 	 */
 	PosterCanvas: function(arr2, store_name, price, successFn, errFun) {
 		let that = this;
@@ -197,9 +228,9 @@ export default {
 		ctx.clearRect(0, 0, 0, 0);
 		/**
 		 * 只能获取合法域名下的图片信息,本地调试无法获取
-		 * 
+		 *
 		 */
-		uni.getImageInfo({			
+		uni.getImageInfo({
 			src: arr2[0],
 			success: function(res) {
 				console.log(res, 'getImageInfo')
@@ -266,8 +297,8 @@ export default {
 	 * @param string store_name 素材文字
 	 * @param string price 价格
 	 * @param function successFn 回调函数
-	 * 
-	 * 
+	 *
+	 *
 	 */
 	goodsPosterCanvas: function(arr2, store_name, price, site_name, ot_price, successFn, errFun) {
 		let that = this;
@@ -275,9 +306,9 @@ export default {
 		ctx.clearRect(0, 0, 0, 0);
 		/**
 		 * 只能获取合法域名下的图片信息,本地调试无法获取
-		 * 
+		 *
 		 */
-		uni.getImageInfo({			
+		uni.getImageInfo({
 			src: arr2[0],
 			success: function(res) {
 				console.log(res, 'getImageInfo')
@@ -290,7 +321,7 @@ export default {
 				let cx = 555;
 				let cy = 910;
 				let ux = 50;
-				let uy = 50;	
+				let uy = 50;
 				ctx.arc(cx + r, cy + r, r, 0, 2 * Math.PI);
 				that.handleBorderRect(ctx, 30, 30, 50, 50, 25);
 				ctx.clip();
@@ -309,7 +340,7 @@ export default {
 					contentRows = 2;
 					let textArray = contentArray.slice(0, 2);
 					textArray[textArray.length - 1] = textArray[textArray.length - 1].slice(0,textArray[textArray.length - 1].length-1)
-					textArray[textArray.length - 1] += '…';		
+					textArray[textArray.length - 1] += '…';
 					contentArray = textArray;
 				}
 				ctx.setFontSize(32);
@@ -367,8 +398,8 @@ export default {
 	 * @param string store_name 素材文字
 	 * @param string price 价格
 	 * @param function successFn 回调函数
-	 * 
-	 * 
+	 *
+	 *
 	 */
 	videoPosterCanvas: function(arr2, content, nickname, successFn, errFun) {
 		let that = this;
@@ -376,9 +407,9 @@ export default {
 		ctx.clearRect(0, 0, 0, 0);
 		/**
 		 * 只能获取合法域名下的图片信息,本地调试无法获取
-		 * 
+		 *
 		 */
-		uni.getImageInfo({			
+		uni.getImageInfo({
 			src: arr2[0],
 			success: function(res) {
 				const WIDTH = res.width;
@@ -416,11 +447,11 @@ export default {
 					contentArray = textArray;
 				}
 				ctx.setTextAlign('left');
-				ctx.font = 'bold 32px Arial';	
+				ctx.font = 'bold 32px Arial';
 				let contentHh = 32 * 1.3;
 				for (let m = 0; m < contentArray.length; m++) {
 					ctx.fillText(contentArray[m], 55, 850 + contentHh * m);
-				}		
+				}
 				ctx.draw(true, function() {
 					uni.canvasToTempFilePath({
 						canvasId: 'myCanvas',
@@ -474,18 +505,18 @@ export default {
 	  ctx.arc(x + r, y + h - r, r, 0.5 * Math.PI, Math.PI);
 	  ctx.lineTo(x, y + r);
 	  ctx.lineTo(x + r, y);
-	
+
 	  ctx.fill();
 	  ctx.closePath();
 	 },
 	/**
 	 * 用户信息分享海报
-	 * @param array arr2 海报素材  1背景 0二维码
+	 * @param array arr2 海报素材  2背景 0H5二维码 1小程序二维码
 	 * @param string nickname 昵称
 	 * @param string sitename 价格
 	 * @param function successFn 回调函数
-	 * 
-	 * 
+	 *
+	 *
 	 */
 	userPosterCanvas: function(arr2, nickname, sitename, index, w, h, successFn) {
 		let that = this;
@@ -493,42 +524,34 @@ export default {
 		ctx.clearRect(0, 0, 0, 0);
 		/**
 		 * 只能获取合法域名下的图片信息,本地调试无法获取
-		 * 
+		 *
 		 */
 		uni.getImageInfo({
 			src: arr2[1],
 			success: function(res) {
 				const WIDTH = res.width;
 				const HEIGHT = res.height;
-				// ctx.fillStyle = '#fff';
+				ctx.fillStyle = '#F8F8F8';
 				ctx.fillRect(0, 0, w, h);
-				ctx.drawImage(arr2[0], 0, 0, WIDTH, HEIGHT);
 				ctx.drawImage(arr2[1], 0, 0, w, h);
-				ctx.setTextAlign('left')
+				ctx.setTextAlign('center')
 				ctx.setFontSize(12);
-				ctx.setFillStyle('#333');
-				let codex = 0.1906
-				let codey = 0.7746
-				let codeSize = 0.21666
-				let namex = 0.4283
-				let namey = 0.8215
-				let markx = 0.4283
-				let marky = 0.8685
-				ctx.drawImage(arr2[0], w * codex, h * codey, w * codeSize, w * codeSize);
-				if (w < 270) {
-					ctx.setFontSize(8);
-				} else {
-					ctx.setFontSize(10);
-				}
+				ctx.setFillStyle('#000');
+				let mpCodex = 0.3867
+				let mpCodey = 0.814
+				let codeSize = 0.2233
+				let namex = 0.5
+				let namey = 0.77
+				let markx = 0.5
+				let marky = 0.802
+
+				ctx.drawImage(arr2[0], w * mpCodex, h * mpCodey, w * codeSize, w * codeSize);
+
 				ctx.fillText(nickname, w * namex, h * namey);
-				if (w < 270) {
-					ctx.setFontSize(8);
-				} else {
-					ctx.setFontSize(10);
-				}
+
 				ctx.fillText(sitename, w * markx, h * marky);
 				ctx.save();
-				ctx.draw(false,setTimeout(()=>{
+				ctx.draw(false, function() {
 					uni.canvasToTempFilePath({
 						canvasId: 'myCanvas' + index,
 						fileType: 'png',
@@ -540,10 +563,10 @@ export default {
 						fail: function(err) {
 							console.log(err)
 							uni.hideLoading();
-							
+
 						}
 					})
-				},1000))
+				})
 			},
 			fail: function(err) {
 
@@ -558,8 +581,8 @@ export default {
 	/*
 	 * 单图上传
 	 * @param object opt
-	 * @param callable successCallback 成功执行方法 data 
-	 * @param callable errorCallback 失败执行方法 
+	 * @param callable successCallback 成功执行方法 data
+	 * @param callable errorCallback 失败执行方法
 	 */
 	uploadImageOne: function(opt, successCallback, errorCallback) {
 		let that = this;
@@ -575,48 +598,77 @@ export default {
 			uploadUrl = opt.url || '',
 			inputName = opt.name || 'field';
 		uni.chooseImage({
-			count: count, //最多可以选择的图片总数  
-			sizeType: sizeType, // 可以指定是原图还是压缩图，默认二者都有  
-			sourceType: sourceType, // 可以指定来源是相册还是相机，默认二者都有  
+			count: count, //最多可以选择的图片总数
+			sizeType: sizeType, // 可以指定是原图还是压缩图，默认二者都有
+			sourceType: sourceType, // 可以指定来源是相册还是相机，默认二者都有
 			success: async (res)=> {
 				let image = [];
-				let filesLen = res.tempFiles.length;
 				let exceeded_list = [];
-				let uploadMaxSize = 10;
+				let uploadMaxSize = opt.maxSize || 10;
 				let imageList = [];
 				let urlPath = HTTP_REQUEST_URL + '/api/' + uploadUrl + '/' + inputName
+				let tempFilePaths = res.tempFilePaths
+				const fileSizes = res.tempFiles.map(f => f.size)
+				const isSizeExceeded = size => Math.ceil(size / 1024) > uploadMaxSize * 1024
+				const alertMessage = content => {
+					// #ifdef APP-PLUS
+					plus.nativeUI.alert(content);
+					// #endif
+					// #ifndef APP-PLUS
+					uni.showModal({ content });
+					// #endif
+				}
+
+				// #ifdef H5
+				// h5压缩图片 (大于2M)
+				for (let i = 0; i < tempFilePaths.length; i++) {
+					const file = res.tempFiles[i]
+
+					if (file.size > 2 * 1024 * 1024) {
+						tempFilePaths[i] = await util.h5CompressImage({ imgPath: file.path, mimeType: file.type }).catch(() => file.path)
+						fileSizes[i] = tempFilePaths[i].length
+					}
+				}
+				// #endif
+
 				if (count === 1) {
-					successCallback && successCallback(await that.uploadFile(urlPath, res.tempFilePaths[
-						0], opt, '图片上传中'))
+					if (isSizeExceeded(fileSizes[0])) {
+						alertMessage(`图片超出限制${uploadMaxSize}MB, 请重新选择`)
+					} else {
+						successCallback && successCallback(await that.uploadFile(urlPath, tempFilePaths[0], opt, '图片上传中'))
+					}
 				} else {
 					for (let i = 0; i < res.tempFiles.length; i++) {
-						if (Math.ceil(res.tempFiles[i].size / 1024) < uploadMaxSize * 1024) {
-							image.push(res.tempFiles[i].path);
-						} else {
+						if (isSizeExceeded(fileSizes[i])) {
 							exceeded_list.push(i + 1);
-							filesLen = filesLen - 1;
-							// #ifdef APP-PLUS
-							plus.nativeUI.alert(
-								`第${[...new Set(exceeded_list)].join(',')}张图片超出限制${uploadMaxSize}MB,已过滤`
-							);
-							// #endif
-							// #ifndef APP-PLUS
-							uni.showModal({
-								content: `第${[...new Set(exceeded_list)].join(',')}张图片超出限制${uploadMaxSize}MB,已过滤`
-							});
-							// #endif
-							continue;
+						} else {
+							image.push(tempFilePaths[i]);
 						}
 					}
+
 					for (const key in image) {
 						let data = await that.uploadFile(urlPath, image[key], opt, '图片上传中')
 						imageList.push(data.data.path)
 					}
-					successCallback && successCallback(imageList)
+
+					if (exceeded_list.length > 0) {
+						alertMessage(`第${exceeded_list.join('、')}张图片超出限制${uploadMaxSize}MB, 已过滤`)
+					}
+
+					if (imageList.length > 0) {
+						successCallback && successCallback(imageList)
+					}
 				}
-			}
+			},
+			fail: opt.onChooseImageFail || (() => {})
 		})
 	},
+
+	uploadImageFile(filePath, opt, message) {
+		const urlPath = HTTP_REQUEST_URL + '/api/upload/image/' + (opt.name || 'field')
+		return this.uploadFile(urlPath, filePath, opt, message)
+	},
+
 	uploadFile(urlPath, localPath, opt, message) {
 		let that = this;
 		return new Promise(async (resolve) => {
@@ -640,13 +692,23 @@ export default {
 						that.Tips({
 							title: res.data
 						});
+					} else if (res.statusCode === 413) {
+						that.Tips({
+							title: '上传文件超过限制'
+						});
 					} else {
-						let data = res.data ? JSON.parse(res.data) : {};
-						if (data.status == 200) {
-							resolve(data);
-						} else {
+						try {
+							let data = res.data ? JSON.parse(res.data) : {};
+							if (data.status == 200) {
+								resolve(data);
+							} else {
+								that.Tips({
+									title: data.message
+								});
+							}
+						} catch {
 							that.Tips({
-								title: data.message
+								title: '上传失败, 服务器开小差'
 							});
 						}
 					}
@@ -663,8 +725,8 @@ export default {
 /**
 	 * 小程序头像获取上传
 	 * @param uploadUrl 上传接口地址
-	 * @param filePath 上传文件路径 
-	 * @param successCallback success回调 
+	 * @param filePath 上传文件路径
+	 * @param successCallback success回调
 	 * @param errorCallback err回调
 	 */
 	uploadImgs(uploadUrl, filePath, successCallback, errorCallback) {
@@ -714,6 +776,84 @@ export default {
 			}
 		})
 	},
+
+	h5DownloadImage: function(url, { filename = '' } = {}) {
+		// #ifdef H5
+		const isIphoneOrIpad = window.navigator.userAgent.match(/(iPhone|iPad)/) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+		if (wechat.isWeixin() || isIphoneOrIpad) {
+			const layer = document.createElement('div')
+			layer.innerHTML =`
+				<div style="display:flex; align-items:center; justify-content:center; position:fixed; left:0; top:0; right:0; bottom:0; background:rgba(0, 0, 0, 0.85); color:white; overflow:auto; z-index:9999;">
+					<div style="max-width:calc(100% - 40px); max-height:calc(100% - 40px); margin: auto; text-align:center;">
+						<div class="close" style="text-align:right; font-size: 16px; cursor:pointer">关闭</div>
+						<image src="${url}" style="max-height: calc(100vh - 160px); max-width:100%; margin:10px 0;"/>
+						<p>请长按图片保存</p>
+					</div>
+				</div>
+			`
+			document.body.appendChild(layer);
+			layer.querySelector('.close').addEventListener('click', () => {
+				layer.remove()
+			})
+		} else {
+			const a = document.createElement('a')
+			a.href = url
+			a.download = filename
+			document.body.appendChild(a)
+			a.click()
+			setTimeout(() => {
+				a.remove()
+			}, 5000)
+		}
+		// #endif
+	},
+
+	// h5端对图片进行压缩, 返回图片base64
+	h5CompressImage({
+		imgPath,
+		quality = 0.8,
+		maxWidthOrHeight = 2000,
+		mimeType = 'image/png'
+	}) {
+		// #ifdef H5
+		return new Promise((resolve, reject) => {
+			const img = new Image()
+			img.src = imgPath
+			img.onload = () => {
+				try {
+					let width = img.naturalWidth
+					let height = img.naturalHeight
+					const ratio = height / width
+
+					if (width >= height && width > maxWidthOrHeight) {
+						width = maxWidthOrHeight
+						height = width * ratio
+					} else if (height >= width && height > maxWidthOrHeight) {
+						height = maxWidthOrHeight
+						width = height / ratio
+					}
+
+					const canvas = document.createElement('canvas')
+					const ctx = canvas.getContext('2d')
+					canvas.width = width
+					canvas.height = height
+					ctx.drawImage(img, 0, 0, width, height);
+
+					const compressedData = canvas.toDataURL(mimeType, quality)
+					resolve(compressedData)
+				} catch (e) {
+					console.log('image compress error: ', e)
+					reject(e)
+				}
+			}
+			img.onerror = reject
+		})
+		// #endif
+		// #ifndef H5
+		return Promise.resolve(imgPath)
+		// #endif
+	},
+
 	serialize: function(obj) {
 		var str = [];
 		for (var p in obj)
@@ -722,6 +862,14 @@ export default {
 			}
 		return str.join("&");
 	},
+
+	getCurrentPage: function() {
+		const pages = getCurrentPages()
+		const page = pages[pages.length - 1]
+
+		return page
+	},
+
 	getNowUrl: function() {
 		const pages = getCurrentPages(),
 		page = pages[pages.length - 1],
@@ -734,7 +882,7 @@ export default {
 	 * @param string k 整体分割符 默认为：&
 	 * @param string p 单个分隔符 默认为：=
 	 * @return object
-	 * 
+	 *
 	 */
 	// #ifdef MP
 	getUrlParams: function(param, k, p) {
@@ -990,9 +1138,7 @@ export default {
 					url: `/pages/annex/web_view/index?url=${url}`
 				});
 			} else {
-				if (['/pages/goods_cate/goods_cate','/pages/plant_grass/index','/pages/order_addcart/order_addcart','/pages/user/index'
-					]
-					.indexOf(url) == -1) {
+				if (!util.isTabbarPage(url)) {
 					uni.navigateTo({
 						url
 					})
@@ -1004,4 +1150,289 @@ export default {
 			}
 		}
 	},
+
+	checkAuthorize({ scope }) {
+		return new Promise((resolve, reject) => {
+			const fail = (e, shouldOpenSetting) => {
+				if (shouldOpenSetting) {
+					uni.showModal({
+						title: '消息提示',
+						content: '尚未获得授权, 请打开小程序设置进行授权后再次尝试试.',
+						success: (res) => {
+							if (res.confirm) {
+								uni.openSetting()
+								simpleMemCache.authSetting = null
+							}
+						}
+					})
+				}
+				reject(e)
+			}
+
+			const checkAuthSetting = (authSetting) => {
+				if (!authSetting[scope]) {
+					uni.authorize({
+						scope,
+						success: resolve,
+						fail: (e) => fail(e, true)
+					})
+				} else {
+					resolve()
+				}
+			}
+
+			if (uni.authorize) {
+				if (simpleMemCache.authSetting) {
+					checkAuthSetting(simpleMemCache.authSetting)
+				} else {
+					uni.getSetting({
+						success: (res) => {
+							// 临时缓存authSetting, 防止getSetting调用超额
+							// https://developers.weixin.qq.com/miniprogram/dev/framework/performance/api-frequency.html
+							simpleMemCache.authSetting = res.authSetting;
+							simpleMemCache.authSettingTimeout && clearTimeout(simpleMemCache.authSettingTimeout);
+							simpleMemCache.authSettingTimeout = setTimeout(() => {
+								simpleMemCache.authSetting = null
+								simpleMemCache.authSettingTimeout = null
+							}, 10 * 60 * 1000);
+
+							checkAuthSetting(res.authSetting);
+						},
+						fail
+					})
+				}
+			} else {
+				resolve()
+			}
+		})
+	},
+
+	hasEmptyProp: (obj) => {
+		if (!obj) return true
+		if (typeof obj !== 'object') return false
+
+		return Object.keys(obj).some(prop => {
+			const value = obj[prop]
+
+			return value === ''
+				|| value === null
+				|| value === undefined
+				|| value.length === 0
+		})
+	},
+
+	gotoPage: ({ url, redirect = false, fallbackPage }) => {
+		let targetUrl = url
+		if (/https?:\/\//.test(url.trim())) {
+			targetUrl = `/pages/webview/webview?url=${encodeURIComponent(url)}`
+		}
+
+		if (util.isTabbarPage(targetUrl)) {
+			uni.switchTab({
+				url: targetUrl
+			})
+		} else {
+			uni[redirect ? 'redirectTo': 'navigateTo']({
+				url: targetUrl,
+				fail: () => fallbackPage && uni.switchTab({ url: fallbackPage })
+			})
+		}
+	},
+
+	// 最多保留n位小数
+	toPrecision(value = 0, precision = 2) {
+		const number = parseFloat(value) || 0;
+
+		return Math.round(number * Math.pow(10, precision)) / Math.pow(10, precision)
+	},
+
+	ensureLogin() {
+		return new Promise((resolve) => {
+			if (store.getters.isLogin) {
+				return resolve(true)
+			}
+
+			return toLogin()
+		})
+	},
+
+	//电话号码加星号
+	maskedPhoneNumber(phone) {
+		if (!phone) { return ''; }
+		
+		const length = phone.length;
+		   if (length <= 4) {
+			   return phone;
+			 } else {
+				 const start = Math.floor((length - 4) / 2);
+				 const end = start + 4;
+				 const maskedStr = phone.slice(0, start) + '****' + phone.slice(end);
+				 return maskedStr;
+			}
+	},
+
+	createMpShareImage(bussinessCardUrl, w, h, successFn, errFn) {
+		let that = this;
+		const canvas = uni.createCanvasContext('myCanvas');
+		canvas.clearRect(0, 0, 0, 0);
+
+		uni.showLoading();
+
+		uni.downloadFile({
+			url: bussinessCardUrl,
+			success(res) {
+				const imageWidth = w - 20;
+				const imageHeight = 260;
+
+				const imageX = (w - imageWidth) / 2;
+				const imageY = (h - imageHeight) / 2;
+
+				canvas.fillStyle = '#F8F8F8';
+				canvas.fillRect(0, 0, w, h);
+				canvas.shadowColor = 'rgba(0, 0, 0, 0.25)';
+				canvas.shadowBlur = 10;
+				canvas.shadowOffsetX = 4;
+				canvas.shadowOffsetY = 4;
+				canvas.drawImage(res.tempFilePath, imageX, imageY, imageWidth, imageHeight);
+				canvas.draw(true, function() {
+					uni.hideLoading()
+					uni.canvasToTempFilePath({
+						canvasId: 'myCanvas',
+						fileType: 'png',
+						destWidth: w,
+						destHeight: h,
+						success: function(res) {
+							successFn && successFn(res.tempFilePath);
+						},
+						fail: function(err) {
+							errFn(err)
+						}
+					})
+				});
+			},
+			fail(err) {
+				uni.hideLoading()
+				errFn(err)
+			}
+		})
+	},
+
+	getPageMap() {
+		const pageMap = {}
+
+		pagesConf.pages.forEach((item) => {
+			pageMap[`/${item.path}`] = item
+		});
+
+		(pagesConf.subPackages || []).forEach((item) => {
+			item.pages.forEach((page) => {
+				pageMap[`/${item.root}/${page.path}`] = page
+			})
+		})
+
+		return pageMap
+	},
+
+	getTabbarPages() {
+		return (pagesConf?.tabBar?.list || []).map((item) => `/${item.pagePath}`)
+	},
+
+	isTabbarPage(url) {
+		return !!util.getTabbarPages().find((pagePath) => url.startsWith(pagePath))
+	},
+
+	createDefferred() {
+		let resolve = null
+		let reject = null
+
+		const promise = new Promise((resolver, rejector) => {
+			resolve = resolver
+			reject = rejector
+		})
+
+		return {
+			promise,
+			resolve,
+			reject
+		}
+	},
+
+	unescapeHTML(str = '') {
+		var htmlEntities = {
+			nbsp: ' ',
+			cent: '¢',
+			pound: '£',
+			yen: '¥',
+			euro: '€',
+			copy: '©',
+			reg: '®',
+			lt: '<',
+			gt: '>',
+			quot: '"',
+			amp: '&',
+			apos: '\''
+		};
+		return str.replace(/\&([^;]+);/g, function (entity, entityCode) {
+			var match;
+
+			if (entityCode in htmlEntities) {
+				return htmlEntities[entityCode];
+				/*eslint no-cond-assign: 0*/
+			} else if (match = entityCode.match(/^#x([\da-fA-F]+)$/)) {
+				return String.fromCharCode(parseInt(match[1], 16));
+				/*eslint no-cond-assign: 0*/
+			} else if (match = entityCode.match(/^#(\d+)$/)) {
+				return String.fromCharCode(~~match[1]);
+			} else {
+				return entity;
+			}
+		});
+	},
+
+	stripHtmlTags(htmlString = '') {
+		const textContent = htmlString.replace(/>\n/g, '>').replace(/<\/?[^>]+(>|$)/g, (match) => 
+			// 块级元素换行
+			/<\/(h1|h2|h3|h4|h5|h6|div|p|hr|br|li|dt|dd|tr)|<hr>|<br\/>/i.test(match) ? '\n' : ''
+		)
+
+		return util.unescapeHTML(textContent)
+	},
+
+	markdownToHtml(content) {	
+		if (!content || typeof content !== 'string') return ''
+
+		const md = new Remarkable({ html: true })
+		return md.render(content)
+	},
+
+	markdownToPlainText(content) {
+		if (!content || typeof content !== 'string') return ''
+
+		const md = new Remarkable({ html: true })
+		const html = md.render(content)
+		return util.stripHtmlTags(html)
+	},
+
+	extractURL(content) {
+		const regexp = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,4}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gi
+		const res = regexp.exec(content || '')
+		return res ? res[0] : ''
+	},
+
+	/**
+	 * error-first wrapper for Promise
+	 * util.er(Promise.resolve('ok')) => Promise.resolve([null, 'ok'])
+	 * util.er(Promise.reject('err')) => Promise.resolve([err, null])
+	**/
+	ef(promise) {
+		return new Promise((resolve) => {
+			promise.then((res) => {
+				resolve([null, res])
+			}).catch((err) => {
+				resolve([typeof err === 'string' ? new Error(err) : err, null])
+			})
+		})
+	}
 }
+
+export default util

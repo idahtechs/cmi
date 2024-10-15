@@ -118,3 +118,40 @@ const request = {};
 	request[method] = (api, data, opt) => baseRequest(api, method, data, opt || {})
 });
 export default request;
+
+
+/**
+ * 带cache的请求
+ * @param {*} requestFn 请求声明
+ * @param {*} options
+ * @param {number} options.cacheMs 缓存时间，毫秒
+ * @returns 
+ */
+export const createCacheRequest = (requestFn, { cacheMs = 5 * 60 * 1000 } = {}) => {
+  const cacheRequest = {}
+	const timeouts = {}
+	const getKey = args => JSON.stringify(args)
+
+  const innerCall = (...args) => {
+    const key = getKey(args)
+    if (!cacheRequest[key]) {
+      cacheRequest[key] = requestFn(...args)
+      timeouts[key] = setTimeout(() => { delete cacheRequest[key] }, cacheMs)
+			cacheRequest[key].catch(() => {
+				delete cacheRequest[key]
+				clearTimeout(timeouts[key])
+			})
+    }
+
+    return cacheRequest[key]
+  }
+
+	innerCall.reload = (...args) => {
+		const key = getKey(args)
+		delete cacheRequest[key]
+		clearTimeout(timeouts[key])
+		return innerCall(...args)
+	}
+
+	return innerCall
+}

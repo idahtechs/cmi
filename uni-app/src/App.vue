@@ -67,7 +67,7 @@
 			...uni.getStorageSync('GLOBAL_DATA') || {}
 		},
 		onLaunch: function(option) {
-			uni.hideTabBar();
+			// uni.hideTabBar();
 			this.globalData.statusBarHeight = uni.getSystemInfoSync().statusBarHeight + 'px';
 			this.globalData.uid = this.$store.state.app.uid
 			let that = this;
@@ -237,7 +237,7 @@
 	@import "@/plugin/animate/animate.min.css";
 	@import 'static/css/base.css';
 	@import 'static/iconfont/iconfont.css';
-	@import 'static/css/style.scss';
+	@import '@/style.scss';
 	.bg-color-red {
 		background-color: #e93323 !important;
 	}

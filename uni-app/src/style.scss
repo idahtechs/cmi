@@ -1,3 +1,563 @@
+// base
+
+// atom css
+.relative {
+	position: relative;
+}
+
+.absolute {
+	position: absolute;
+}
+
+.fixed {
+	position: fixed;
+}
+
+.sticky {
+	position: sticky;
+}
+
+.z--1 {
+	z-index: -1;
+}
+.z-0 {
+	z-index: 0;
+}
+.z-1 {
+	z-index: 1;
+}
+.z-10 {
+	z-index: 10;
+}
+.z-100 {
+	z-index: 100;
+}
+.z-1000 {
+	z-index: 1000;
+}
+
+.block {
+	display: block;
+}
+
+.inline-block {
+	display: inline-block;
+}
+
+.flex {
+	display: flex;
+}
+
+.inline-flex {
+	display: inline-flex;
+}
+
+.flex-reverse {
+	flex-direction: column-reverse
+}
+
+.flex-column {
+	flex-direction: column;
+}
+
+.flex-column-reverse {
+	flex-direction: column-reverse;
+}
+
+.align-items-start {
+	align-items: flex-start;
+}
+
+.align-items-center {
+	align-items: center;
+}
+
+.align-items-end {
+	align-items: flex-end;
+}
+
+.justify-content-start {
+	justify-content: flex-start;
+}
+
+.justify-content-between {
+	justify-content: space-between;
+}
+
+.justify-content-center {
+	justify-content: center;
+}
+
+.justify-content-end {
+	justify-content: flex-end;
+}
+
+.flex-1 {
+	flex: 1;
+}
+
+.flex-auto {
+	flex: 1 1 auto;
+}
+
+.no-flex {
+	flex: none
+}
+
+.events-disabled {
+	pointer-events: none;
+}
+
+$range: 0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48;
+@each $value in $range {
+	$rpxValue: #{$value * 2}rpx;
+
+	.p-#{$value} {
+		padding: #{$rpxValue};
+	}
+	.pt-#{$value} {
+		padding-top: #{$rpxValue};
+	}
+	.pl-#{$value} {
+		padding-left: #{$rpxValue};
+	}
+	.pb-#{$value} {
+		padding-bottom: #{$rpxValue};
+	}
+	.pr-#{$value} {
+		padding-right: #{$rpxValue};
+	}
+	.px-#{$value} {
+		padding-left: #{$rpxValue};
+		padding-right: #{$rpxValue};
+	}
+	.py-#{$value} {
+		padding-top: #{$rpxValue};
+		padding-bottom: #{$rpxValue};
+	}
+
+	.m-#{$value} {
+		margin: #{$rpxValue};
+	}
+	.mt-#{$value} {
+		margin-top: #{$rpxValue};
+	}
+	.ml-#{$value} {
+		margin-left: #{$rpxValue};
+	}
+	.mb-#{$value} {
+		margin-bottom: #{$rpxValue};
+	}
+	.mr-#{$value} {
+		margin-right: #{$rpxValue};
+	}
+	.mx-#{$value} {
+		margin-left: #{$rpxValue};
+		margin-right: #{$rpxValue};
+	}
+	.my-#{$value} {
+		margin-top: #{$rpxValue};
+		margin-bottom: #{$rpxValue};
+	}
+
+	.gap-#{$value} {
+		gap: #{$rpxValue};
+	}
+	.gap-#{$value} {
+		gap: #{$rpxValue};
+	}
+	.gap-#{$value} {
+		gap: #{$rpxValue};
+	}
+	.gap-#{$value} {
+		gap: #{$rpxValue};
+	}
+
+	.left-#{$value} {
+		left: #{$rpxValue};
+	}
+	.right-#{$value} {
+		right: #{$rpxValue};
+	}
+	.top-#{$value} {	
+		top: #{$rpxValue};
+	}
+	.bottom-#{$value} {
+		bottom: #{$rpxValue};
+	}
+}
+
+.m-auto {
+	margin: auto;
+}
+.ml-auto {
+	margin-left: auto;
+}
+.mr-auto {
+	margin-right: auto;
+}
+.mt-auto {
+	margin-top: auto;
+}
+.mb-auto {
+	margin-bottom: auto;
+}
+.mx-auto {
+	margin-left: auto;
+	margin-right: auto;
+}
+.my-auto {
+	margin-top: auto;
+	margin-bottom: auto;
+}
+
+$border-radius: 4, 8, 10, 12, 14, 16, 18, 20;
+@each $value in $border-radius {
+	.br-#{$value} {
+		border-radius: #{$value * 2}rpx;
+	}
+}
+.br-rounded {
+	border-radius: 50%;
+}
+
+$border-width: 0, 1, 2, 3, 4;
+@each $value in $border-width {
+	$rpxValue: #{$value * 2}rpx;
+	.bd-#{$value} {
+		border: $rpxValue solid $uni-border-color;
+	}
+	.bd-t-#{$value} {
+		border-top: $rpxValue solid $uni-border-color;
+	}
+	.bd-b-#{$value} {
+		border-bottom: $rpxValue solid $uni-border-color;
+	}
+	.bd-r-#{$value} {
+		border-right: $rpxValue solid $uni-border-color;
+	}
+	.bd-l-#{$value} {
+		border-left: $rpxValue solid $uni-border-color;
+	}
+}
+
+$sizes: 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48;
+@each $value in $sizes {
+	.w-#{$value} {
+		width: #{$value * 2}rpx;
+	}
+
+	.h-#{$value} {
+		height: #{$value * 2}rpx;
+	}
+}
+
+.w-full {
+	width: 100%;
+}
+
+.h-full {
+	height: 100%;
+}
+
+.bg-white {
+	background-color: white;
+}
+
+.bg-black {
+	background-color: black;
+}
+
+.bg-gray {
+	background-color: #F8F8F8;
+}
+
+.bg-danger {
+	background-color: $uni-color-error;
+}
+
+.bg-warning {
+	background-color: $uni-color-warning;
+}
+
+.bg-success {
+	background-color: $uni-color-success;
+}
+
+.bg-none {
+	background: none !important;
+}
+
+.color-white {
+	color: white;
+}
+
+.color-black {
+	color: black;
+}
+
+.color-view-theme {
+	color: var(--view-theme, $theme-color);
+}
+
+.color-placeholder {
+	color: #cbcbcb;
+}
+
+.color-muted {
+	color: #999;
+}
+
+.color-gray {
+	color: #666;
+}
+
+.color-danger {
+	color: $uni-color-error;
+}
+
+.color-warning {
+	color: $uni-color-warning;
+}
+
+.color-success {
+	color: $uni-color-success;
+}
+
+$font-sizes: 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28;
+@each $value in $font-sizes {
+	.fs-#{$value} {
+		font-size: #{$value * 2}rpx;
+	}
+}
+
+.font-bold {
+	font-weight: bold;
+}
+
+.text-center {
+	text-align: center;
+}
+
+.text-right {
+	text-align: right;
+}
+
+.text-left {
+	text-align: left;
+}
+
+.overflow-hidden {
+	overflow: hidden;
+}
+
+.overflow-auto {
+	overflow: auto;
+	-webkit-overflow-scrolling: touch;
+}
+
+.align-baseline	{
+	vertical-align: baseline;
+}
+.align-top {
+	vertical-align: top;
+}
+.align-middle	{
+	vertical-align: middle;
+}
+.align-bottom	{
+	vertical-align: bottom;
+}
+.align-text-top {
+	vertical-align: text-top;
+}
+.align-text-bottom {
+	vertical-align: text-bottom;
+}
+.align-sub {
+	vertical-align: sub;
+}
+.align-super {
+	vertical-align: super;
+}
+
+.cursor-auto {
+	cursor: auto;
+}
+.cursor-default {
+	cursor: default;
+}
+.cursor-pointer {
+	cursor: pointer;
+}
+.cursor-wait {
+	cursor: wait;
+}
+.cursor-text {
+	cursor: text;
+}
+.cursor-move {
+	cursor: move;
+}
+.cursor-help {
+	cursor: help;
+}
+.cursor-not-allowed {
+	cursor: not-allowed;
+}
+
+.pre-wrap {
+	white-space: pre-wrap;
+}
+.pre-line {
+	white-space: pre-line;
+}
+.nowrap {
+	white-space: nowrap;
+}
+
+// components
+.cmi-btn {
+	display: block;
+	border-radius: 80rpx;
+	line-height: 48rpx;
+	padding: 20rpx 30rpx;
+	font-size: 28rpx;
+	text-align: center;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	box-sizing: border-box;
+
+	&.cmi-btn-small {
+		padding: 12rpx 20rpx;
+	}
+
+	&.cmi-btn-xs {
+		font-size: 24rpx;
+		line-height: 38rpx;
+		padding: 6rpx 20rpx;
+	}
+
+	&[type="primary"], &.cmi-btn-primary {
+		color: white;
+		background-color: var(--view-theme);
+
+		&:active, &:hover {
+			background-color: var(--view-theme);
+		}
+
+		&[disabled], &.disabled {
+			background-color: var(--view-theme);
+
+			&::after {
+				background-color: rgba(255, 255, 255, 0.4);
+			}
+		}
+
+		&[plain], &.plain {
+			background-color: #fff;
+			color: var(--view-theme);
+			border-color: var(--view-theme);
+			padding: 18rpx 30rpx;
+		}
+	}
+}
+
+.cmi-form {
+	padding: 40rpx;
+}
+
+.cmi-form-actions {
+	margin: 40rpx 0 120rpx;
+}
+
+.cmi-form-item  {
+	margin-bottom: 40rpx;
+	box-sizing: border-box;
+
+	&.required .cmi-form-label::after {
+		content: '*';
+		color: red;
+		margin-left: 4rpx;
+	}
+}
+
+.cmi-form-label {
+	font-size: 28rpx;
+	margin-bottom: 16rpx;
+}
+
+.cmi-input, .cmi-textarea {
+	border-radius: 16rpx;
+	background: #fff;
+	flex: 1;
+	line-height: 40rpx;
+	padding: 20rpx 16rpx;
+	font-size: 28rpx;
+	width: auto;
+}
+
+// #ifndef MP
+.cmi-input {
+	height: 80rpx;
+}
+// #endif
+
+.cmi-form-fixed-footer {
+	position: fixed;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	padding: 20rpx 40rpx;
+	background-color: white;
+	border-top: 1px solid rgba(0, 0, 0, 0.1);
+	z-index: 9;
+}
+
+
+.cmi-text-counter {
+	color: #222;
+	opacity: 0.3;
+	float: right;
+}
+
+.cmi-picker-container {
+	position: relative;
+
+	.cmi-input {
+		pointer-events: none;
+	}
+
+	.cmi-picker-arrow {
+		position: absolute;
+		right: 16rpx;
+		top: 50%;
+		transform: translateY(-50%);
+	}
+}
+
+.cmi-tag {
+	font-size: 24rpx;
+	font-weight: bold;
+	padding: 4rpx 8rpx;
+	border-radius: 8rpx;
+	background-color: #d1d1d1;
+	color: white;
+
+	&-golden {
+		color: black;
+		background: linear-gradient(180deg, #FFDE9F 0%, #FFB950 100%);
+	}
+}
+
+.cmi-link {
+	display: inline-block;
+	color: var(--view-theme, $theme-color);
+	background-color: inherit;
+	vertical-align: text-bottom;
+}
+
 .font-bg-red,.font_bg-red{
 	display: inline-block;
 	align-items: center;
