@@ -69,13 +69,14 @@
 					</view>
 					<view class='item acea-row row-between-wrapper'>
 						<view>手机号码</view>
-						<navigator url="/pages/users/user_phone/index" hover-class="none" class="input" v-if="!userInfo.phone">
+						<view class='acea-row row-between-wrapper'>{{ userInfo.phone || '' }}</view>
+						<!-- <navigator url="/pages/users/user_phone/index" hover-class="none" class="input" v-if="!userInfo.phone">
 							点击绑定手机号<text class="iconfont icon-xiangyou"></text>
 						</navigator>
 						<navigator url="/pages/users/user_modify_phone/index" hover-class="none" class='input acea-row row-between-wrapper' v-else>
 							<input type='text' disabled='true' name='phone' :value='userInfo.phone' class='id'></input>
 							<text class='iconfont icon-you'></text>
-						</navigator>
+						</navigator> -->
 					</view>
 					<!-- 
 					<view class='item acea-row row-between-wrapper'>

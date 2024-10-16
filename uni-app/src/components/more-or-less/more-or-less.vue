@@ -46,6 +46,7 @@
       return {
         showMore: false,
         contentHeight: 0,
+        inited: false
       }
     },
 
@@ -54,10 +55,11 @@
         return !disabled && contentHeight > threshold
       },
 
-      className({ showMore, enable }) {
+      className({ showMore, enable, inited }) {
         const classes = [
           showMore ? '' : 'mol-less',
-          enable ? '' : 'mol-disabled'
+          enable ? '' : 'mol-disabled',
+          inited ? 'mol-inited' : ''
         ]
         return classes.filter(Boolean).join(' ')
       },
@@ -96,6 +98,10 @@
           if (rect) {
             this.contentHeight = rect.height
           }
+
+          if (!this.inited) {
+            this.inited = true
+          }
         })
       }
     }
@@ -105,6 +111,11 @@
 <style lang="scss" scoped>
   .mol {
     position: relative;
+    visibility: hidden;
+
+    &-inited {
+      visibility: visible;
+    }
 
     &-container {
       overflow: hidden;

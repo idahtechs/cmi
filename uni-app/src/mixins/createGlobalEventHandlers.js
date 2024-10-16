@@ -3,6 +3,7 @@
  * @param {{ [key: string]: (...args: any[]) => void }} handlers 事件处理器集合，以事件名为键，事件处理为值的对象，注意，事件处理器必须是函数，不能为箭头函数
  * @returns 
  * @example
+ * // 注册全局事件处理器的页面
  * import { createGlobalEventHandlers } from '@/mixins/createGlobalEventHandlers'
  *
  * export default {
@@ -13,6 +14,9 @@
  *    })
  *   ]
  * }
+ * 
+ * // 页面外的地方触发事件，上述页面将在页面onShow中调用相应的事件处理器
+ * uni.$emit('ai_records_updated')
  */
 export default function createGlobalEventHandlers(handlers = {}) {
   const eventNames = Object.keys(handlers)

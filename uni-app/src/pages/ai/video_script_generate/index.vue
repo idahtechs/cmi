@@ -16,7 +16,7 @@
             </view>
           </view>
   
-          <more-or-less :threshold="32" :trigger-value="record.content" more-text="展开并编辑" :disabled="(isNewRecord && !extractRecord) || !loaded" class="block bg-white br-16">
+          <more-or-less :threshold="32" :trigger-value="record.content" more-text="展开并编辑" :disabled="isNewRecord && !extractRecord" class="block bg-white br-16">
             <textarea class="cmi-input" placeholder="请输入脚本内容" v-model="record.content" :maxlength="-1" auto-height style="min-height: 380rpx;" />
           </more-or-less>
         </view>
@@ -28,7 +28,7 @@
               导入模板
             </view>
           </view>
-          <more-or-less :threshold="32" :trigger-value="record.prompt" more-text="展开并编辑" :disabled="isNewRecord || !loaded" class="block bg-white br-16">
+          <more-or-less :threshold="32" :trigger-value="record.prompt" more-text="展开并编辑" :disabled="isNewRecord" class="block bg-white br-16">
             <textarea class="cmi-input" placeholder="描述对文章的其他要求。例如：引用名人名言，加入成语，删去XX部分..." v-model="record.prompt" :maxlength="-1" auto-height style="min-height: 200rpx;" />
           </more-or-less>
         </view>
