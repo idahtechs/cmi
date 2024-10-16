@@ -112,12 +112,13 @@ class ToolsRepository extends BaseRepository
     public function calculateIntegral($duration, $platform)
     {
         $perUnit = 1000 * 60 * 2; // TODO: 每2分钟扣减1，不足2分钟算2分钟
-
-        if ($platform == 'bilibili') {
-            $perUnit = $perUnit * 2;
-        }
-
+        
         $integral = ceil($duration / $perUnit);
+
+        // B站积分*2
+        if ($platform == 'bilibili') {
+            $integral = $integral * 2;
+        }
 
         return $integral;
     }
