@@ -11,8 +11,14 @@
 <script>
 import { getVideoScriptList, deleteVideoScript } from '@/api/ai'
 import RecordItem from './components/RecordItem.vue'
+import createGlobalEventHandlers from '@/mixins/createGlobalEventHandlers'
 
 export default {
+  mixins: [
+    createGlobalEventHandlers({
+      'ai_records_updated': function() { this.reload() }
+    })
+  ],
   components: { RecordItem },
 
   data() {
@@ -25,16 +31,21 @@ export default {
   },
 
   onPullDownRefresh() {
-    this.page = 0
-    this.records = []
-    this.finished = false
-    this.loadData().finally(() => uni.stopPullDownRefresh())
+    this.reload().finally(() => uni.stopPullDownRefresh())
   },
 
   onReachBottom() {
     this.loadData()
   },
 
+  // onLoad() {
+  //   this._handleRecordsUpdated = () => this.reload()
+  //   uni.$on('ai_records_updated', this._handleRecordsUpdated)
+  // },
+
+  // onUnload() {
+  //   uni.$off('ai_records_updated', this._handleRecordsUpdated)
+  // },
 
   methods: {
     onPageReady() {
@@ -61,6 +72,13 @@ export default {
       this.records = [...this.records, ...res.data.list]
       this.page = page
       this.finished = res.data.list.length < limit
+    },
+
+    reload() {
+      this.page = 0
+      this.records = []
+      this.finished = false
+      return this.loadData()
     },
 
     handleClick(record) {

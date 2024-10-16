@@ -72,20 +72,20 @@
     },
 
     watch: {
-      triggerValue: {
-        handler: 'detect',
-        immediate: true
+      triggerValue() {
+        this._debounceDetect()
       },
 
       enable(enable) {
         if (enable) {
-          this.detect()
+          this._debounceDetect()
         }
       }
     },
-
-    mounted() {
-      this.detect()
+    
+    created() {
+      this._debounceDetect = this.$util.debounce(this.detect, 50)
+      this._debounceDetect()
     },
 
     methods: {

@@ -82,6 +82,7 @@ function baseRequest(url, method, data, {
 			url: Url + '/api/' + url,
 			method: method || 'GET',
 			header: header,
+			timeout: 5 * 60 * 1000, // 5分钟超时
 			data: data || {},
 			success: (res) => {
 				if (res.data && res.data.encode) {

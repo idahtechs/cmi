@@ -17,7 +17,7 @@
           </view>
   
           <more-or-less :threshold="32" :trigger-value="record.content" more-text="展开并编辑" :disabled="(isNewRecord && !extractRecord) || !loaded" class="block bg-white br-16">
-            <textarea class="cmi-input" placeholder="请输入脚本内容" v-model="record.content" :maxlength="-1" auto-height style="min-height: 380rpx;" adjust-keyboard-to="bottom" />
+            <textarea class="cmi-input" placeholder="请输入脚本内容" v-model="record.content" :maxlength="-1" auto-height style="min-height: 380rpx;" />
           </more-or-less>
         </view>
   
@@ -28,13 +28,13 @@
               导入模板
             </view>
           </view>
-          <more-or-less :threshold="32" :trigger-value="record.prompt" more-text="展开并编辑" :disabled="(isNewRecord && !extractRecord) || !loaded" class="block bg-white br-16">
-            <textarea class="cmi-input" placeholder="描述对文章的其他要求。例如：引用名人名言，加入成语，删去XX部分..." v-model="record.prompt" :maxlength="-1" auto-height style="min-height: 200rpx;" adjust-keyboard-to="bottom" />
+          <more-or-less :threshold="32" :trigger-value="record.prompt" more-text="展开并编辑" :disabled="isNewRecord || !loaded" class="block bg-white br-16">
+            <textarea class="cmi-input" placeholder="描述对文章的其他要求。例如：引用名人名言，加入成语，删去XX部分..." v-model="record.prompt" :maxlength="-1" auto-height style="min-height: 200rpx;" />
           </more-or-less>
         </view>
   
         <view class="pb-36">
-          <button class="cmi-btn" type="primary" @click="handleGenerate" :disabled="generateButtonDisabled">生成脚本</button>
+          <button class="cmi-btn" type="primary" @click="handleGenerate" :disabled="generateButtonDisabled">{{ isNewRecord ? '生成脚本' : '重新生成' }}</button>
         </view>
   
         <!-- 生成结果 -->
@@ -43,7 +43,7 @@
             <view class="flex mb-8">
               生成脚本
               <text class="color-muted ml-4 fs-12">{{ result.createTime || '' }}</text>
-              <text class="iconfont icon-shanchu1 ml-auto cmi-link fs-16" @click="handleDelete(index)"></text>
+              <text class="iconfont icon-shanchu1 ml-auto cmi-link fs-16" @click="handleDelete(result)"></text>
             </view>
             <view class="bg-white px-14 py-10 br-8">
               <rich-text :nodes="result.contentHtml"></rich-text>
@@ -80,8 +80,16 @@ import {
   polishVideoScript,
   deleteVideoScriptVersion,
 } from '@/api/ai'
+import createGlobalEventHandlers from '@/mixins/createGlobalEventHandlers'
 
 export default {
+  mixins: [
+    createGlobalEventHandlers({
+      'use_prompt_template': function(promptTemplate) {
+        this.record.prompt = promptTemplate
+      }
+    })
+  ],
 
   data() {
     return {
@@ -113,7 +121,7 @@ export default {
     },
 
     generateButtonDisabled() {
-      return false
+      return !this.record.content || !this.record.prompt
     },
 
     generatedVersions() {
@@ -133,15 +141,6 @@ export default {
   onLoad({ id, extractStorageKey }) {
     this.id = id
     this.extractStorageKey = extractStorageKey
-
-    this._handleUsePromptTemplate = (promptTemplate) => {
-      this.record.prompt = promptTemplate
-    }
-    uni.$on('use_prompt_template', this._handleUsePromptTemplate)
-  },
-
-  onUnload() {
-    uni.$off('use_prompt_template', this._handleUsePromptTemplate)
   },
 
   methods: {
@@ -174,11 +173,12 @@ export default {
           if (extractRecord.used > 0) {
             uni.showToast({
               title: `已扣除${extractRecord.used}积分`,
+              duraction: 5000
             })
           }
         }
 
-        this.loaded = true
+        setTimeout(() => this.loaded = true, 100)
       } else {
         this.loaded = true
       }
@@ -211,6 +211,7 @@ export default {
           this.id = res.data.initiation_id
         }
         this.scrollToFirstVersion()
+        uni.$emit('ai_records_updated')
       } else {
         uni.showModal({
           title: '提示',
@@ -242,6 +243,7 @@ export default {
         this.$refs.polishPopup.close()
         this.polishPrompt = ''
         this.scrollToFirstVersion()
+        uni.$emit('ai_records_updated')
       } else {
         uni.showToast({
           title: err.message,
@@ -250,20 +252,20 @@ export default {
       }
     },
 
-    handleDelete(index) {
+    handleDelete(version) {
       uni.showModal({
         title: '是否确认删除？',
         cancelText: '否',
         confirmText: '是',
         success: (res) => {
           if (res.confirm) {
-            const version = this.record.versions[index]
             deleteVideoScriptVersion(version.id).then(() => {
-              this.record.versions.splice(index, 1)
+              this.record.versions = this.record.versions.filter(v => v.id !== version.id)
               uni.showToast({
                 title: '已成功删除',
                 icon: 'none'
               })
+              uni.$emit('ai_records_updated')
             }).catch(err => {
               console.log(err)
               uni.showToast({

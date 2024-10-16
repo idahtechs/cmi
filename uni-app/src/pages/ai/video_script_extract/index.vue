@@ -31,15 +31,13 @@
 
 <script>
 import { extractVideoScript } from '@/api/ai'
+import { getConfigGroupWithCache } from '@/api/public'
 
 export default {
   data() {
     return {
       platforms: [
-        { value: 'douyin', label: '抖音' }, 
-        { value: 'xhs', label: '小红书' }, 
-        { value: 'bilibili', label: 'B站' }, 
-        { value: 'wechat_public_account_article', label: '微信公众号' }
+        // { value: 'douyin', label: '抖音' }, 
       ],
 
       form: {
@@ -53,6 +51,10 @@ export default {
     buttonDisabled() {
       return !this.form.platform || !this.$util.extractURL(this.form.url)
     },
+  },
+
+  onLoad() {
+    this.loadData()
   },
 
   methods: {
@@ -73,6 +75,12 @@ export default {
         uni.hideLoading()
       }).catch(err => {
         uni.showToast({ title: err, icon: 'none' })
+      })
+    },
+
+    loadData() {
+      getConfigGroupWithCache('script_extraction_platforms').then(res => {
+        this.platforms = res.data
       })
     }
   }

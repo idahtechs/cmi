@@ -1155,13 +1155,23 @@ const util = {
 		return new Promise((resolve, reject) => {
 			const fail = (e, shouldOpenSetting) => {
 				if (shouldOpenSetting) {
-					uni.showModal({
+					return uni.showModal({
 						title: '消息提示',
-						content: '尚未获得授权, 请打开小程序设置进行授权后再次尝试试.',
+						content: '尚未获得授权, 请打开小程序设置进行授权后再次尝试.',
 						success: (res) => {
 							if (res.confirm) {
-								uni.openSetting()
+								uni.openSetting({
+									success: (res) => {
+										if (res.authSetting[scope]) {
+											resolve()
+										} else {
+											reject(new Error('未获得授权'))
+										}
+									}
+								})
 								simpleMemCache.authSetting = null
+							} else {
+								reject(new Error('未获得授权'))
 							}
 						}
 					})
@@ -1174,7 +1184,7 @@ const util = {
 					uni.authorize({
 						scope,
 						success: resolve,
-						fail: (e) => fail(e, true)
+						fail: (e) => fail(new Error(e.errMsg), true)
 					})
 				} else {
 					resolve()
@@ -1198,7 +1208,7 @@ const util = {
 
 							checkAuthSetting(res.authSetting);
 						},
-						fail
+						fail: (err) => fail(new Error(err.errMsg))
 					})
 				}
 			} else {
@@ -1432,7 +1442,17 @@ const util = {
 				resolve([typeof err === 'string' ? new Error(err) : err, null])
 			})
 		})
-	}
+	},
+
+	debounce(fn, wait) {
+		let timer = null
+		return function () {
+			clearTimeout(timer)
+			timer = setTimeout(() => {
+				fn.apply(this, arguments)
+			}, wait)
+		}
+	},
 }
 
 export default util

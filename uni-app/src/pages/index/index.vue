@@ -35,6 +35,12 @@ export default {
     }
   },
 
+  onShareAppMessage() {
+    return {
+      title: '创作鬼才'
+    }
+  },
+
   methods: {
     goTo(entry) {
       this.$util.gotoPage({ url: entry.url })

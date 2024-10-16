@@ -31,17 +31,20 @@ import { mapGetters } from 'vuex'
 export default {
   data() {
     return {
-      userMenus: [
+      
+    }
+  },
+
+  computed: {
+    ...mapGetters(['isLogin', 'userInfo']),
+    userMenus() {
+      return [
         { text: '我的积分', url: '', postfix: this.isLogin ? '100分' : '' },
         { text: '我的创作记录', url: '/pages/ai/records/index', postfix: '' },
         { text: '联系客服', url: '/pages/customer_service_qrcode/index', postfix: '' },
         { text: '设置', url: '/pages/users/user_info/index', postfix: '' },
       ]
-    }
-  },
-
-  computed: {
-    ...mapGetters(['isLogin', 'userInfo'])
+    } 
   },
 
   onShow() {
@@ -56,6 +59,15 @@ export default {
     onMenuClick(menu) {
       if (!this.isLogin) {
         return this.$util.ensureLogin()
+      }
+
+      if (!menu.url) {
+        return uni.showModal({
+          title: '提示',
+          content: '该功能暂未开放，敬请期待',
+          showCancel: false,
+          confirmText: '我知道了'
+        })
       }
 
       this.$util.gotoPage({ url: menu.url })
