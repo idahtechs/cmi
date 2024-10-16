@@ -231,6 +231,9 @@ utils 自定义工具js 独立命名，一般不用新建文件夹
 # 进入项目目录
 $ cd admin-iView
 
+# 使用Node14版本
+$ nvm use 14
+
 # 安装依赖
 $ npm install
 
