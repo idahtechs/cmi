@@ -27,19 +27,20 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import { getIntegralInfo } from '@/api/user'
 
 export default {
   data() {
     return {
-      
+      userIntegralInfo: {}
     }
   },
 
   computed: {
     ...mapGetters(['isLogin', 'userInfo']),
-    userMenus() {
+    userMenus({ isLogin, userIntegralInfo }) {
       return [
-        { text: '我的积分', url: '', postfix: this.isLogin ? '100分' : '' },
+        { text: '我的积分', url: '', postfix: isLogin ? `${userIntegralInfo.integral || 0}分` : '' },
         { text: '我的创作记录', url: '/pages/ai/records/index', postfix: '' },
         { text: '联系客服', url: '/pages/customer_service_qrcode/index', postfix: '' },
         { text: '设置', url: '/pages/users/user_info/index', postfix: '' },
@@ -48,7 +49,7 @@ export default {
   },
 
   onShow() {
-    this.$store.dispatch('USERINFO', true)
+    this.loadData()
   },
 
   methods: {
@@ -71,6 +72,16 @@ export default {
       }
 
       this.$util.gotoPage({ url: menu.url })
+    },
+
+    async loadData() {
+      if (!this.$store.getters.isLogin) return
+
+      this.$store.dispatch('USERINFO', true)
+      const [error, res] = await this.$util.ef(getIntegralInfo())
+      if (!error) {
+        this.userIntegralInfo = res.data
+      }
     }
   }
 }

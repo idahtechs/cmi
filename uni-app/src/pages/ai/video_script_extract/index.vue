@@ -23,7 +23,7 @@
 
       <view class="cmi-form-actions">
         <button class="cmi-btn" type="primary" @click="handleSubmit" :disabled="buttonDisabled">提取文案</button>
-        <view class="color-gray text-center mt-4">剩余积分：100</view>
+        <view class="color-gray text-center mt-4">剩余积分：{{ userIntegralInfo.integral || 0 }}</view>
       </view>
     </view>
   </c-page>
@@ -31,6 +31,7 @@
 
 <script>
 import { extractVideoScript } from '@/api/ai'
+import { getIntegralInfo } from '@/api/user'
 import { getConfigGroupWithCache } from '@/api/public'
 
 export default {
@@ -44,6 +45,8 @@ export default {
         platform: '',
         url: ''
       },
+
+      userIntegralInfo: {}
     }
   },
 
@@ -55,6 +58,20 @@ export default {
 
   onLoad() {
     this.loadData()
+  },
+
+  onShow() {
+    if (this.$store.getters.isLogin) {
+      getIntegralInfo().then(res => {
+        this.userIntegralInfo = res.data
+      })
+    }
+  },
+
+  onShareAppMessage() {
+    return {
+      title: '创作鬼才'
+    }
   },
 
   methods: {

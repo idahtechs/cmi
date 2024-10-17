@@ -1412,6 +1412,13 @@ const util = {
 		if (!content || typeof content !== 'string') return ''
 
 		const md = new Remarkable({ html: true })
+		md.use((md) => {
+			// 调整标题大小
+			md.renderer.rules.heading_open = function(tokens, idx /*, options, env */) {
+				const level = tokens[idx].hLevel
+				return '<h' + level + ` style="font-size: ${(7 - level) / 20 + 1}em">`;
+			};
+		})
 		return md.render(content)
 	},
 

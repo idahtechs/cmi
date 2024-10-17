@@ -152,7 +152,6 @@ export default {
           this.record = {
             ...this.record,
             ...res.data,
-            content: this.$util.markdownToPlainText(res.data.content),
           }
         }).catch(e => {
           uni.showToast({
@@ -169,13 +168,8 @@ export default {
         if (extractRecord) {
           this.extractRecord = extractRecord
           uni.removeStorageSync(extractStorageKey)
-          this.record.content = this.$util.markdownToPlainText(extractRecord.content)
-          if (extractRecord.used > 0) {
-            uni.showToast({
-              title: `已扣除${extractRecord.used}积分`,
-              duraction: 5000
-            })
-          }
+          this.record.content = extractRecord.content
+          this.showIntegralDeductionInfo(extractRecord.used)
         }
 
         setTimeout(() => this.loaded = true, 100)
@@ -210,6 +204,7 @@ export default {
         if (this.isNewRecord) {
           this.id = res.data.initiation_id
         }
+        this.showIntegralDeductionInfo(res.data.used)
         this.scrollToFirstVersion()
         uni.$emit('ai_records_updated')
       } else {
@@ -242,6 +237,7 @@ export default {
         this.record.versions = [res.data, ...this.record.versions]
         this.$refs.polishPopup.close()
         this.polishPrompt = ''
+        this.showIntegralDeductionInfo(res.data.used)
         this.scrollToFirstVersion()
         uni.$emit('ai_records_updated')
       } else {
@@ -286,6 +282,16 @@ export default {
           this.scrollIntoView = ''
         }, 1200)
       }, 50)
+    },
+
+    showIntegralDeductionInfo(deductionIntegral) {
+      if (deductionIntegral > 0) {
+        uni.showToast({
+          title: `本次扣除${deductionIntegral}积分`,
+          icon: 'none',
+          duration: 5000
+        })
+      }
     }
   }
 }
