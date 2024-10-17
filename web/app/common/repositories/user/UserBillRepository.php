@@ -51,6 +51,7 @@ class UserBillRepository extends BaseRepository
         'integral/sign_integral' => '签到赠送积分',
         'integral/spread' => '邀请好友',
         'integral/sys_dec' => '系统减少积分',
+        'integral/ai_dec' => '使用AI工具减少积分',
         'integral/sys_inc' => '系统增加积分',
         'integral/timeout' => '积分过期',
         'mer_integral/deduction' => '积分抵扣',

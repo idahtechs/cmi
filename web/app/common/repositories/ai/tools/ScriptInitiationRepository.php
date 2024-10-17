@@ -6,6 +6,8 @@ namespace app\common\repositories\ai\tools;
 use app\common\dao\ai\tools\ScriptInitiationDao as dao;
 use app\common\repositories\ai\ToolsRepository;
 use app\common\repositories\BaseRepository;
+use app\common\repositories\user\UserRepository;
+use think\exception\ValidateException;
 use think\facade\Db;
 
 class ScriptInitiationRepository extends BaseRepository
@@ -14,27 +16,50 @@ class ScriptInitiationRepository extends BaseRepository
      * @var ScriptInitiationDao
      */
     public $dao;
+    public $rewriteType;
 
     public function __construct(dao $dao)
     {
         $this->dao = $dao;
+        $this->rewriteType = 'initiation';
     }
 
-    public function initiation($data)
+    public function getAPIConfig($usage)
+    {
+        $aiToolsApiConfig = systemGroupData('ai_tools_api_config');
+
+        if (!$aiToolsApiConfig) {
+            new ValidateException('未配置AI工具API，请联系管理员');
+        }
+
+        $aiToolsApiConfig = array_filter($aiToolsApiConfig, function ($item) use ($usage) {
+            return $item['usage'] == $usage;
+        });
+
+        if (empty($aiToolsApiConfig)) {
+            throw new ValidateException('暂不支持' . $usage);
+        }
+
+        return $aiToolsApiConfig[array_key_last($aiToolsApiConfig)];
+    }
+
+    public function initiation($user, $data)
     {
         $toolsRepository = app()->make(ToolsRepository::class);
         $expires = $toolsRepository->validateVIPExpired($data['uid']);
-        // TODO: 仿写暂不扣积分
-        $integral = 0;
-        $remain = $toolsRepository->getRemain($data['uid'], $integral);
-        $contentRes = $toolsRepository->rewriteContent($data);
+        $apiConfig = $this->getAPIConfig($this->rewriteType);
+        $integral = $apiConfig['integral'];
+        $remain = $toolsRepository->getRemain($user, $integral);
+
+        $contentRes = $toolsRepository->rewriteContent($data, $this->rewriteType, $apiConfig);
         $returnData = [
             'content' => $contentRes['text'],
             'used' => $integral,
             'remain' => $remain,
             'expires' => $expires,
         ];
-        return Db::transaction(function() use ($data, $contentRes, $returnData) {
+
+        return Db::transaction(function() use ($data, $contentRes, $returnData, $user) {
             $createTime = date('Y-m-d H:i:s');
             $data['create_time'] = $createTime;
             $data['last_update_time'] = $createTime;
@@ -49,8 +74,16 @@ class ScriptInitiationRepository extends BaseRepository
                 'rewrite' => $contentRes['text'],
                 'create_time' => $createTime,
             ]);
+            $version_id = (int) $version[$scriptRewriteRepository->dao->getPk()];
 
-            $returnData['id'] = (int) $version[$scriptRewriteRepository->dao->getPk()];
+            $userRepository = app()->make(UserRepository::class);
+            $userRepository->changeIntegral($user['uid'], $version_id, 0, $returnData['used'], [
+                'title' => '仿写文案',
+                'mark' => '仿写文案减少了' . $returnData['used'] . '积分',
+                'bill_type' => 'ai_dec',
+            ]);
+
+            $returnData['id'] = $version_id;
             $returnData['initiation_id'] = $initiation_id;
             $returnData['createTime'] = $createTime;
 

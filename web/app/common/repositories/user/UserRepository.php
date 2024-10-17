@@ -412,31 +412,34 @@ class UserRepository extends BaseRepository
      * @author xaboy
      * @day 2020-05-07
      */
-    public function changeIntegral($id, $adminId, $type, $integral)
+    public function changeIntegral($id, $adminId, $type, $integral, $billData = [])
     {
         $user = $this->dao->get($id);
-        Db::transaction(function () use ($id, $adminId, $user, $type, $integral) {
+        Db::transaction(function () use ($id, $adminId, $user, $type, $integral, $billData) {
             $integral = (int)$integral;
             $balance = $type == 1 ? bcadd($user->integral, $integral, 0) : bcsub($user->integral, $integral, 0);
             $user->save(['integral' => $balance]);
             /** @var UserBillRepository $make */
             $make = app()->make(UserBillRepository::class);
+            $title = isset($billData['title']) ? $billData['title'] : null;
+            $mark = isset($billData['mark']) ? $billData['mark'] : null;
+            $billType = isset($billData['bill_type']) ? $billData['bill_type'] : null;
             if ($type == 1) {
-                $make->incBill($id, 'integral', 'sys_inc', [
+                $make->incBill($id, 'integral', empty($billType) ? 'sys_inc' : $billType, [
                     'link_id' => $adminId,
                     'status' => 1,
-                    'title' => '系统增加积分',
+                    'title' => empty($title) ? '系统增加积分' : $title,
                     'number' => $integral,
-                    'mark' => '系统增加了' . $integral . '积分',
+                    'mark' => empty($mark) ? '系统增加了' . $integral . '积分' : $mark,
                     'balance' => $balance
                 ]);
             } else {
-                $make->decBill($id, 'integral', 'sys_dec', [
+                $make->decBill($id, 'integral', empty($billType) ? 'sys_dec' : $billType, [
                     'link_id' => $adminId,
                     'status' => 1,
-                    'title' => '系统减少积分',
+                    'title' => empty($title) ? '系统减少积分' : $title,
                     'number' => $integral,
-                    'mark' => '系统减少了' . $integral . '积分',
+                    'mark' => empty($mark) ? '系统减少了' . $integral . '积分' : $mark,
                     'balance' => $balance
                 ]);
             }

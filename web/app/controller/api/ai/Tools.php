@@ -16,11 +16,15 @@ class Tools extends BaseController
 {
 
     protected $uid;
+    protected $user;
+
+    
 
     public function __construct(App $app)
     {
         parent::__construct($app);
-        $this->uid = $this->request->uid();
+        $this->user = $this->request->userInfo();
+        $this->uid = $this->user['uid'];
     }
 
     /**
@@ -42,7 +46,7 @@ class Tools extends BaseController
 
         $data['uid'] = $this->uid;
 
-        $res = $extractCopyRepository->byUrl($data);
+        $res = $extractCopyRepository->byUrl($this->user, $data);
 
         return app('json')->success($res);
     }
@@ -67,7 +71,7 @@ class Tools extends BaseController
 
         $data['uid'] = $this->uid;
 
-        $res = $scriptInitiationRepository->initiation($data);
+        $res = $scriptInitiationRepository->initiation($this->user, $data);
 
         return app('json')->success($res);
     }
@@ -87,7 +91,7 @@ class Tools extends BaseController
 
         $data['uid'] = $this->uid;
 
-        $rewrite = $scriptRewriteRepository->recreate($id,$data);
+        $rewrite = $scriptRewriteRepository->recreate($id, $this->user, $data);
 
         if (!$rewrite) {
             return app('json')->fail('无效的操作');
@@ -148,7 +152,7 @@ class Tools extends BaseController
 
         $data['uid'] = $this->uid;
 
-        $polish = $scriptRewriteRepository->polish($id, $data);
+        $polish = $scriptRewriteRepository->polish($id, $this->user, $data);
 
         if (!$polish) {
             return app('json')->fail('无效的操作');

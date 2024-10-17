@@ -6,6 +6,8 @@ namespace app\common\repositories\ai\tools;
 use app\common\dao\ai\tools\ScriptRewriteDao as dao;
 use app\common\repositories\ai\ToolsRepository;
 use app\common\repositories\BaseRepository;
+use app\common\repositories\user\UserRepository;
+use think\exception\ValidateException;
 use think\facade\Db;
 
 class ScriptRewriteRepository extends BaseRepository
@@ -20,7 +22,26 @@ class ScriptRewriteRepository extends BaseRepository
         $this->dao = $dao;
     }
 
-    public function recreate($id, $data)
+    public function getAPIConfig($usage)
+    {
+        $aiToolsApiConfig = systemGroupData('ai_tools_api_config');
+
+        if (!$aiToolsApiConfig) {
+            new ValidateException('未配置AI工具API，请联系管理员');
+        }
+
+        $aiToolsApiConfig = array_filter($aiToolsApiConfig, function ($item) use ($usage) {
+            return $item['usage'] == $usage;
+        });
+
+        if (empty($aiToolsApiConfig)) {
+            throw new ValidateException('暂不支持' . $usage);
+        }
+
+        return $aiToolsApiConfig[array_key_last($aiToolsApiConfig)];
+    }
+
+    public function recreate($id, $user, $data)
     {
         $scriptInitiationRepository = app()->make(ScriptInitiationRepository::class);
         $existsInitiation = $scriptInitiationRepository->existsInitiation($id, $data['uid']);
@@ -32,12 +53,15 @@ class ScriptRewriteRepository extends BaseRepository
         $toolsRepository = app()->make(ToolsRepository::class);
 
         $expires = $toolsRepository->validateVIPExpired($data['uid']);
-        // TODO: 重新生成暂不扣积分
-        $integral = 0;
 
-        $remain = $toolsRepository->getRemain($data['uid'], $integral);
+        $rewriteType = 'recreate';
+        $apiConfig = $this->getAPIConfig($rewriteType);
 
-        $contentRes = $toolsRepository->rewriteContent($data, 'REWRITE');
+        $integral = $apiConfig['integral'];
+
+        $remain = $toolsRepository->getRemain($user, $integral);
+
+        $contentRes = $toolsRepository->rewriteContent($data, $rewriteType, $apiConfig);
 
         $returnData = [
             'content' => $contentRes['text'],
@@ -46,7 +70,7 @@ class ScriptRewriteRepository extends BaseRepository
             'expires' => $expires,
         ];
 
-        $res = Db::transaction(function () use ($data, $existsInitiation, $contentRes, $returnData, $scriptInitiationRepository) {
+        $res = Db::transaction(function () use ($data, $existsInitiation, $contentRes, $returnData, $scriptInitiationRepository, $rewriteType, $user) {
             $initiation_id = (int) $existsInitiation['initiation_id'];
             $createTime = date('Y-m-d H:i:s');
             $create = $this->dao->create([
@@ -55,7 +79,7 @@ class ScriptRewriteRepository extends BaseRepository
                 'original' => $data['original'],
                 'prompt' => $data['prompt'],
                 'rewrite' => $contentRes['text'],
-                'method' => 'recreate',
+                'method' => strtolower($rewriteType),
                 'create_time' => $createTime,
             ]);
 
@@ -65,7 +89,16 @@ class ScriptRewriteRepository extends BaseRepository
                 'last_update_time' => $create['create_time']
             ]);
 
-            $returnData['id'] = (int) $create[$this->dao->getPk()];
+            $version_id = (int) $create[$this->dao->getPk()];
+
+            $userRepository = app()->make(UserRepository::class);
+            $userRepository->changeIntegral($user['uid'], $version_id, 0, $returnData['used'], [
+                'title' => '重新生成文案',
+                'mark' => '重新生成文案减少了' . $returnData['used'] . '积分',
+                'bill_type' => 'ai_dec',
+            ]);
+
+            $returnData['id'] = $version_id;
             $returnData['initiation_id'] = $initiation_id;
             $returnData['createTime'] = $createTime;
 
@@ -82,7 +115,7 @@ class ScriptRewriteRepository extends BaseRepository
         return $exists ? $this->dao->update($id, ['is_del' => 1]) : false;
     }
 
-    public function polish($id, $data)
+    public function polish($id, $user, $data)
     {
         $exists = $this->dao->existsRewrite($id, $data['uid']);
         
@@ -100,15 +133,18 @@ class ScriptRewriteRepository extends BaseRepository
         $toolsRepository = app()->make(ToolsRepository::class);
 
         $expires = $toolsRepository->validateVIPExpired($data['uid']);
-        // TODO: 润色暂不扣积分
-        $integral = 0;
 
-        $remain = $toolsRepository->getRemain($data['uid'], $integral);
+        $rewriteType = 'polish';
+        $apiConfig = $this->getAPIConfig($rewriteType);
+
+        $integral = $apiConfig['integral'];
+
+        $remain = $toolsRepository->getRemain($user, $integral);
 
         $contentRes = $toolsRepository->rewriteContent([
             'original' => $exists['rewrite'],
             'prompt' => $data['prompt'],
-        ], 'POLISH');
+        ], $rewriteType, $apiConfig);
 
         $returnData = [
             'content' => $contentRes['text'],
@@ -117,7 +153,7 @@ class ScriptRewriteRepository extends BaseRepository
             'expires' => $expires,
         ];
 
-        $res = Db::transaction(function () use ($data, $exists, $contentRes, $returnData, $scriptInitiationRepository) {
+        $res = Db::transaction(function () use ($data, $exists, $contentRes, $returnData, $scriptInitiationRepository, $rewriteType, $user) {
             $initiation_id = (int) $exists['initiation_id'];
             $create = $this->dao->create([
                 'initiation_id' => $initiation_id,
@@ -125,12 +161,21 @@ class ScriptRewriteRepository extends BaseRepository
                 'original' => $exists['rewrite'],
                 'prompt' => $data['prompt'],
                 'rewrite' => $contentRes['text'],
-                'method' => 'polish',
+                'method' => $rewriteType,
             ]);
 
             $scriptInitiationRepository->update($exists['initiation_id'], ['last_update_time' => $create['create_time']]);
 
-            $returnData['id'] = (int) $create[$this->dao->getPk()];
+            $version_id = (int) $create[$this->dao->getPk()];
+
+            $userRepository = app()->make(UserRepository::class);
+            $userRepository->changeIntegral($user['uid'], $version_id, 0, $returnData['used'], [
+                'title' => '润色文案',
+                'mark' => '润色文案减少了' . $returnData['used'] . '积分',
+                'bill_type' => 'ai_dec',
+            ]);
+
+            $returnData['id'] = $version_id;
             $returnData['initiation_id'] = $initiation_id;
             $returnData['createTime'] = $create['create_time'];
 

@@ -9,46 +9,23 @@ use think\facade\Log;
 
 class ToolsRepository extends BaseRepository
 {
-    public $apiCrawler;
-    public $apiDefault;
-    public $apiHeader;
     public $timeout;
+    public $extractContent;
 
     public function __construct()
     {
-        $this->apiCrawler = env('AI_API_CRAWLER');
-        $this->apiDefault = env('AI_API_DEFAULT');
-        $this->apiHeader = ['x-api-key:' . env('AI_API_KEY'), 'Content-Type: application/json'];
         $this->timeout = 60 * 5;
     }
 
-    public function getExtractContentApi($platform, $type = 'preview_info')
+    public function getIntegralRequire($url, $platform, $apiConfig = [])
     {
-        if (!in_array($platform, ['douyin', 'xhs', 'bilibili', 'wechat_public_account_article'])) {
-            throw new ValidateException('暂不支持的此平台：' . $platform);
+        if (!$apiConfig['to_text']['unit_time']) {
+            return $apiConfig['to_text']['integral'];
         }
+        
+        $videoInfo = $this->validateVideoUrl($url, $apiConfig['preview_info']);
 
-        $canPreview = $type == 'preview_info' && $platform != 'wechat_public_account_article';
-
-        if ($type != 'to_text' && !$canPreview) {
-            throw new ValidateException('不支持的类型：' . $type);
-        }
-
-        return $this->apiCrawler . '/' . $platform . '_' . $type;
-    }
-
-    public function getIntegralRequire($url, $platform)
-    {
-        $isArticle = $platform == 'wechat_public_account_article';
-
-        if ($isArticle) {
-            // 微信公众号文章扣减积分
-            return 1;
-        }
-
-        $videoInfo = $this->validateVideoUrl($url, $platform);
-
-        return $this->calculateIntegral($videoInfo['duration'], $platform);
+        return $this->calculateIntegral($videoInfo['duration'], $apiConfig['to_text']);
     }
 
     /**
@@ -79,11 +56,16 @@ class ToolsRepository extends BaseRepository
      * @throws \think\exception\ValidateException
      * @return mixed
      */
-    public function validateVideoUrl($url, $platform)
+    public function validateVideoUrl($url, $apiConfig = [])
     {
-        $checkApi = $this->getExtractContentApi($platform, 'preview_info');
+        $checkApi = $apiConfig['api_url'];
 
-        $res = HttpService::request($checkApi, 'post', json_encode(['share_url' => $url]), $this->apiHeader, $this->timeout);
+        $res = HttpService::request($checkApi, 'post', json_encode([
+            'share_url' => $url
+        ]), [
+            'x-api-key: ' . $apiConfig['api_key'],
+            'Content-Type: application/json'
+        ], $this->timeout);
 
         if (!$res) {
             throw new ValidateException('验证失败，请重试！');
@@ -109,32 +91,25 @@ class ToolsRepository extends BaseRepository
      * @throws \think\exception\ValidateException
      * @return integer
      */
-    public function calculateIntegral($duration, $platform)
+    public function calculateIntegral($duration, $apiConfig = [])
     {
-        $perUnit = 1000 * 60 * 2; // TODO: 每2分钟扣减1，不足2分钟算2分钟
+        $perUnit = 1000 * $apiConfig['unit_time'];
         
-        $integral = ceil($duration / $perUnit);
-
-        // B站积分*2
-        if ($platform == 'bilibili') {
-            $integral = $integral * 2;
-        }
+        $integral = ceil($duration / $perUnit) * $apiConfig['integral'];
 
         return $integral;
     }
 
     /**
-     * TODO: 计算用户剩余积分
+     * 计算用户剩余积分
      * @param integer $uid
      * @param integer $integral
      * @throws \think\exception\ValidateException
      * @return integer
      */
-    public function getRemain($uid, $integral)
+    public function getRemain($user, $integral)
     {
-        $remain = random_int(0, 5);
-        // TODO: 无限积分
-        $remain = $integral * 2;
+        $remain = $user->integral;
 
         if ($remain < $integral) {
             throw new ValidateException('积分不足，本次所需积分：' . $integral . '，剩余积分：' . $remain);
@@ -149,10 +124,16 @@ class ToolsRepository extends BaseRepository
      * @throws \think\exception\ValidateException
      * @return mixed
      */
-    public function extractContent($data)
+    public function extractContent($data, $apiConfig = [])
     {
-        $apiUrl = $this->getExtractContentApi($data['platform'], 'to_text');
-        $res = HttpService::request($apiUrl, 'post', json_encode(['share_url' => $data['url']]), $this->apiHeader, $this->timeout);
+        $apiUrl = $apiConfig['api_url'];
+
+        $res = HttpService::request($apiUrl, 'post', json_encode([
+            'share_url' => $data['url']
+        ]), [
+            'x-api-key: ' . $apiConfig['api_key'],
+            'Content-Type: application/json'
+        ], $this->timeout);
 
         if (!$res) {
             throw new ValidateException('提取失败，请重试！');
@@ -174,25 +155,35 @@ class ToolsRepository extends BaseRepository
      * @throws \think\exception\ValidateException
      * @return mixed
      */
-    public function rewriteContent($data, $type = 'INITIATION')
+    public function rewriteContent($data, $type = 'INITIATION', $config = [])
     {
         $type = strtoupper($type);
-        if (!in_array($type, ['INITIATION', 'REWRITE', 'POLISH'])) {
+        if (!in_array($type, ['INITIATION', 'RECREATE', 'POLISH'])) {
             throw new ValidateException('暂不支持的类型：' . $type);
         }
 
-        $apiUrl = $this->apiDefault;
-        $res = HttpService::request($apiUrl, 'post', json_encode([
-            'inputs' => [
-                'content' => $data['original'],
-                'prompt' => $data['prompt']
-            ],
-            'response_mode' => 'blocking',
-            'user' => env('AI_API_USER')
-        ]), [
-            'Authorization: Bearer ' . env('AI_API_KEY_' . $type),
-            'Content-Type: application/json'
-        ], $this->timeout);
+        $apiUrl = $config['api_url'];
+
+        // $res = HttpService::request($apiUrl, 'post', json_encode([
+        //     'inputs' => [
+        //         'content' => $data['original'],
+        //         'prompt' => $data['prompt']
+        //     ],
+        //     'response_mode' => 'blocking',
+        //     'user' => $config['api_user'],
+        // ]), [
+        //     'Authorization: Bearer ' . $config['api_key'],
+        //     'Content-Type: application/json'
+        // ], $this->timeout);
+
+        $res = json_encode([
+            'data' => [
+                'outputs' => [
+                    'text' => '--' . $type . '--' . $data['original'] . $data['prompt'] . '--' . $type . '--'
+                ],
+                'error' => false
+            ]
+        ]);
 
         if (!$res) {
             throw new ValidateException('操作失败，请重试！');

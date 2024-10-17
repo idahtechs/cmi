@@ -148,7 +148,7 @@ class UserBillDao extends BaseDao
         return UserBill::getDB()->where('uid', $uid)
             ->where('category', 'integral')
             ->where('pm', 0)
-            ->whereIn('type', ['deduction','refund_lock','timeout','sys_dec'])
+            ->whereIn('type', ['deduction','refund_lock','timeout','sys_dec', 'ai_dec'])
             ->where('status', 1)
             ->sum('number');
     }
