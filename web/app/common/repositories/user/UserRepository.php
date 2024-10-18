@@ -22,6 +22,7 @@ use app\common\repositories\community\CommunityRepository;
 use app\common\repositories\store\order\StoreOrderRepository;
 use app\common\repositories\store\service\StoreServiceRepository;
 use app\common\repositories\system\attachment\AttachmentRepository;
+use app\common\repositories\system\groupData\GroupDataRepository;
 use app\common\repositories\wechat\WechatUserRepository;
 use crmeb\exceptions\AuthException;
 use crmeb\jobs\SendNewPeopleCouponJob;
@@ -531,10 +532,14 @@ class UserRepository extends BaseRepository
      */
     public function create(string $type, array $userInfo)
     {
+
         $userInfo['user_type'] = $this->userType($type);
         if (!isset($userInfo['status'])) {
             $userInfo['status'] = 1;
         }
+
+        $userInfo = $this->setRegisterGiveSvip($userInfo);
+        
         $user = $this->dao->create($userInfo);
         try {
             Queue::push(SendNewPeopleCouponJob::class, $user->uid);
@@ -1501,5 +1506,39 @@ class UserRepository extends BaseRepository
                 'phone' => $user_info['phone'] ?? '00000000000',
                 'uid' => $user_info['uid'] ?? '-1'
             ] + $append_info;
+    }
+
+    public function setRegisterGiveSvip($userInfo)
+    {
+        $registerGiveSvipId = systemConfig('register_give_svip');
+
+        if ($registerGiveSvipId) {
+            $groupDataRepository = app()->make(GroupDataRepository::class);
+            $svipPay = $groupDataRepository->groupData('svip_pay', 0);
+
+            if ($svipPay) {
+                $registerGiveSvip = array_filter($svipPay, function ($value) use ($registerGiveSvipId) {
+                    return $value['group_data_id'] == $registerGiveSvipId;
+                });
+                
+                if (count($registerGiveSvip)) {
+                    $registerGiveSvip = $registerGiveSvip[array_key_first($registerGiveSvip)];
+                    
+                    if (isset($registerGiveSvip['integral'])) {
+                        $userInfo['integral'] = $registerGiveSvip['integral'];
+                    }
+                    
+                    if (isset($registerGiveSvip['svip_type'])) {
+                        $userInfo['is_svip'] = $registerGiveSvip['svip_type'];
+                        $day = $registerGiveSvip['svip_type'] == 3 ? 0 : $registerGiveSvip['svip_number'];
+                        $endtime = date('Y-m-d H:i:s',time());
+                        $svip_endtime =  date('Y-m-d H:i:s',strtotime("$endtime  +$day day" ));
+                        $userInfo['svip_endtime'] = $svip_endtime;
+                    }
+                }
+            }
+        }
+
+        return $userInfo;
     }
 }
