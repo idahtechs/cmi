@@ -164,26 +164,17 @@ class ToolsRepository extends BaseRepository
 
         $apiUrl = $config['api_url'];
 
-        // $res = HttpService::request($apiUrl, 'post', json_encode([
-        //     'inputs' => [
-        //         'content' => $data['original'],
-        //         'prompt' => $data['prompt']
-        //     ],
-        //     'response_mode' => 'blocking',
-        //     'user' => $config['api_user'],
-        // ]), [
-        //     'Authorization: Bearer ' . $config['api_key'],
-        //     'Content-Type: application/json'
-        // ], $this->timeout);
-
-        $res = json_encode([
-            'data' => [
-                'outputs' => [
-                    'text' => '--' . $type . '--' . $data['original'] . $data['prompt'] . '--' . $type . '--'
-                ],
-                'error' => false
-            ]
-        ]);
+        $res = HttpService::request($apiUrl, 'post', json_encode([
+            'inputs' => [
+                'content' => $data['original'],
+                'prompt' => $data['prompt']
+            ],
+            'response_mode' => 'blocking',
+            'user' => $config['api_user'],
+        ]), [
+            'Authorization: Bearer ' . $config['api_key'],
+            'Content-Type: application/json'
+        ], $this->timeout);
 
         if (!$res) {
             throw new ValidateException('操作失败，请重试！');
