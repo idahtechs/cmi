@@ -46,7 +46,7 @@ class ScriptInitiationRepository extends BaseRepository
     public function initiation($user, $data)
     {
         $toolsRepository = app()->make(ToolsRepository::class);
-        $expires = $toolsRepository->validateVIPExpired($data['uid']);
+        $expires = $toolsRepository->validateVIPExpired($user);
         $apiConfig = $this->getAPIConfig($this->rewriteType);
         $integral = $apiConfig['integral'];
         $remain = $toolsRepository->getRemain($user, $integral);

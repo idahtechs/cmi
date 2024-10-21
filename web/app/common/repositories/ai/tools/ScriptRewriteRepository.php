@@ -52,7 +52,7 @@ class ScriptRewriteRepository extends BaseRepository
         
         $toolsRepository = app()->make(ToolsRepository::class);
 
-        $expires = $toolsRepository->validateVIPExpired($data['uid']);
+        $expires = $toolsRepository->validateVIPExpired($user);
 
         $rewriteType = 'recreate';
         $apiConfig = $this->getAPIConfig($rewriteType);
@@ -132,7 +132,7 @@ class ScriptRewriteRepository extends BaseRepository
 
         $toolsRepository = app()->make(ToolsRepository::class);
 
-        $expires = $toolsRepository->validateVIPExpired($data['uid']);
+        $expires = $toolsRepository->validateVIPExpired($user);
 
         $rewriteType = 'polish';
         $apiConfig = $this->getAPIConfig($rewriteType);

@@ -30,16 +30,17 @@ class ToolsRepository extends BaseRepository
 
     /**
      * TODO: 验证用户会员到期时间
-     * @param integer $uid
+     * @param object $user
      * @throws \think\exception\ValidateException
      * @return mixed
      */
-    public function validateVIPExpired($uid)
+    public function validateVIPExpired($user)
     {
-        // TODO:永不过期
-        $random = '+' . random_int(1,1) . ' second';
-        $expires = date('Y-m-d H:i:s', strtotime($random));
-
+        $expires = $user->svip_endtime;
+        if ($user->is_svip == 3) {
+            $expires = date('Y-m-d H:i:s', strtotime("+100 year"));
+        }
+  
         $now = date('Y-m-d H:i:s');
 
         if ($expires <= $now) {
@@ -102,7 +103,7 @@ class ToolsRepository extends BaseRepository
 
     /**
      * 计算用户剩余积分
-     * @param integer $uid
+     * @param object $user
      * @param integer $integral
      * @throws \think\exception\ValidateException
      * @return integer

@@ -47,7 +47,7 @@ class ExtractCopyRepository extends BaseRepository
     public function byUrl($user, $data)
     {
         $toolsRepository = app()->make(ToolsRepository::class);
-        $expires = $toolsRepository->validateVIPExpired($data['uid']);
+        $expires = $toolsRepository->validateVIPExpired($user);
 
         $apiConfig = [
             'preview_info' => $this->getAPIConfig('preview_info', $data['platform'], $data['platform'] != 'wechat_public_account_article'),
