@@ -80,11 +80,11 @@ import {
   polishVideoScript,
   deleteVideoScriptVersion,
 } from '@/api/ai'
-import createGlobalEventHandlers from '@/mixins/createGlobalEventHandlers'
+import createGlobalEventHandlersMixin from '@/mixins/createGlobalEventHandlersMixin'
 
 export default {
   mixins: [
-    createGlobalEventHandlers({
+    createGlobalEventHandlersMixin({
       'use_prompt_template': function(promptTemplate) {
         this.record.prompt = promptTemplate
       }
