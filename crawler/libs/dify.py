@@ -25,7 +25,11 @@ def correct_typo(content: str):
             current_app.logger.error(f"dify.correct_typo 未返回成功响应, {resp=}")
             return content
 
-        return data["outputs"]["text"]
+        new_text = data["outputs"]["text"].strip()
+        if new_text == "":
+            current_app.logger.error(f"dify.correct_typo 返回的内容为空, 使用原输入返回, {resp=}")
+            return content
+        return new_text
     except Exception as e:
         current_app.logger.error(f"调用 dify.correct_typo 出错, {e=}")
         return content
