@@ -151,6 +151,13 @@
 							"scrollIndicator": "none"
 						}
 					}
+				},
+				{
+					"path": "user_integral_records/index",
+					"style": {
+						"navigationBarTitleText": "积分明细",
+						"enablePullDownRefresh": true
+					}
 				}
 			]
 		}
