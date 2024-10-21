@@ -539,6 +539,7 @@ class UserRepository extends BaseRepository
         }
 
         $userInfo = $this->setRegisterGiveSvip($userInfo);
+        $userInfo = $this->setPromoter($userInfo);
         
         $user = $this->dao->create($userInfo);
         try {
@@ -1537,6 +1538,18 @@ class UserRepository extends BaseRepository
                     }
                 }
             }
+        }
+
+        return $userInfo;
+    }
+
+    public function setPromoter($userInfo)
+    {
+        $registerBePromoter = systemConfig('register_be_promoter');
+
+        if ($registerBePromoter) {
+            $userInfo['is_promoter'] = 1;
+            $userInfo['promoter_time'] = date('Y-m-d H:i:s');
         }
 
         return $userInfo;

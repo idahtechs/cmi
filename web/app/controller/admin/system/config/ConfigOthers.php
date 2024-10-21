@@ -50,7 +50,8 @@ class ConfigOthers extends BaseController
             'max_bag_number',
             'promoter_explain',
             'user_extract_min',
-            'withdraw_type'
+            'withdraw_type',
+            'register_be_promoter'
         ]);
 
         if ($data['extension_two_rate'] < 0 || $data['extension_one_rate'] < 0)
