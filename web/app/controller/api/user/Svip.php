@@ -84,9 +84,20 @@ class Svip extends BaseController
             return app('json')->fail('请选择正确的支付方式');
         $res = $groupDataRepository->getWhere(['group_data_id' => $id, 'status' => 1]);
         if (!$res) return  app('json')->fail('参数有误～');
-        if ($this->request->userInfo()->is_svip == 3)
-            return  app('json')->fail('您已经是终身会员～');
-        if ($this->request->userInfo()->is_svip !== -1 && $res['value']['svip_type'] == 1)
+
+        $svip = $res['value'];
+        $isBuyIntegral = isset($svip['integral']) && $svip['integral'] > 0;
+        $svip3CanBuy = $svip['svip_type'] == 3 && $isBuyIntegral && $svip['price'] > 0;
+        
+        if ($this->request->userInfo()->is_svip == 3 && !$svip3CanBuy) {
+            $errMessage = '您已经是终身会员～';
+            if ($svip['price'] <= 0 || $isBuyIntegral) {
+                $errMessage = '请选择其他会员类型';
+            }
+            return  app('json')->fail($errMessage);
+        }
+
+        if ($this->request->userInfo()->is_svip !== -1 && $svip['svip_type'] == 1)
             return  app('json')->fail('请选择其他会员类型');
         $params['is_app'] = $this->request->isApp();
         return $userOrderRepository->add($res,$this->request->userInfo(),$params);

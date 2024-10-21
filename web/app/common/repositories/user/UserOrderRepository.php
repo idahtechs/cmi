@@ -157,6 +157,10 @@ class UserOrderRepository extends BaseRepository
         $endtime = ($user['svip_endtime'] && $user['is_svip'] != 0) ? $user['svip_endtime'] : date('Y-m-d H:i:s',time());
         $svip_endtime =  date('Y-m-d H:i:s',strtotime("$endtime  +$day day" ));
 
+        if ($info->integral && $info->integral > 0) {
+            $user->integral = $user->integral + $info->integral;
+        }
+
         $user->is_svip = $info->svip_type;
         $user->svip_endtime = $svip_endtime;
         $user->save();

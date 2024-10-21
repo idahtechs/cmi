@@ -23,8 +23,8 @@ services:
     command: --sql_mode="NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION"
     volumes:
       - ./data/mysql:/var/lib/mysql
-    # ports:
-    #   - 3306:3306
+    ports:
+      - 3306:3306
     environment:
       MYSQL_ROOT_PASSWORD: mysql
       MYSQL_USER: mysql
@@ -36,11 +36,11 @@ services:
       start_interval: 1s
       interval: 1s
       timeout: 1s
-      retries: 3 
+      retries: 3
 
   redis:
     image: redis:alpine
     volumes:
       - ./data/redis:/var/lib/redis/data
-    # ports:
-    #   - 6379:6379
+    ports:
+      - 6379:6379
