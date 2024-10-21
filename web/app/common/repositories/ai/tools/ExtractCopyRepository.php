@@ -68,11 +68,13 @@ class ExtractCopyRepository extends BaseRepository
             $id = (int) $data[$this->dao->getPk()];
 
             $userRepository = app()->make(UserRepository::class);
-            $userRepository->changeIntegral($user['uid'], $id, 0, $integral, [
-                'title' => '提取文案',
-                'mark' => '提取文案减少了' . $integral . '积分',
-                'bill_type' => 'ai_dec',
-            ]);
+            if ($integral > 0) {
+                $userRepository->changeIntegral($user['uid'], $id, 0, $integral, [
+                    'title' => '创作',
+                    'mark' => '用户提取文案时所消耗的积分',
+                    'bill_type' => 'ai_dec',
+                ]);
+            }
 
             return [
                 'id' => $id,

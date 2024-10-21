@@ -92,11 +92,13 @@ class ScriptRewriteRepository extends BaseRepository
             $version_id = (int) $create[$this->dao->getPk()];
 
             $userRepository = app()->make(UserRepository::class);
-            $userRepository->changeIntegral($user['uid'], $version_id, 0, $returnData['used'], [
-                'title' => '重新生成文案',
-                'mark' => '重新生成文案减少了' . $returnData['used'] . '积分',
-                'bill_type' => 'ai_dec',
-            ]);
+            if ((int)$returnData['used']) {
+                $userRepository->changeIntegral($user['uid'], $version_id, 0, $returnData['used'], [
+                    'title' => '创作',
+                    'mark' => '用户重新生成文案时所消耗的积分',
+                    'bill_type' => 'ai_dec',
+                ]);
+            }
 
             $returnData['id'] = $version_id;
             $returnData['initiation_id'] = $initiation_id;
@@ -169,11 +171,13 @@ class ScriptRewriteRepository extends BaseRepository
             $version_id = (int) $create[$this->dao->getPk()];
 
             $userRepository = app()->make(UserRepository::class);
-            $userRepository->changeIntegral($user['uid'], $version_id, 0, $returnData['used'], [
-                'title' => '润色文案',
-                'mark' => '润色文案减少了' . $returnData['used'] . '积分',
-                'bill_type' => 'ai_dec',
-            ]);
+            if ((int)$returnData['used'] > 0) {
+                $userRepository->changeIntegral($user['uid'], $version_id, 0, $returnData['used'], [
+                    'title' => '润色文案',
+                    'mark' => '用户润色文案时所消耗的积分',
+                    'bill_type' => 'ai_dec',
+                ]);
+            }
 
             $returnData['id'] = $version_id;
             $returnData['initiation_id'] = $initiation_id;

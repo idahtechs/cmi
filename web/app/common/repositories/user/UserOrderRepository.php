@@ -152,13 +152,19 @@ class UserOrderRepository extends BaseRepository
     public function payAfter($data, $ret)
     {
         $info = json_decode($data['order_info']);
-        $user = app()->make(UserRepository::class)->get($ret['uid']);
+        $userRepository = app()->make(UserRepository::class);
+        $user = $userRepository->get($ret['uid']);
         $day = $info->svip_type == 3 ? 0 : $info->svip_number;
         $endtime = ($user['svip_endtime'] && $user['is_svip'] != 0) ? $user['svip_endtime'] : date('Y-m-d H:i:s',time());
         $svip_endtime =  date('Y-m-d H:i:s',strtotime("$endtime  +$day day" ));
 
         if ($info->integral && $info->integral > 0) {
             $user->integral = $user->integral + $info->integral;
+            $userRepository->changeIntegral($user->uid, $data['order_id'], 1, $info->integral, [
+                'title' => '充值',
+                'mark' => '用户购买积分后所获得的积分',
+                'bill_type' => 'recharge',
+            ]);
         }
 
         $user->is_svip = $info->svip_type;

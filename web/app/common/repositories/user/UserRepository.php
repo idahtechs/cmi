@@ -541,7 +541,17 @@ class UserRepository extends BaseRepository
         $userInfo = $this->setRegisterGiveSvip($userInfo);
         $userInfo = $this->setPromoter($userInfo);
         
-        $user = $this->dao->create($userInfo);
+        Db::transaction(function () use ($userInfo) {
+            $user = $this->dao->create($userInfo);
+
+            if(isset($userInfo['integral']) && $userInfo['integral'] > 0) {
+                $this->changeIntegral($user['uid'], $user['uid'], 1, $userInfo['integral'], [
+                    'title' => '会员首次登录',
+                    'mark' => '用户注册会员后所获得的积分',
+                    'bill_type' => 'register',
+                ]);
+            }
+        });
         try {
             Queue::push(SendNewPeopleCouponJob::class, $user->uid);
         } catch (\Exception $e) {
