@@ -545,7 +545,7 @@ class UserRepository extends BaseRepository
             $user = $this->dao->create($userInfo);
 
             if(isset($userInfo['integral']) && $userInfo['integral'] > 0) {
-                $this->changeIntegral($user['uid'], $user['uid'], 1, $userInfo['integral'], [
+                $this->changeIntegral($user['uid'], $user['uid'], type: 1, $userInfo['integral'], [
                     'title' => '会员首次登录',
                     'mark' => '用户注册会员后所获得的积分',
                     'bill_type' => 'register',
@@ -949,9 +949,9 @@ class UserRepository extends BaseRepository
                     app()->make(UserBillRepository::class)->incBill($spreadUid, 'integral', 'spread', [
                         'link_id' => $user->uid,
                         'status' => 1,
-                        'title' => '邀请好友',
+                        'title' => '好友充值',
                         'number' => $integral,
-                        'mark' => '邀请好友奖励' . $integral . '积分',
+                        'mark' => '好友充值完成后所获得的积分',
                         'balance' => $spread->integral
                     ]);
                 }
