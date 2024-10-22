@@ -24,7 +24,7 @@
         <view class="cmi-form-item">
           <view class="cmi-form-label relative">
             提示词
-            <view class="cmi-link absolute right-0" @click="handleTemplatePromptImport">
+            <view class="cmi-link absolute right-0" @click="handleTemplatePromptImport('generate')">
               导入模板
             </view>
           </view>
@@ -62,7 +62,12 @@
     <uni-popup ref="polishPopup" type="bottom">
       <view class="bg-white px-20 pb-22" style="border-radius: 32rpx 32rpx 0 0;">
         <view class="py-16 text-center fs-15 font-bold">润色</view>
-        <view class="color-muted mb-8">润色提示词（必填）</view>
+        <view class="color-muted mb-8 relative">
+          润色提示词（必填）
+          <view class="cmi-link absolute right-0" @click="handleTemplatePromptImport('polish')">
+            导入模板
+          </view>
+        </view>
         <view class="px-8 py-10 br-8 bd-1">
           <textarea v-model="polishPrompt" :maxlength="-1" style="width: 100%; height: 560rpx;" adjust-keyboard-to="bottom" />
         </view>
@@ -85,8 +90,15 @@ import createGlobalEventHandlersMixin from '@/mixins/createGlobalEventHandlersMi
 export default {
   mixins: [
     createGlobalEventHandlersMixin({
-      'use_prompt_template': function(promptTemplate) {
-        this.record.prompt = promptTemplate
+      'use_prompt_template': function({ prompt, ticket }) {
+        switch (ticket) {
+          case 'generate':
+            this.record.prompt = prompt
+            break
+          case 'polish':
+            this.polishPrompt = prompt
+            break
+        }
       }
     })
   ],
@@ -184,9 +196,10 @@ export default {
       })
     },
 
-    handleTemplatePromptImport() {
+    handleTemplatePromptImport(ticket) {
+      // notice: 在mixin中通过全局事件处理器（use_prompt_template）接收用户选中的模版
       uni.navigateTo({
-        url: '/pages/ai/prompt_templates/index',
+        url: '/pages/ai/prompt_templates/index?ticket=' + ticket,
       })
     },
 

@@ -20,11 +20,13 @@ import { getConfigGroupWithCache } from '@/api/public'
 export default {
   data() {
     return {
-      templates: []
+      templates: [],
+      ticket: ''
     }
   },
 
-  onLoad() {
+  onLoad({ ticket }) {
+    this.ticket = ticket
     this.loadPromptTemplates()
   },
 
@@ -42,7 +44,7 @@ export default {
         confirmText: '是',
         success: (res) => {
           if (res.confirm) {
-            uni.$emit('use_prompt_template', template.prompt)
+            uni.$emit('use_prompt_template', { prompt: template.prompt, ticket: this.ticket })
             uni.navigateBack()
           }
         }
