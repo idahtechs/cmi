@@ -739,3 +739,8 @@ export const updateUserPromptTemplate = (id, data) => {
 export const deleteUserPromptTemplate = (id) => {
 	return request.delete('user/prompt/template/delete/' + id)
 }
+
+// 新版分享海链接及二维码信息获取
+export function getSpreadImage(data) {
+	return request.get(`user/v2/spread_image`, data)
+}

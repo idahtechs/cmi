@@ -205,6 +205,18 @@
 					"style": {
 						"navigationBarTitleText": "积分购买"
 					}
+				},
+				{
+					"path": "share/index",
+					"style": {
+						"navigationBarTitleText": "分享好友"
+					}
+				},
+				{
+					"path": "share_qrcode/index",
+					"style": {
+						"navigationBarTitleText": "分享二维码"
+					}
 				}
 			]
 		}

@@ -2,7 +2,10 @@
 	<view :class="pageClass" :style="pageStyle" v-show="completed">
 		<slot name="nav"></slot>
 		<view class="c-page-body">
-      <slot></slot>
+      <view v-if="loading" class="p-24 text-center">
+        <loading-dots />
+      </view>
+      <slot v-else></slot>
     </view>
   
     <custom-tabbar />
@@ -18,6 +21,7 @@ export default {
   props: {
     loginRequired: Boolean,
     flex: Boolean,
+    loading: Boolean,
     bgTheme: {
       typeof: String,
       default: 'light'

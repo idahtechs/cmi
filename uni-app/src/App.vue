@@ -9,9 +9,6 @@
 	// | Author: CRMEB Team <admin@crmeb.com>
 	// +----------------------------------------------------------------------
 	import {
-		checkLogin
-	} from "./libs/login";
-	import {
 		HTTP_REQUEST_URL
 	} from './config/app';
 	import {
@@ -19,7 +16,9 @@
 		history
 	} from '@/api/public.js'
 	import Routine from './libs/routine.js';
-	import Cache from '@/utils/cache';
+	import shareScence from '@/libs/spread';
+	import { silenceBindingSpread } from '@/utils/index';
+	
 	export default {
 		globalData: {
 			spid: 0,
@@ -78,6 +77,15 @@
 				);
 				return false;
 			}
+
+			// 绑定推广关系
+			if (option.query.spid) {
+				const isLogin = this.$store.getters.isLogin
+				this.globalData.spid = option.query.spid
+				shareScence(this.globalData.spid, isLogin)
+				isLogin && silenceBindingSpread();
+			}
+
 			if (option.query.hasOwnProperty('scene')) {
 				switch (option.scene) {
 					//扫描小程序码
@@ -100,6 +108,7 @@
 						break;
 				}
 			}
+			
 			// #endif
 			// 获取导航高度；
 			const windowInfo = (uni.getWindowInfo || uni.getSystemInfoSync)();
