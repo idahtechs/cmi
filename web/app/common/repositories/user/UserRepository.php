@@ -27,9 +27,13 @@ use app\common\repositories\wechat\WechatUserRepository;
 use crmeb\exceptions\AuthException;
 use crmeb\jobs\SendNewPeopleCouponJob;
 use crmeb\jobs\UserBrokerageLevelJob;
+use crmeb\services\HttpService;
 use crmeb\services\JwtTokenService;
+use crmeb\services\MiniProgramService;
 use crmeb\services\QrcodeService;
 use crmeb\services\WechatService;
+use EasyWeChat\Core\AbstractAPI;
+use EasyWeChat\Core\AccessToken;
 use FormBuilder\Exception\FormBuilderException;
 use FormBuilder\Factory\Elm;
 use FormBuilder\Form;
@@ -40,6 +44,7 @@ use think\exception\ValidateException;
 use think\facade\Cache;
 use think\facade\Config;
 use think\facade\Db;
+use think\facade\Log;
 use think\facade\Queue;
 use think\facade\Route;
 use think\Model;
@@ -776,6 +781,39 @@ class UserRepository extends BaseRepository
 
         return app()->make(QrcodeService::class)->getRoutineQrcodePath($name, 'pages/index/index', 'spid=' . $user['uid']);
     }
+
+    public function routineShortLink(User $user) {
+        $shortLinkAPI = 'https://api.weixin.qq.com/wxa/generate_urllink?access_token=';
+        $config = MiniProgramService::create()->getConfig();
+
+        $accessToken = new AccessToken($config['app_id'], $config['secret']);
+
+        $apiUrl = $shortLinkAPI . $accessToken->getToken();
+        $params = [
+            'path' => 'pages/index/index',
+            'query' => 'spid=' . $user['uid'],
+            'expire_type' => 1,
+            'expire_interval' => 30,
+            'env_version' => env('APP_ENV') === 'production' ? 'release' : 'trial',
+        ];
+
+        $res = HttpService::request($apiUrl, 'post', json_encode($params), [], 60);
+
+        if (!$res) {
+            Log::error('生成小程序短链接失败，可能网络出错');
+            return '';
+        }
+
+        $res = json_decode($res, true);
+
+        if (isset($res['errcode']) && $res['errcode'] !== 0) {
+            Log::error('生成小程序短链接失败：' . $res['errmsg']);
+            return '';
+        }
+
+        return $res['url_link'];
+    }
+
 
     public function wxSpreadImage(User $user)
     {

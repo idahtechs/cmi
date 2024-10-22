@@ -61,6 +61,7 @@ class User extends BaseController
     {
         $type = $this->request->param('type');
         $user = $this->user;
+        $shortLink = $type == 'routine' ? $this->repository->routineShortLink($user) : '';
         $siteName = systemConfig('site_name');
         $qrcode = $type == 'routine'
             ? $this->repository->mpQrcode($user)
@@ -68,7 +69,7 @@ class User extends BaseController
         $poster = systemGroupData('spread_banner');
         $nickname = $user['nickname'];
         $mark = '邀请您加入' . $siteName;
-        return app('json')->success(compact('qrcode', 'poster', 'nickname', 'mark'));
+        return app('json')->success(compact('qrcode', 'shortLink','poster', 'nickname', 'mark'));
     }
 
     public function spread_info()
