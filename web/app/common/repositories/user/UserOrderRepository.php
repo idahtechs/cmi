@@ -85,7 +85,7 @@ class UserOrderRepository extends BaseRepository
             'order_sn' => $order_sn,
             'pay_price' => $data['pay_price'],
             'attach' => 'user_order',
-            'body' =>'付费会员'
+            'body' => (isset($res['value']['integral']) && $res['value']['integral'] > 0) ? '积分充值' : '付费会员'
         ];
         $type = $params['pay_type'];
         if (in_array($type, ['weixin', 'alipay'], true) && $params['is_app']) {
