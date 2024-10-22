@@ -178,4 +178,30 @@ class Svip extends BaseController
         }
         return  app('json')->success($data ?? ['count' => 0,'list' => []]);
     }
+
+    public function getTypeLstByIntegral(GroupRepository $groupRepository,GroupDataRepository  $groupDataRepository)
+    {
+        $group_id = $groupRepository->getSearch(['group_key' => 'svip_pay'])->value('group_id');
+        $where['group_id'] = $group_id;
+        $where['status'] = 1;
+        $list = $groupDataRepository->getSearch($where)->field('group_data_id,value,sort,status')->order('sort DESC')->select()->each(function ($item) {
+            $value = $item['value'];
+            unset($item['value']);
+            foreach ($value as $k => $v) {
+                $item[$k] = $v;
+            }
+            $isFree = $item['price'] <= 0;
+            $useIsTrial = $this->request->isLogin() && $this->request->userInfo()->is_svip != -1;
+            $typeIsTrial = $item['svip_type'] == 1;
+            $item['unset'] = ($isFree || ($useIsTrial && $typeIsTrial));
+
+            return $item;
+        });
+
+        foreach ($list as $item) {
+            if (!$item['unset']) $res[] = $item;
+        }
+
+        return app('json')->success(['count' => count($res), 'list' => $res]);
+    }
 }

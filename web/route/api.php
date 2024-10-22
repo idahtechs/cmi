@@ -379,6 +379,7 @@ Route::group('api/', function () {
         // 付费会员
         Route::group('svip', function () {
             //价格列表
+            Route::get('integral_lst', '/getTypeLstByIntegral');
             Route::get('pay_lst', '/getTypeLst');
             Route::get('user_info', '/svipUserInfo');
             Route::get('coupon_lst', '/svipCoupon');
