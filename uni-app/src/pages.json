@@ -152,11 +152,25 @@
 						}
 					}
 				},
+
+				{
+					"path": "privacy/index",
+					"style": {
+						"navigationBarTitleText": "用户协议"
+					}
+				},
+				
 				{
 					"path": "user_integral_records/index",
 					"style": {
 						"navigationBarTitleText": "积分明细",
 						"enablePullDownRefresh": true
+					}
+				},
+				{
+					"path": "user_integral_recharge/index",
+					"style": {
+						"navigationBarTitleText": "积分购买"
 					}
 				}
 			]

@@ -49,7 +49,7 @@ export default {
     ...mapGetters(['isLogin', 'userInfo']),
     userMenus() {
       return [
-        { text: '购买积分', url: '', postfix: '' },
+        { text: '购买积分', url: '/pages/users/user_integral_recharge/index', postfix: '' },
         { text: '分享好友', url: '', postfix: '' },
         { text: '我的创作记录', url: '/pages/ai/records/index', postfix: '' },
         { text: '联系客服', url: '/pages/customer_service_qrcode/index', postfix: '' },

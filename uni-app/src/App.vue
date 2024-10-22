@@ -102,15 +102,13 @@
 			}
 			// #endif
 			// 获取导航高度；
-			uni.getSystemInfo({
-				success: function(res) {
-					that.globalData.navHeight = res.statusBarHeight * (750 / res.windowWidth) + 91;
-				}
-			});
+			const windowInfo = (uni.getWindowInfo || uni.getSystemInfoSync)();
+			that.globalData.navHeight = windowInfo.statusBarHeight * (750 / windowInfo.windowWidth) + 91;
+
 			// #ifdef MP
 			let menuButtonInfo = uni.getMenuButtonBoundingClientRect();
 			that.globalData.navH = menuButtonInfo.top * 2 + menuButtonInfo.height / 2;
-			const version = uni.getSystemInfoSync().SDKVersion
+			const version = (uni.getAppBaseInfo || uni.getSystemInfoSync)().SDKVersion
 			if (Routine.compareVersion(version, '2.21.2') >= 0) {
 				that.$Cache.set('MP_VERSION_ISNEW', true)
 			} else {

@@ -633,6 +633,14 @@ export function serviceSaveMark(merId, uid, mark) {
 export function memberCard() {
 	return request.get(`svip/pay_lst`)
 }
+
+/**
+ * 积分套餐列表
+ * @returns 
+ */
+export function getIntegralLst() {
+	return request.get(`svip/integral_lst`)
+}
 /**
  * 开通付费会员--支付
  * @param object data
@@ -641,6 +649,7 @@ export function memberCard() {
 export function memberCardCreate(id, data) {
 	return request.post(`svip/pay/${id}`, data)
 }
+export const integralRecharge = memberCardCreate
 /**
  * 付费会员权益
  * @param object data
