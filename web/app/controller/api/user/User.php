@@ -61,7 +61,7 @@ class User extends BaseController
     {
         $type = $this->request->param('type');
         $user = $this->user;
-        $shortLink = $type == 'routine' ? $this->repository->routineShortLink($user) : '';
+        $shortLink = $type == 'routine' ? $this->repository->routineShortLink($user) : tidy_url('/page/index/index?spid=' . $user['uid']);
         $siteName = systemConfig('site_name');
         $qrcode = $type == 'routine'
             ? $this->repository->mpQrcode($user)

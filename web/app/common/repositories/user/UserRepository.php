@@ -794,7 +794,7 @@ class UserRepository extends BaseRepository
             'query' => 'spid=' . $user['uid'],
             'expire_type' => 1,
             'expire_interval' => 30,
-            'env_version' => env('APP_ENV') === 'production' ? 'release' : 'trial',
+            'env_version' => env('APP_ENV') == 'production' ? 'release' : 'trial',
         ];
 
         $res = HttpService::request($apiUrl, 'post', json_encode($params), [], 60);
