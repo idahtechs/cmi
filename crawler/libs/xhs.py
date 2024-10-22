@@ -1,6 +1,5 @@
 import re
 
-import requests
 from extensions.ext_cache import get_cache, set_cache
 from flask import current_app
 from libs import tikhub, utils
@@ -9,19 +8,10 @@ from models.xhs import XhsInfo
 
 def get_xhs_note_id_from_url(url: str):
     # 如果是短链接，获取重定向后的链接
-    match = re.search(r"https?://xhslink.com/a/[a-zA-Z0-9]+", url)
-    if match:
-        try:
-            response = requests.get(
-                match.group(0),
-                headers={
-                    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
-                },
-                allow_redirects=True,
-            )
-            url = response.url
-        except Exception as e:
-            current_app.logger.error(f"Error fetching URL: {e}")
+    short_url_match = re.search(r"https?://xhslink.com/a/[a-zA-Z0-9]+", url)
+    if short_url_match:
+        url = utils.get_final_redirect_url(short_url_match.group(0))
+        if not url:
             return None
 
     # 从最终链接中提取 ID
@@ -36,6 +26,7 @@ def get_xhs_note_id_from_url(url: str):
 
 
 # https://www.xiaohongshu.com/explore/66c92cd0000000001d0172b9?xsec_token=ABpmX71NmjIiB8zggR3CNgeZsMLsXiC18Y3htWHR0Tkq4=%26xsec_source=pc_feed
+# http://xhslink.com/a/4M913hr1KUaY
 def get_xhs_info(note_id: str):
     cache_key = f"xhs_info:{note_id}"
     info: XhsInfo = get_cache(cache_key)

@@ -74,3 +74,21 @@ def get_valid_url(urls: list[str]):
         resp = requests.get(url)
         if resp.status_code == 200:
             return url
+
+
+def get_final_redirect_url(url:str):
+    """
+    获取重定向之后的链接
+    """
+    try:
+        response = requests.get(
+            url,
+            headers={
+                "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
+            },
+            allow_redirects=True,
+        )
+        return response.url
+    except Exception as e:
+        current_app.logger.error(f"Error fetching final redirect URL({url=}): {e}")
+        return None
