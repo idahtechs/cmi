@@ -18,7 +18,7 @@
 
       <view class="cmi-form-item required">
         <view class="cmi-form-label">视频链接</view>
-        <input class="cmi-input" v-model="form.url" placeholder="请输入想要提取文案的视频链接" />
+        <input class="cmi-input" v-model="form.url" :maxlength="-1" placeholder="请输入想要提取文案的视频链接" />
       </view>
 
       <view class="cmi-form-actions">
