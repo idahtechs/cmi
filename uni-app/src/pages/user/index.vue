@@ -4,7 +4,16 @@
       <image src="/static/images/bg-user-index.png" class="absolute left-0 top-0 w-full" mode="widthFix" />
       <view class="relative z-1 flex gap-8" @click="onUserCardClick">
         <image class="user-avatar" :src="userInfo && userInfo.avatar || '/static/images/f.png'"></image>
-        <view class="fs-15 font-bold mt-8">{{isLogin ? userInfo.nickname : '请点击登录'}}</view>
+        <view>
+          <view class="fs-15 font-bold mb-12">{{isLogin ? userInfo.nickname : '请点击登录'}}</view>
+          <view class="flex flex-column align-items-start ml-6" v-if="isLogin">
+            可用积分
+            <navigator class="fs-20 font-bold cursor-pointer" url="/pages/users/user_integral_records/index">
+              {{userIntegralInfo.integral || 0}}
+              <text class="iconfont icon-jiantou ml-4"></text>
+            </navigator>
+          </view>
+        </view>
       </view>
     </view>
 
@@ -38,9 +47,10 @@ export default {
 
   computed: {
     ...mapGetters(['isLogin', 'userInfo']),
-    userMenus({ isLogin, userIntegralInfo }) {
+    userMenus() {
       return [
-        { text: '我的积分', url: '', postfix: isLogin ? `${userIntegralInfo.integral || 0}分` : '' },
+        { text: '购买积分', url: '/pages/users/user_integral_recharge/index', postfix: '' },
+        { text: '分享好友', url: '', postfix: '' },
         { text: '我的创作记录', url: '/pages/ai/records/index', postfix: '' },
         { text: '联系客服', url: '/pages/customer_service_qrcode/index', postfix: '' },
         { text: '设置', url: '/pages/users/user_info/index', postfix: '' },
