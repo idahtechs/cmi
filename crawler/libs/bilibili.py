@@ -7,8 +7,16 @@ from models.bilibili import BilibiliInfo
 
 
 # 【《狐妖小红娘月红篇》？我从来没见过这么颠覆性的改编！】 https://www.bilibili.com/video/BV19T421i7rg/?share_source=copy_web
+# 【当不喜欢狗狗的超市老板，被一只遗弃小狗赖上后～-哔哩哔哩】 https://b23.tv/2pEZr7Q
 def get_bilibili_bvid_from_url(url: str):
     # 如果是短链接，获取重定向后的链接
+    short_url_match = re.search(r"https?://b23.tv/[a-zA-Z0-9]+", url)
+    if short_url_match:
+        url = utils.get_final_redirect_url(short_url_match.group(0))
+        if not url:
+            return None
+
+    # 从最终链接中提取 BV
     match = re.search(r"bilibili.com/video/([a-zA-Z0-9]+)", url)
     if match:
         return match.group(1)
