@@ -59,7 +59,7 @@ class Tools extends BaseController
 
     public function scriptInitiation(ScriptInitiationValidate $validate)
     {
-        $data = $this->request->params(['original', 'prompt', 'extract_copy_id']);
+        $data = $this->request->params(['original', 'prompt', 'extract_copy_id', 'type']);
 
         if (empty($data['extract_copy_id'])) {
             $data['extract_copy_id'] = 0;
