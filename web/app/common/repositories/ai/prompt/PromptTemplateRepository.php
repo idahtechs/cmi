@@ -78,4 +78,12 @@ class PromptTemplateRepository extends BaseRepository
 
         return compact('count', 'list');
     }
+
+    public function count($where) {
+        return $this->dao->search($where)->count();
+    }
+
+    public function userCustomLimit($isSVip) {
+        return intval(systemConfig($isSVip ? 'svip_prompt_template_limit' : 'prompt_template_limit'));
+    }
 }

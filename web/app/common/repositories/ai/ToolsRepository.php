@@ -41,6 +41,9 @@ class ToolsRepository extends BaseRepository
         if ($user->is_svip == 3) {
             $expires = date('Y-m-d H:i:s', strtotime("+100 year"));
         }
+
+        // TODO: 暂不验证过期时间
+        $expires = date('Y-m-d H:i:s', strtotime("+100 year"));
   
         $now = date('Y-m-d H:i:s');
 

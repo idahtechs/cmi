@@ -39,6 +39,15 @@ class PromptTemplate extends BaseController
         if (!$data['title']) $data['title'] = uniqid('模板_');
         $validate->check($data);
         $data['uid'] = $uid;
+
+        $count = $this->repository->count(['uid' => $this->uid, 'is_del' => 0]);
+
+        $limit = $this->repository->userCustomLimit($this->user->is_svip);
+
+        if ($count >= $limit && $limit > 0) {
+            return app('json')->fail('模板数量已达上限');
+        }
+
         $res = $this->repository->create($data);
 
         return app('json')->success($res);
