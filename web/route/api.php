@@ -198,6 +198,13 @@ Route::group('api/', function () {
 
             Route::get('member/info', 'User/memberInfo');
             Route::get('member/log', 'Member/getMemberValue');
+
+            //提示词模板
+            Route::post('prompt/template/create', 'PromptTemplate/create');
+            Route::delete('prompt/template/delete/:id', 'PromptTemplate/delete');
+            Route::post('prompt/template/update/:id', 'PromptTemplate/update');
+            Route::get('prompt/template/lst', 'PromptTemplate/lst');
+            Route::get('prompt/template/:id', 'PromptTemplate/detail');
         })->prefix('api.user.');
 
         //购物车
