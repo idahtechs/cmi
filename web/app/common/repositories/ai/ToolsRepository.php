@@ -9,15 +9,16 @@ use think\facade\Log;
 
 class ToolsRepository extends BaseRepository
 {
-    public $timeout;
-    public $extractContent;
+    protected $timeout;
+    protected $minuteLimit;
 
     public function __construct()
     {
         $this->timeout = 60 * 5;
+        $this->minuteLimit = 4;
     }
 
-    public function getIntegralRequire($url, $platform, $apiConfig = [])
+    public function getIntegralRequire($url, $apiConfig = [])
     {
         if (!$apiConfig['to_text']['unit_time']) {
             return $apiConfig['to_text']['integral'];
@@ -79,8 +80,8 @@ class ToolsRepository extends BaseRepository
             throw new ValidateException('请填写正确的链接后重试！');
         }
         
-        if ($result['duration'] > 10 * 60 * 1000) {
-            throw new ValidateException('视频时长不允许超过10分钟！');
+        if ($result['duration'] > $this->minuteLimit * 60 * 1000) {
+            throw new ValidateException("不支持长视频，时长不能超过" . $this->minuteLimit . "分钟！");
         }
 
         return $result;

@@ -54,7 +54,7 @@ class ExtractCopyRepository extends BaseRepository
             'to_text' => $this->getAPIConfig('to_text', $data['platform']),
         ];
 
-        $integral = $toolsRepository->getIntegralRequire($data['url'], $data['platform'], $apiConfig);
+        $integral = $toolsRepository->getIntegralRequire($data['url'], $apiConfig);
         $remain = $toolsRepository->getRemain($user, $integral);
         
         $data['integral'] = $integral;
