@@ -32,7 +32,7 @@ class ScriptInitiationDao extends BaseDao
         )->order(
             $alias . '.last_update_time DESC'
         )->field(
-            $this->getPk() . ' as id, ' . $alias . '.original as content, ' . $alias . '.prompt as prompt, EC.platform as source, ' . $alias . '.last_update_time as updateTime'
+            $this->getPk() . ' as id, ' . $alias . '.type as type, ' . $alias . '.original as content, ' . $alias . '.prompt as prompt, EC.platform as source, ' . $alias . '.last_update_time as updateTime'
         );
     }
 

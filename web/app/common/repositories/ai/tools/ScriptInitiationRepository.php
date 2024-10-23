@@ -115,6 +115,7 @@ class ScriptInitiationRepository extends BaseRepository
         if($exists) {
             return [
                 'id' => $exists[$this->dao->getPk()],
+                'type' => $exists['type'],
                 'content' => $exists['original'],
                 'prompt' => $exists['prompt'],
                 'updateTime' => $exists['last_update_time'],
