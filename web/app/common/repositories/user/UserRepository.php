@@ -544,9 +544,10 @@ class UserRepository extends BaseRepository
         }
 
         $userInfo = $this->setRegisterGiveSvip($userInfo);
+        $userInfo = $this->setRegisterGiveIntegral($userInfo);
         $userInfo = $this->setPromoter($userInfo);
         
-        Db::transaction(function () use ($userInfo) {
+        return Db::transaction(function () use ($userInfo) {
             $user = $this->dao->create($userInfo);
 
             if(isset($userInfo['integral']) && $userInfo['integral'] > 0) {
@@ -556,13 +557,15 @@ class UserRepository extends BaseRepository
                     'bill_type' => 'register',
                 ]);
             }
+
+            try {
+                Queue::push(SendNewPeopleCouponJob::class, $user->uid);
+            } catch (\Exception $e) {
+            }
+            $user->isNew = true;
+
+            return $user;
         });
-        try {
-            Queue::push(SendNewPeopleCouponJob::class, $user->uid);
-        } catch (\Exception $e) {
-        }
-        $user->isNew = true;
-        return $user;
     }
 
     /**
@@ -1557,40 +1560,55 @@ class UserRepository extends BaseRepository
             ] + $append_info;
     }
 
+    
+    /**
+     *  设置注册赠送永久会员
+     *  @param array $userInfo
+     *  @return array
+     */
     public function setRegisterGiveSvip($userInfo)
     {
         $registerGiveSvipId = systemConfig('register_give_svip');
 
-        if ($registerGiveSvipId) {
-            $groupDataRepository = app()->make(GroupDataRepository::class);
-            $svipPay = $groupDataRepository->groupData('svip_pay', 0);
+        if (empty($registerGiveSvipId)) return $userInfo;
 
-            if ($svipPay) {
-                $registerGiveSvip = array_filter($svipPay, function ($value) use ($registerGiveSvipId) {
-                    return $value['group_data_id'] == $registerGiveSvipId;
-                });
-                
-                if (count($registerGiveSvip)) {
-                    $registerGiveSvip = $registerGiveSvip[array_key_first($registerGiveSvip)];
-                    
-                    if (isset($registerGiveSvip['integral'])) {
-                        $userInfo['integral'] = $registerGiveSvip['integral'];
-                    }
-                    
-                    if (isset($registerGiveSvip['svip_type'])) {
-                        $userInfo['is_svip'] = $registerGiveSvip['svip_type'];
-                        $day = $registerGiveSvip['svip_type'] == 3 ? 0 : $registerGiveSvip['svip_number'];
-                        $endtime = date('Y-m-d H:i:s',time());
-                        $svip_endtime =  date('Y-m-d H:i:s',strtotime("$endtime  +$day day" ));
-                        $userInfo['svip_endtime'] = $svip_endtime;
-                    }
-                }
+        $groupDataRepository = app()->make(GroupDataRepository::class);
+        $svipPay = $groupDataRepository->groupData('svip_pay', 0);
+
+        if (empty($svipPay)) return $userInfo;
+
+        $registerGiveSvip = array_filter($svipPay, function ($value) use ($registerGiveSvipId) {
+            return $value['group_data_id'] == $registerGiveSvipId;
+        });
+
+        if (count($registerGiveSvip) == 0) return $userInfo;
+        
+        $registerGiveSvip = $registerGiveSvip[array_key_first($registerGiveSvip)];
+        
+        if (isset($registerGiveSvip['integral'])) {
+            if (isset($userInfo['integral'])) {
+                $userInfo['integral'] += $registerGiveSvip['integral'];
+            } else {
+                $userInfo['integral'] = $registerGiveSvip['integral'];
             }
+        }
+        
+        if (isset($registerGiveSvip['svip_type'])) {
+            $userInfo['is_svip'] = $registerGiveSvip['svip_type'];
+            $day = $registerGiveSvip['svip_type'] == 3 ? 0 : $registerGiveSvip['svip_number'];
+            $endtime = date('Y-m-d H:i:s',time());
+            $svip_endtime =  date('Y-m-d H:i:s',strtotime("$endtime  +$day day" ));
+            $userInfo['svip_endtime'] = $svip_endtime;
         }
 
         return $userInfo;
     }
 
+    /**
+     * 设置注册成为推广人
+     * @param mixed $userInfo
+     * @return mixed
+     */
     public function setPromoter($userInfo)
     {
         $registerBePromoter = systemConfig('register_be_promoter');
@@ -1598,6 +1616,26 @@ class UserRepository extends BaseRepository
         if ($registerBePromoter) {
             $userInfo['is_promoter'] = 1;
             $userInfo['promoter_time'] = date('Y-m-d H:i:s');
+        }
+
+        return $userInfo;
+    }
+
+    /**
+     * 设置注册赠送积分
+     * @param mixed $userInfo
+     * @return mixed
+     */
+    public function setRegisterGiveIntegral($userInfo)
+    {
+        $integral = systemConfig('register_give_integral');
+
+        if ($integral) {
+            if (isset($userInfo['integral'])) {
+                $userInfo['integral'] += $integral;
+            } else {
+                $userInfo['integral'] = $integral;
+            }
         }
 
         return $userInfo;
