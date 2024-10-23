@@ -12,7 +12,7 @@
         <view class="entry-info">
           <view class="fs-16 font-bold">{{ entry.title }}</view>
           <view class="fs-16">{{ entry.desc }}</view>
-          <button class="cmi-btn cmi-btn-small entry-btn" type="primary" @click="goTo(entry)">{{ entry.buttonText }}</button>
+          <button class="cmi-btn cmi-btn-sm entry-btn" type="primary" @click="goTo(entry)">{{ entry.buttonText }}</button>
         </view>
       </view>
     </view>

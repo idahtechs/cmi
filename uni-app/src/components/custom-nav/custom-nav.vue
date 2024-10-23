@@ -26,20 +26,14 @@
 
 <script>
 export default {
-  props: [
-		'showTitle',
-		'iconColor',
-		'textColor',
-		'bgColor',
-		'hideBackBtn',
-		'hideHomeBtn',
-		'fixed',
-	],
-
 	props: {
 		showTitle: {
 			type: Boolean,
 			default: true
+		},
+		title: {
+			type: String,
+			default: ''
 		},
 		iconColor: {
 			type: String,
@@ -115,6 +109,10 @@ export default {
 		},
 
 		navTitle({ currentRoute }) {
+			if (this.title) {
+				return this.title
+			}
+
 			const pageMap = this.$util.getPageMap()
 			return currentRoute ? pageMap[`/${currentRoute}`]?.style?.navigationBarTitleText : ''
 		}

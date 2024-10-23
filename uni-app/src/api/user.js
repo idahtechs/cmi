@@ -714,3 +714,28 @@ export function getlevelInfo() {
 export function getRandCode() {
 	return request.get(`user/rand_code`)
 }
+
+// 获取用户自定义提示词模板列表
+export const getUserPromptTemplates = (data) => {
+  return request.get('user/prompt/template/lst', data)
+}
+
+// 获取用户自定义提示词模板
+export const getUserPromptTemplate = (id) => {
+  return request.get('user/prompt/template/' + id)
+}
+
+// 创建自定义提示词模板
+export const createUserPromptTemplate = (data) => {
+	return request.post('user/prompt/template/create', data)
+}
+
+// 编辑自定义提示词模板
+export const updateUserPromptTemplate = (id, data) => {
+	return request.post('user/prompt/template/update/' + id, data)
+}
+
+// 删除自定义提示词模板
+export const deleteUserPromptTemplate = (id) => {
+	return request.delete('user/prompt/template/delete/' + id)
+}
