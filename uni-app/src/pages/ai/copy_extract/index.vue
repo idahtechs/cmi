@@ -7,18 +7,18 @@
     <view class="cmi-form">
       <view class="cmi-form-item required">
         <view class="cmi-form-label relative">
-          选择视频平台
+          选择平台
           <view class="cmi-link absolute right-0" @click="handleManualInput">
             <image src="/static/icons/swap-horizontal.svg" class="w-24 h-24 align-middle" />
-            使用文案脚本
+            使用文案
           </view>
         </view>
-        <c-picker :options="platforms" v-model="form.platform" placeholder="请选择视频链接所属平台" popup-title="选择视频链接平台" />
+        <c-picker :options="platforms" v-model="form.platform" placeholder="请选择链接所属平台" popup-title="选择链接所属平台"/>
       </view>
 
       <view class="cmi-form-item required">
-        <view class="cmi-form-label">视频链接</view>
-        <input class="cmi-input" v-model="form.url" :maxlength="-1" placeholder="请输入想要提取文案的视频链接" />
+        <view class="cmi-form-label">链接</view>
+        <input class="cmi-input" v-model="form.url" :maxlength="-1" placeholder="请输入想要提取文案的链接" />
       </view>
 
       <view class="cmi-form-actions">
@@ -70,13 +70,13 @@ export default {
 
   onShareAppMessage() {
     return {
-      title: '创作鬼才'
+      title: '文案变种'
     }
   },
 
   methods: {
     handleManualInput() {
-      uni.redirectTo({ url: '/pages/ai/video_script_generate/index' })
+      uni.redirectTo({ url: '/pages/ai/copy_generate/index' })
     },
 
     handleSubmit() {
@@ -86,9 +86,9 @@ export default {
         url: this.$util.extractURL(this.form.url)
       }
       extractContent(data).then(res => {
-        const extractStorageKey = `video_script_extract_${res.data.id}`
+        const extractStorageKey = `copy_extract_${res.data.id}`
         uni.setStorageSync(extractStorageKey, res.data)
-        uni.redirectTo({ url: `/pages/ai/video_script_generate/index?extractStorageKey=${extractStorageKey}` })
+        uni.redirectTo({ url: `/pages/ai/copy_generate/index?extractStorageKey=${extractStorageKey}` })
         uni.hideLoading()
       }).catch(err => {
         uni.showToast({ title: err, icon: 'none' })
@@ -97,7 +97,7 @@ export default {
 
     loadData() {
       getConfigGroupWithCache('content_extraction_platforms').then(res => {
-        this.platforms = res.data.filter(item => item.type === 'video_script')
+        this.platforms = res.data.filter(item => item.type === 'copy')
       })
     }
   }

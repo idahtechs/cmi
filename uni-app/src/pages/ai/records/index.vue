@@ -9,10 +9,10 @@
 </template>
 
 <script>
-import { getVideoScriptList, deleteVideoScript } from '@/api/ai'
+import { getContentList, deleteContent } from '@/api/ai'
 import RecordItem from './components/RecordItem.vue'
 import createGlobalEventHandlersMixin from '@/mixins/createGlobalEventHandlersMixin'
-import createPagingRecordsMixin from '../../../mixins/createPagingRecordsMixin';
+import createPagingRecordsMixin from '../../../mixins/createPagingRecordsMixin'
 
 export default {
   mixins: [
@@ -21,8 +21,8 @@ export default {
     }),
     createPagingRecordsMixin({
       resourceName: 'ai',
-      pagingFetcher: getVideoScriptList,
-      pageSize: 5
+      pagingFetcher: getContentList,
+      pageSize: 10
     })
   ],
 
@@ -30,8 +30,15 @@ export default {
 
   methods: {
     handleClick(record) {
+      const detailPageMapping = {
+        video_script: '/pages/ai/video_script_generate/index',
+        copy: '/pages/ai/copy_generate/index'
+      }
+
+      const pagePath = detailPageMapping[record.type] || detailPageMapping.copy
+
       uni.navigateTo({
-        url: `/pages/ai/video_script_generate/index?id=${record.id}`
+        url: `${pagePath}?id=${record.id}`
       })
     },
 
@@ -42,7 +49,7 @@ export default {
         confirmText: '是',
         success: (res) => {
           if (res.confirm) {
-            deleteVideoScript(record.id).then(() => {
+            deleteContent(record.id).then(() => {
               this.records = this.records.filter(item => item.id !== record.id)
               uni.showToast({
                 title: '已成功删除',

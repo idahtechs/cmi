@@ -9,15 +9,15 @@
       <view class="cmi-form" :style="loaded ? 'visibility: visible' : 'visibility: hidden'">
         <view class="cmi-form-item">
           <view class="cmi-form-label relative">
-            脚本内容
+            文案内容
             <view class="cmi-link absolute right-0" @click="handleVideoExtractSwitch" v-if="isNewRecord && !extractRecord">
               <image src="/static/icons/swap-horizontal.svg" class="w-24 h-24 align-middle"/>
-              提取视频脚本
+              提取文案
             </view>
           </view>
   
           <more-or-less :threshold="32" :trigger-value="record.content" more-text="展开并编辑" :disabled="isNewRecord && !extractRecord" class="block bg-white br-16">
-            <textarea class="cmi-input" placeholder="请输入脚本内容" v-model="record.content" :maxlength="-1" auto-height style="min-height: 380rpx;" />
+            <textarea class="cmi-input" placeholder="请输入文案内容" v-model="record.content" :maxlength="-1" auto-height style="min-height: 380rpx;" />
           </more-or-less>
         </view>
   
@@ -34,14 +34,14 @@
         </view>
   
         <view class="pb-36">
-          <button class="cmi-btn" type="primary" @click="handleGenerate" :disabled="generateButtonDisabled">{{ isNewRecord ? '生成脚本' : '重新生成' }}</button>
+          <button class="cmi-btn" type="primary" @click="handleGenerate" :disabled="generateButtonDisabled">{{ isNewRecord ? '生成文案' : '重新生成' }}</button>
         </view>
   
         <!-- 生成结果 -->
         <view class="flex flex-column gap-20" id="generated_versions">
           <view v-for="(result, index) in generatedVersions" :key="result.id" :class="(index === 0 && scrollIntoView) ? 'highlight-version' : ''">
             <view class="flex mb-8">
-              生成脚本
+              生成文案
               <text class="color-muted ml-4 fs-12">{{ result.createTime || '' }}</text>
               <text class="iconfont icon-shanchu1 ml-auto cmi-link fs-16" @click="handleDelete(result)"></text>
             </view>
@@ -192,7 +192,7 @@ export default {
 
     handleVideoExtractSwitch() {
       uni.redirectTo({
-        url: '/pages/ai/video_script_extract/index'
+        url: '/pages/ai/copy_extract/index'
       })
     },
 
@@ -204,10 +204,10 @@ export default {
     },
 
     async handleGenerate() {
-      uni.showLoading({ title: '正在生成脚本' })
+      uni.showLoading({ title: '正在生成文案' })
       const { content: original, prompt } = this.record
       const promise = this.isNewRecord 
-        ? generateContent({ original, prompt, extract_copy_id: this.extractRecord?.id, type: 'video_script' })
+        ? generateContent({ original, prompt, extract_copy_id: this.extractRecord?.id, type: 'copy' })
         : regenerateContent(this.id, { original, prompt })
       const [err, res] = await this.$util.ef(promise)
       uni.hideLoading()

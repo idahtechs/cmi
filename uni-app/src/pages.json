@@ -4,7 +4,8 @@
 			"path": "pages/index/index",
 			"style": {
 				"navigationBarTitleText": "首页",
-				"navigationStyle": "custom"
+				"navigationStyle": "custom",
+				"enablePullDownRefresh": true
 			}
 		},
 
@@ -28,6 +29,22 @@
 			"path": "pages/ai/video_script_generate/index",
 			"style": {
 				"navigationBarTitleText": "脚本创作",
+				"navigationStyle": "custom"
+			}
+		},
+
+		{
+			"path": "pages/ai/copy_extract/index",
+			"style": {
+				"navigationBarTitleText": "文案提取",
+				"navigationStyle": "custom"
+			}
+		},
+
+		{
+			"path": "pages/ai/copy_generate/index",
+			"style": {
+				"navigationBarTitleText": "文案创作",
 				"navigationStyle": "custom"
 			}
 		},

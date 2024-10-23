@@ -1,11 +1,11 @@
 <template>
   <view class="cmi-picker-container">
     <view @click="handleClick">
-      <input class="cmi-input" placeholder="请选择视频链接所属平台" :value="selectedItem ? selectedItem[labelKey] : ''" />
+      <input class="cmi-input" :placeholder="placeholder" :value="selectedItem ? selectedItem[labelKey] : ''" />
       <text class="cmi-picker-arrow iconfont icon-jiantou" />
     </view>
 
-    <c-popup-picker ref="popupPicker" title="选择视频链接平台" :columns="pickerColumns" :selected-indexes="selectedIndexes" :value-key="valueKey" :label-key="labelKey" v-if="pickerColumns" />
+    <c-popup-picker ref="popupPicker" :title="popupTitle" :columns="pickerColumns" :selected-indexes="selectedIndexes" :value-key="valueKey" :label-key="labelKey" v-if="pickerColumns" />
   </view>
 </template>
 
@@ -32,6 +32,14 @@
       valueKey: {
         type: String,
         default: 'value'
+      },
+      placeholder: {
+        type: String,
+        default: '请选择'
+      },
+      popupTitle: {
+        type: String,
+        default: '请选择'
       }
     },
 
