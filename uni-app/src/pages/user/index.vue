@@ -52,6 +52,7 @@ export default {
         { text: '购买积分', url: '/pages/users/user_integral_recharge/index', postfix: '' },
         { text: '分享好友', url: '', postfix: '' },
         { text: '我的创作记录', url: '/pages/ai/records/index', postfix: '' },
+        { text: '自定义提示词模版', url: '/pages/ai/user_prompt_templates/index', postfix: '' },
         { text: '联系客服', url: '/pages/customer_service_qrcode/index', postfix: '' },
         { text: '设置', url: '/pages/users/user_info/index', postfix: '' },
       ]

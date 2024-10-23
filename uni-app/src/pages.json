@@ -41,6 +41,22 @@
 		},
 
 		{
+			"path": "pages/ai/user_prompt_templates/index",
+			"style": {
+				"navigationBarTitleText": "自定义提示词模版",
+				"navigationStyle": "custom"
+			}
+		},
+
+		{
+			"path": "pages/ai/user_prompt_templates/edit",
+			"style": {
+				"navigationBarTitleText": "编辑模版",
+				"navigationStyle": "custom"
+			}
+		},
+
+		{
 			"path": "pages/user/index",
 			"style": {
 				"enablePullDownRefresh": true,

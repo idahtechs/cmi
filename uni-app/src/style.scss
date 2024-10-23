@@ -64,6 +64,10 @@
 	flex-direction: column-reverse;
 }
 
+.flex-wrap {
+	flex-wrap: wrap;
+}
+
 .align-items-start {
 	align-items: flex-start;
 }
@@ -429,7 +433,7 @@ $font-sizes: 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28,
 	text-overflow: ellipsis;
 	box-sizing: border-box;
 
-	&.cmi-btn-small {
+	&.cmi-btn-sm {
 		padding: 12rpx 20rpx;
 	}
 
@@ -459,6 +463,30 @@ $font-sizes: 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28,
 			background-color: #fff;
 			color: var(--view-theme);
 			border-color: var(--view-theme);
+			padding: 18rpx 30rpx;
+		}
+	}
+
+	&[type="warn"], &.cmi-btn-warn {
+		color: white;
+		background-color: $uni-color-error;
+
+		&:active, &:hover {
+			background-color: $uni-color-error;
+		}
+
+		&[disabled], &.disabled {
+			background-color: $uni-color-error;
+
+			&::after {
+				background-color: rgba(255, 255, 255, 0.4);
+			}
+		}
+
+		&[plain], &.plain {
+			background-color: #fff;
+			color: $uni-color-error;
+			border-color: $uni-color-error;
 			padding: 18rpx 30rpx;
 		}
 	}
@@ -556,6 +584,40 @@ $font-sizes: 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28,
 	color: var(--view-theme, $theme-color);
 	background-color: inherit;
 	vertical-align: text-bottom;
+}
+
+
+.text-ellipsis {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+$lines: 2, 3, 4, 5, 6, 7, 8, 9, 10;
+@each $line in $lines {
+	.text-ellipsis-#{$line} {
+		display: -webkit-box;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: $line;
+		overflow: hidden;
+	}
+}
+
+// animation
+@keyframes ani-fade-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.75);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.ani-fade-in {
+	animation: ani-fade-in 0.3s;
 }
 
 .font-bg-red,.font_bg-red{
