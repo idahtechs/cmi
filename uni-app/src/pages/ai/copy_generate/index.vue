@@ -12,7 +12,7 @@
             文案内容
             <view class="cmi-link absolute right-0" @click="handleVideoExtractSwitch" v-if="isNewRecord && !extractRecord">
               <image src="/static/icons/swap-horizontal.svg" class="w-24 h-24 align-middle"/>
-              提取文案
+              使用链接
             </view>
           </view>
   
