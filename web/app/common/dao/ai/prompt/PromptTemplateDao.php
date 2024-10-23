@@ -40,6 +40,6 @@ class PromptTemplateDao extends BaseDao
         })->when(isset($where['status']) && $where['status']!== '', function ($query) use ($where) {
             $query->where('status', $where['status']);
         })
-        ->order('sort ASC create_time DESC');
+        ->order('sort ASC, create_time DESC');
     }
 }
