@@ -25,8 +25,8 @@ export default {
     return {
       entries: [
         {
-          title: '变种鬼才',
-          desc: '脚本生成',
+          title: '视频变种',
+          desc: '创意内容生成',
           cover: '/static/images/cover-bzgc.png',
           url: '/pages/ai/video_script_extract/index',
           buttonText: '开始写作'
