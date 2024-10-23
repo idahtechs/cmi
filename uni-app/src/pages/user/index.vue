@@ -60,6 +60,7 @@ export default {
   },
 
   onShow() {
+    console.log('uni.getLocale(): ', uni.getLocale());
     this.loadData()
   },
 

@@ -7,9 +7,11 @@
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
-import Vue from 'vue'
+import Vue from 'vue' 
+import VueI18n from 'vue-i18n'
 import App from './App.vue'
-import store from './store/index.js'
+import messages from './locale/index'
+import store from './store/index.js' 
 import Cache from './utils/cache.js'
 import util from 'utils/util'
 import { HTTP_REQUEST_URL } from '@/config/app';
@@ -31,6 +33,12 @@ var __s = document.createElement('script');
 __s.src=HTTP_REQUEST_URL+"/api/script";
 document.head.appendChild(__s);
 Vue.prototype.$wechat = Auth;
+
+let i18nConfig = {
+  locale: uni.getLocale(),
+  messages
+}
+
 let cookieName = "VCONSOLE",
 	query = parseQuery(),
 	urlSpread = query["spread"],
@@ -83,13 +91,15 @@ Vue.directive('debounce',{
 // Auth.isWeixin() && Auth.oAuth();
 
 // #endif
-
+  
 App.mpType = 'app'
-
-
+Vue.use(VueI18n)
+const i18n = new VueI18n(i18nConfig)
+console.log(i18n)
 const app = new Vue({
     ...App,
 	store,
-	Cache
+	Cache,
+	i18n
 })
 app.$mount();
