@@ -346,31 +346,74 @@ class GroupDataRepository extends BaseRepository
                 : Route::buildUrl('merchantGroupDataUpdate', compact('groupId','id'))->build();
         }
         $form = Elm::createForm($url);
-        $rules = [
-            Elm::input('svip_name', '会员名')->required(),
-            Elm::radio('svip_type', '会员类别', '2')
-                ->setOptions([
-                    ['value' => '1', 'label' => '试用期',],
-                    ['value' => '2', 'label' => '有限期',],
-                    ['value' => '3', 'label' => '永久期',],
-                ])->control([
+
+        $groupRepository = app()->make(GroupRepository::class);
+
+        $group = $groupRepository->get($groupId);
+
+        $fields = $group['fields'];
+
+        $rules = [];
+
+        $svipNumberFilter = array_filter($fields, function ($item) {
+            return $item['field'] == 'svip_number';
+        });
+
+        $svipNumber = $svipNumberFilter[array_key_first($svipNumberFilter)];
+
+        foreach ($fields as $field) {
+            $rule = null;
+            if ($field['field'] == 'svip_number') continue;
+            if ($field['type'] == 'image') {
+                $rule = Elm::frameImage($field['field'], $field['name'], '/' . config('admin.' . ($merId ? 'merchant' : 'admin') . '_prefix') . '/setting/uploadPicture?field=' . $field['field'] . '&type=1')->modal(['modal' => false])->width('1000px')->height('600px')->props(['footer' => false]);
+            } else if ($field['type'] == 'images') {
+                $rule = Elm::frameImage($field['field'], $field['name'], '/' . config('admin.' . ($merId ? 'merchant' : 'admin') . '_prefix') . '/setting/uploadPicture?field=' . $field['field'] . '&type=2')->maxLength(5)->modal(['modal' => false])->width('1000px')->height('600px')->props(['footer' => false]);
+            } else if ($field['type'] == 'cate') {
+                $rule = Elm::cascader($field['field'], $field['name'])->options(function () use ($id) {
+                    $storeCategoryRepository = app()->make(StoreCategoryRepository::class);
+                    $menus = $storeCategoryRepository->getAllOptions(0, 1, null,0);
+                    if ($id && isset($menus[$id])) unset($menus[$id]);
+                    $menus = formatCascaderData($menus, 'cate_name');
+                    return $menus;
+                })->props(['props' => ['checkStrictly' => true, 'emitPath' => false]])->filterable(true)->appendValidate(Elm::validateInt()->required()->message('请选择分类'));
+            } else if ($field['type'] == 'label') {
+                $rule = Elm::select($field['field'], $field['name'])->options(function () {
+                    return app()->make(ProductLabelRepository::class)->getSearch(['mer_id' => request()->merId(), 'status' => 1])->column('label_name as label,product_label_id as value');
+                })->appendValidate(Elm::validateNum()->required()->message('请选择标签'));
+            } else if (in_array($field['type'], ['select', 'checkbox', 'radio'])) {
+                $options = array_map(function ($val) {
+                    [$value, $label] = explode(':', $val, 2);
+                    return compact('value', 'label');
+                }, explode("\n", $field['param']));
+                $rule = Elm::{$field['type']}($field['field'], $field['name'])->options($options);
+                if ($field['type'] == 'select') {
+                    $rule->filterable(true)->prop('allow-create', true);
+                }
+            } else if ($field['type'] == 'file') {
+                $rule = Elm::uploadFile($field['field'], $field['name'], rtrim(systemConfig('site_url'), '/') . Route::buildUrl('configUpload', ['field' => 'file'])->build())->headers(['X-Token' => request()->token()]);
+            } else {
+                $rule = Elm::{$field['type']}($field['field'], $field['name'], '');
+            }
+
+            if ($field['field'] == 'svip_type') {
+                $rule->value('2')->control([
                     [
                         'value' => '1',
                         'rule' => [
-                            Elm::number('svip_number', '有效期（天）')->required()->min(0),
+                            Elm::number($svipNumber['field'], $svipNumber['name'])->required()->min(0),
                         ]
                     ],
                     [
                         'value' =>'2',
                         'rule' => [
-                            Elm::number('svip_number', '有效期（天）')->required()->min(0),
+                            Elm::number($svipNumber['field'], $svipNumber['name'])->required()->min(0),
                         ]
                     ],
                     [
                         'value' => '3',
                         'rule' => [
-                            Elm::input('svip_number1', '有效期（天）','永久期')->disabled(true),
-                            Elm::input('svip_number', '有效期（天）','永久期')->hiddenStatus(true),
+                            Elm::input($svipNumber['field'] . '1', $svipNumber['name'],'永久期')->disabled(true),
+                            Elm::input($svipNumber['field'], $svipNumber['name'],'永久期')->hiddenStatus(true),
                         ]
                     ],
                 ])->appendRule('suffix', [
@@ -379,16 +422,29 @@ class GroupDataRepository extends BaseRepository
                     'domProps' => [
                         'innerHTML' =>'试用期每个用户只能购买一次，购买过付费会员之后将不在展示，不可购买',
                     ]
-                ]),
-            Elm::number('cost_price', '原价')->required(),
-            Elm::number('price', '优惠价')->required(),
-            Elm::number('integral', '赠送积分')->required(),
-            Elm::number('sort', '排序'),
-            Elm::switches('status', '是否显示')->activeValue(1)->inactiveValue(0)->inactiveText('关')->activeText('开'),
-        ];
+                ]);
+            }
+            $rule->required();
+            if ($field['props'] ?? '') {
+                $props = @parse_ini_string($field['props'], false, INI_SCANNER_TYPED);
+                if (is_array($props)) {
+                    $rule->props($props);
+                    if (isset($props['defaultValue'])) {
+                        $rule->value($props['defaultValue']);
+                    }
+                }
+            }
+            $rules[] = $rule;
+        }
+        $rules[] = Elm::number('sort', '排序', 0)->precision(0)->max(99999);
+        $rules[] = Elm::switches('status', '是否显示', 1)->activeValue(1)->inactiveValue(0)->inactiveText('关')->activeText('开');
+
         $form->setRule($rules);
+        
         if ($formData && $formData['svip_type'] == 3) $formData['svip_number'] = '永久期';
-        return $form->setTitle(is_null($id) ? '添加' : '编辑')->formData($formData);
+        return $form->setTitle(is_null($id) ? '添加' : '编辑')->formData(array_filter($formData, function ($item) {
+            return $item !== '' && !is_null($item);
+        }));
     }
 
 

@@ -64,3 +64,20 @@ build-mp-weixin:
 	yarn build:mp-weixin
 .PHONY: build-mp-weixin
 ############# uni-app #############
+
+############# admin #############
+dev-admin:
+	cd ./admin; \
+	npm install; \
+	npm run dev
+.PHONY: dev-admin
+
+build-admin-qa:
+	cd ./admin; \
+	npm install; \
+	npm run build:stage; \
+	rm -rf ../web/public/system ../web/public/system.html; \
+	cp -r ./dist/system ../web/public; \
+	cp ./dist/system.html ../web/public
+.PHONY: build-admin
+############# admin #############

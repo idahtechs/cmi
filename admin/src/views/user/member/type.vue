@@ -11,11 +11,13 @@
         size="small"
       >
         <el-table-column prop="group_data_id" label="ID" min-width="60" />
+        <el-table-column prop="type_label" label="套餐类型" min-width="60" />
         <el-table-column prop="svip_name" label="会员名" min-width="60" />
         <el-table-column prop="svip_number" label="有效期(天)" min-width="60" />
         <el-table-column prop="cost_price" label="原价" min-width="60" />
         <el-table-column prop="price" label="优惠价" min-width="60" />
-        <el-table-column prop="integral" label="赠送积分" min-width="60" />
+        <el-table-column prop="integral" label="积分" min-width="60" />
+        <el-table-column prop="rebate" label="返佣积分" min-width="60" />
         <el-table-column prop="sort" label="排序" min-width="60" />
         <el-table-column prop="status" label="是否开启" min-width="100">
           <template slot-scope="scope">
@@ -92,6 +94,22 @@ export default {
       this.listLoading = true;
       this.tableFrom.page = num ? num : this.tableFrom.page;
       levelListApi(this.tableFrom)
+        .then((res) => {
+          res.data.list.forEach((item) => {
+            switch (item.category) {
+              case 'svip':
+                item.type_label = '会员套餐';
+                break;
+              case 'integral':
+                item.type_label = '积分套餐';
+                break;
+              default:
+                item.type_label = item.category;
+            }
+          })
+
+          return res;
+        })
         .then((res) => {
           this.tableData.data = res.data.list;
           this.tableData.total = res.data.count;  
