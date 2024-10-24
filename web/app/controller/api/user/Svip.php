@@ -194,6 +194,12 @@ class Svip extends BaseController
 
     public function getTypeLstByIntegral(GroupRepository $groupRepository,GroupDataRepository  $groupDataRepository)
     {
+        $user = $this->request->userInfo();
+
+        if (!$user || $user->is_svip == -1) {
+            return app('json')->fail('请先成为专业版会员');
+        }
+
         $group_id = $groupRepository->getSearch(['group_key' => 'svip_pay'])->value('group_id');
         $where['group_id'] = $group_id;
         $where['status'] = 1;
