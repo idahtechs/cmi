@@ -56,6 +56,7 @@ class UserBillRepository extends BaseRepository
         'integral/timeout' => '积分过期',
         'integral/register' => '注册赠送积分',
         'integral/recharge' => '充值积分',
+        'integral/svip' => '会员赠送积分',
         'mer_integral/deduction' => '积分抵扣',
         'mer_integral/refund' => '订单退款',
         'mer_lock_money/order' => '商户佣金冻结',

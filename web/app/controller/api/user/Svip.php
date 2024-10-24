@@ -86,19 +86,26 @@ class Svip extends BaseController
         if (!$res) return  app('json')->fail('参数有误～');
 
         $svip = $res['value'];
-        $isBuyIntegral = isset($svip['integral']) && $svip['integral'] > 0;
+        $isBuyIntegral = isset($svip['category']) && $svip['category'] == 'integral';
         $svip3CanBuy = $svip['svip_type'] == 3 && $isBuyIntegral && $svip['price'] > 0;
         
         if ($this->request->userInfo()->is_svip == 3 && !$svip3CanBuy) {
-            $errMessage = '您已经是终身会员～';
-            if ($svip['price'] <= 0 || $isBuyIntegral) {
-                $errMessage = '请选择其他会员类型';
+            $errMessage = '';
+            if ($isBuyIntegral) {
+                $errMessage = '请选择其他积分套餐';
+            } else if ($svip['price'] <= 0) {
+                $errMessage = '请选择其他会员套餐';
+            } else {
+                $errMessage = '您已经是终身会员～';
             }
+
             return  app('json')->fail($errMessage);
         }
 
         if ($this->request->userInfo()->is_svip !== -1 && $svip['svip_type'] == 1)
-            return  app('json')->fail('请选择其他会员类型');
+            return  app('json')->fail('请选择其他会员套餐');
+        if ($this->request->userInfo()->is_svip == -1 && $isBuyIntegral) 
+            return  app('json')->fail('请先升级为专业版会员');
         $params['is_app'] = $this->request->isApp();
         return $userOrderRepository->add($res,$this->request->userInfo(),$params);
     }

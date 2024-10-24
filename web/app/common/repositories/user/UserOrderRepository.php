@@ -85,7 +85,7 @@ class UserOrderRepository extends BaseRepository
             'order_sn' => $order_sn,
             'pay_price' => $data['pay_price'],
             'attach' => 'user_order',
-            'body' => (isset($res['value']['integral']) && $res['value']['integral'] > 0) ? '积分充值' : '付费会员'
+            'body' => (isset($res['value']['category']) && $res['value']['category'] == 'integral') ? '积分充值' : '付费会员'
         ];
         $type = $params['pay_type'];
         if (in_array($type, ['weixin', 'alipay'], true) && $params['is_app']) {
@@ -154,27 +154,46 @@ class UserOrderRepository extends BaseRepository
         $info = json_decode($data['order_info']);
         $userRepository = app()->make(UserRepository::class);
         $user = $userRepository->get($ret['uid']);
-        $day = $info->svip_type == 3 ? 0 : $info->svip_number;
-        $endtime = ($user['svip_endtime'] && $user['is_svip'] != 0) ? $user['svip_endtime'] : date('Y-m-d H:i:s',time());
-        $svip_endtime =  date('Y-m-d H:i:s',strtotime("$endtime  +$day day" ));
+
+        if ($user->is_svip != 3) {
+            $day = $info->svip_type == 3 ? 0 : $info->svip_number;
+            $endtime = ($user['svip_endtime'] && $user['is_svip'] != 0) ? $user['svip_endtime'] : date('Y-m-d H:i:s',time());
+            $svip_endtime =  date('Y-m-d H:i:s',strtotime("$endtime  +$day day" ));
+        } else {
+            $svip_endtime = $user->svip_endtime;
+        }
 
         if ($info->integral && $info->integral > 0) {
             $user->integral = $user->integral + $info->integral;
+
+            $isBuyIntegral = $info->category == 'integral';
             $userRepository->changeIntegral($user->uid, $data['order_id'], 1, $info->integral, [
                 'title' => '充值',
-                'mark' => '用户购买积分后所获得的积分',
-                'bill_type' => 'recharge',
+                'mark' => '用户购买' . ($isBuyIntegral ? '积分' : '会员') . '后所获得的积分',
+                'bill_type' => $isBuyIntegral ? 'recharge' : 'svip',
             ]);
         }
 
-        $user->is_svip = $info->svip_type;
+        if ($info->rebate && $info->rebate > 0) {
+            $spreadUid = $user->spread_uid;
+            $spread = $userRepository->get($spreadUid);
+            if (!$spreadUid && $spreadUid != $user->uid && $spread && !$spread->cancel_time) {
+                $userRepository->changeIntegral($spreadUid, $data['order_id'], 1, $info->integral, [
+                    'title' => '好友充值',
+                    'mark' => '用户' . ($isBuyIntegral ? '充值积分' : '购买会员') . '后所获得的积分',
+                    'bill_type' => 'spread',
+                ]);
+            }
+        }
+
+        $user->is_svip = $user->is_svip == 3 ? $user->is_svip : $info->svip_type;
         $user->svip_endtime = $svip_endtime;
         $user->save();
         $ret->status = 1;
         $ret->pay_time = date('Y-m-d H:i:s',time());
         $ret->end_time = $svip_endtime;
         $ret->save();
-        $date = $info->svip_type == 3 ? '终身会员' : $svip_endtime;
+        $date = $user->is_svip == 3 ? '终身会员' : $svip_endtime;
         if ($user->phone) Queue::push(SendSmsJob::class,['tempId' => 'SVIP_PAY_SUCCESS','id' => ['phone' => $user->phone, 'date' => $date]]);
         return ;
     }
