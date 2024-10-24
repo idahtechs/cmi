@@ -2,15 +2,30 @@
   <c-page>
     <view class="px-20 pt-20 pb-24">
       <image src="/static/images/bg-user-index.png" class="absolute left-0 top-0 w-full" mode="widthFix" />
-      <view class="relative z-1 flex gap-8" @click="onUserCardClick">
+      <view class="relative z-1 flex gap-8">
         <image class="user-avatar" :src="userInfo && userInfo.avatar || '/static/images/f.png'"></image>
-        <view>
-          <view class="fs-15 font-bold mb-12">{{isLogin ? userInfo.nickname : '请点击登录'}}</view>
-          <view class="flex flex-column align-items-start ml-6" v-if="isLogin">
-            可用积分
-            <navigator class="fs-20 font-bold cursor-pointer" url="/pages/users/user_integral_records/index">
-              {{userIntegralInfo.integral || 0}}
-              <text class="iconfont icon-jiantou ml-4"></text>
+        <view class="flex-auto">
+          <view class="flex align-items-centerfs-15 font-bold mb-12">
+            <view @click="onUserCardClick">
+              {{isLogin ? userInfo.nickname : '请点击登录'}}
+            </view>
+            <vip-tag class="ml-4"/>
+          </view>
+          <view class="flex align-items-center" v-if="isLogin">
+            <view class="flex flex-column flex-auto align-items-start ml-6">
+              可用积分
+              <navigator class="fs-20 font-bold cursor-pointer" url="/pages/users/user_integral_records/index">
+                {{userIntegralInfo.integral || 0}}
+                <text class="iconfont icon-jiantou ml-4"></text>
+              </navigator>
+            </view>
+            <navigator
+              v-if="!isVip"
+              class="cmi-btn cmi-btn-primary plain cmi-btn-sm"
+              style="padding: 6rpx 24rpx;"
+              url="/pages/users/upgrade_to_vip/index"
+            >
+              升级会员
             </navigator>
           </view>
         </view>
@@ -46,10 +61,10 @@ export default {
   },
 
   computed: {
-    ...mapGetters(['isLogin', 'userInfo']),
-    userMenus() {
+    ...mapGetters(['isLogin', 'userInfo', 'isVip']),
+    userMenus({ isVip }) {
       return [
-        { text: '购买积分', url: '/pages/users/user_integral_recharge/index', postfix: '' },
+        { text: '购买积分', url: isVip ? '/pages/users/user_integral_recharge/index' : '/pages/users/upgrade_to_vip/index', postfix: '' },
         { text: '分享好友', url: '/pages/users/share/index', postfix: '' },
         { text: '我的创作记录', url: '/pages/ai/records/index', postfix: '' },
         { text: '自定义提示词模版', url: '/pages/ai/user_prompt_templates/index', postfix: '' },
@@ -61,6 +76,12 @@ export default {
 
   onShow() {
     this.loadData()
+  },
+
+  onPullDownRefresh() {
+    this.loadData().finally(() => {
+      uni.stopPullDownRefresh()
+    })
   },
 
   methods: {

@@ -66,6 +66,7 @@
 			...uni.getStorageSync('GLOBAL_DATA') || {}
 		},
 		onLaunch: function(option) {
+			const $store = this.$store
 			// uni.hideTabBar();
 			this.globalData.statusBarHeight = uni.getSystemInfoSync().statusBarHeight + 'px';
 			this.globalData.uid = this.$store.state.app.uid
@@ -76,6 +77,11 @@
 					"请配置根目录下的config.js文件中的 'HTTP_REQUEST_URL'\n\n请修改开发者工具中【详情】->【AppID】改为自己的Appid\n\n请前往后台【小程序】->【小程序配置】填写自己的 appId and AppSecret"
 				);
 				return false;
+			}
+
+			// 如果已经登录，刷新一次用户信息
+			if ($store.getters.isLogin) {
+				$store.dispatch('USERINFO', true)
 			}
 
 			// 绑定推广关系

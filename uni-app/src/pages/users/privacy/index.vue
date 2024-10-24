@@ -32,9 +32,9 @@
 				content: ``
 			}
 		},
-		mounted() {
-			getAgreementApi('sys_user_agree').then(res => {
-				this.content = res.data.sys_user_agree
+		onLoad({ type = 'sys_user_agree'}) {
+			getAgreementApi(type).then(res => {
+				this.content = res.data[type]
 			})
 		}
 	}
