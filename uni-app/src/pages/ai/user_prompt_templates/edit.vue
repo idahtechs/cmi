@@ -10,6 +10,10 @@
         <input class="cmi-input" v-model="form.title" maxlength="-1" placeholder="请填写模版名字" />
       </view>
       <view class="cmi-form-item required">
+        <view class="cmi-form-label">提示词类型</view>
+        <c-picker :options="types" v-model="form.type" popup-title="选择提示词类型" />
+      </view>
+      <view class="cmi-form-item required">
         <view class="cmi-form-label">模版内容</view>
         <textarea class="cmi-input" style="min-height: 560rpx;" v-model="form.prompt" maxlength="-1" placeholder="请填写模版内容" auto-height />
       </view>
@@ -34,6 +38,7 @@
         id: '',
         form: {
           title: '',
+          type: '',
           prompt: ''
         }
       }
@@ -50,7 +55,13 @@
 
       navTitle({ isNewRecord }) {
         return isNewRecord ? '自定义模版' : '编辑模版'
+      },
 
+      types() {
+        return [
+          { label: '仿写', value: 'initiation' },
+          { label: '润色', value: 'polish' }
+        ]
       }
     },
 

@@ -19,7 +19,10 @@
         v-for="template in userPromptTemplateRecords"
         :key="template.prompt_template_id"
       >
-        <view class="fs-17 font-bold mb-16 text-ellipsis">{{ template.title }}</view>
+        <view class="flex align-items-center justify-content-between mb-16 ">
+          <view class="fs-17 font-bold text-ellipsis min-w-8">{{ template.title }}</view>
+          <view class="flex-none color-view-theme fs-12 font-bold px-4 py-2" style="background: #F5FCFF; margin-top: -20rpx;" v-if="typeMap[template.type]">{{ typeMap[template.type] }}</view>
+        </view>
         <view class="mb-16 text-ellipsis-3">{{ template.prompt }}</view>
         <navigator class="cmi-btn cmi-btn-primary cmi-btn-xs" :url="`/pages/ai/user_prompt_templates/edit?id=${template.prompt_template_id}`">编辑模版</navigator>
       </view>
@@ -44,13 +47,14 @@
         loginRequired: true
       })
     ],
-    data() {
-      return {
+
+    computed: {
+      typeMap() {
+        return {
+          initiation: '仿写',
+          polish: '润色'
+        }
       }
-    },
-
-    methods: {
-
     }
   }
 </script>

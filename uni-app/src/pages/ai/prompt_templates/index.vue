@@ -39,15 +39,18 @@ export default {
     return {
       promptTemplates: [],
       userPromptTemplates: [],
-      ticket: '',
+      category: '', 
 
       loading: true
     }
   },
 
   computed: {
-    templates() {
-      return [...this.userPromptTemplates, ...this.promptTemplates].map(template => {
+    templates({ userPromptTemplates, promptTemplates, category }) {
+      return [
+        ...userPromptTemplates.filter(template => !template.type || template.type === category), 
+        ...promptTemplates.filter(template => template.category === category)
+      ].map(template => {
         return {
           ...template,
           key: template.group_data_id ? `common_${template.group_data_id}` : `user_${template.prompt_template_id}`,
@@ -57,8 +60,8 @@ export default {
     }
   },
 
-  onLoad({ ticket }) {
-    this.ticket = ticket
+  onLoad({ category }) {
+    this.category = category
   },
 
   methods: {
@@ -90,7 +93,7 @@ export default {
         confirmText: '是',
         success: (res) => {
           if (res.confirm) {
-            uni.$emit('use_prompt_template', { prompt: template.prompt, ticket: this.ticket })
+            uni.$emit('use_prompt_template', { prompt: template.prompt, category: this.category })
             uni.navigateBack()
           }
         }

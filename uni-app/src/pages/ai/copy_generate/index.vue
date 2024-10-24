@@ -24,7 +24,7 @@
         <view class="cmi-form-item">
           <view class="cmi-form-label relative">
             提示词
-            <view class="cmi-link absolute right-0" @click="handleTemplatePromptImport('generate')">
+            <view class="cmi-link absolute right-0" @click="handleTemplatePromptImport('initiation')">
               导入模版
             </view>
           </view>
@@ -90,9 +90,9 @@ import createGlobalEventHandlersMixin from '@/mixins/createGlobalEventHandlersMi
 export default {
   mixins: [
     createGlobalEventHandlersMixin({
-      'use_prompt_template': function({ prompt, ticket }) {
-        switch (ticket) {
-          case 'generate':
+      'use_prompt_template': function({ prompt, category }) {
+        switch (category) {
+          case 'initiation':
             this.record.prompt = prompt
             break
           case 'polish':
@@ -196,10 +196,10 @@ export default {
       })
     },
 
-    handleTemplatePromptImport(ticket) {
+    handleTemplatePromptImport(category) {
       // notice: 在mixin中通过全局事件处理器（use_prompt_template）接收用户选中的模版
       uni.navigateTo({
-        url: '/pages/ai/prompt_templates/index?ticket=' + ticket,
+        url: '/pages/ai/prompt_templates/index?category=' + category,
       })
     },
 
