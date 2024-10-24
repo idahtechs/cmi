@@ -36,7 +36,11 @@ export default {
   methods: {
     async onPageReady() {
       this.loading = true
-      const [err, res] = await this.$util.ef(getSpreadImage({ type: 'routine' }))
+      let type = 'h5'
+      // #ifdef MP-WEIXIN
+      type = 'routine'
+      // #endif
+      const [err, res] = await this.$util.ef(getSpreadImage({ type }))
       this.loading = false
 
       if (err) {
