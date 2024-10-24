@@ -207,6 +207,12 @@
 					}
 				},
 				{
+					"path": "upgrade_to_vip/index",
+					"style": {
+						"navigationBarTitleText": "升级会员"
+					}
+				},
+				{
 					"path": "share/index",
 					"style": {
 						"navigationBarTitleText": "分享好友"

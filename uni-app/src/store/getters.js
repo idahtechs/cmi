@@ -7,6 +7,8 @@
 // +----------------------------------------------------------------------
 // | Author: CRMEB Team <admin@crmeb.com>
 // +----------------------------------------------------------------------
+import dayjs from "dayjs"
+
 export default {
   token: state => state.app.token,
   isLogin: state => !!state.app.token,
@@ -14,6 +16,7 @@ export default {
   globalData: state => state.app.globalData,
   userInfo: state => state.app.userInfo || {},
   uid:state => state.app.uid,
+  isVip: state => state.app.token && state.app.userInfo ? state.app.userInfo.is_svip > 0 && dayjs().isBefore(dayjs(state.app.userInfo.svip_endtime)) : false,
   homeActive: state => state.app.homeActive,
   home: state => state.app.home,
   copyPwd: state => state.app.copyPwd,

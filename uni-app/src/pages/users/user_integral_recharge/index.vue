@@ -22,7 +22,7 @@
             <checkbox :checked="agree" class="events-disabled" />
             已阅读并同意
           </view>
-          <navigator class="cmi-link" url="/pages/users/privacy/index?type=3">《用户服务协议》</navigator>
+          <navigator class="cmi-link" url="/pages/users/privacy/index?type=sys_user_agree">《用户服务协议》</navigator>
         </view>
       </view>
     </view>
