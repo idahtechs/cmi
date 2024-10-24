@@ -57,14 +57,15 @@ class Svip extends BaseController
         $list = $groupDataRepository->getSearch($where)->field('group_data_id,value,sort,status')->order('sort DESC')->select()->toArray();
        
         $list = array_values(array_filter($list, function ($item) {
-            return (
-                $item['value']['category'] != 'integral'
-                || (
-                    $this->request->isLogin()
-                    && $this->request->userInfo()->is_svip != -1
-                    && $item['value']['svip_type'] != 1
-                )
-            );
+            if ($item['value']['category'] == 'integral') {
+                return false;
+            }
+
+            if ($this->request->isLogin() && $this->request->userInfo()->is_svip != -1) {
+                return $item['value']['svip_type'] != 1;
+            }
+
+            return true;
         }));
         $def = [];
         if ($list && count($list[0])) {
