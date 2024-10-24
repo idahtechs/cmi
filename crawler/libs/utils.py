@@ -23,20 +23,23 @@ def md5(s: str):
 
 
 def download_file(url: str):
-    response = requests.get(url, stream=True)
-    response.raise_for_status()  # 检查请求是否成功
+    try:
+        response = requests.get(url, stream=True)
+        response.raise_for_status()  # 检查请求是否成功
 
-    save_path = os.path.join(
-        os.path.curdir, "downloads", url.split("/")[-1].split("?")[0]
-    )
-    # 确保目录存在
-    os.makedirs(os.path.dirname(save_path), exist_ok=True)
+        save_path = os.path.join(
+            os.path.curdir, "downloads", url.split("/")[-1].split("?")[0]
+        )
+        # 确保目录存在
+        os.makedirs(os.path.dirname(save_path), exist_ok=True)
 
-    with open(save_path, "wb") as file:
-        for chunk in response.iter_content(chunk_size=8192):
-            file.write(chunk)
+        with open(save_path, "wb") as file:
+            for chunk in response.iter_content(chunk_size=8192):
+                file.write(chunk)
 
-    return save_path
+        return save_path
+    except Exception as e:
+        raise Exception(f"无法下载文件({url}), error:{e}")
 
 
 def extract_audio_from_video(video_path: str):
@@ -76,7 +79,7 @@ def get_valid_url(urls: list[str]):
             return url
 
 
-def get_final_redirect_url(url:str):
+def get_final_redirect_url(url: str):
     """
     获取重定向之后的链接
     """

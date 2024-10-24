@@ -21,6 +21,7 @@ def get_douyin_info(share_url: str):
     audio_urls = utils.append_or_extend(
         audio_urls, detail["music"]["play_url"]["url_list"]
     )
+    audio_urls = [e for e in audio_urls if e.strip() != ""]
     info = DouyinInfo(
         author=detail["author"]["nickname"],
         caption=detail["caption"],
