@@ -548,10 +548,12 @@ class UserRepository extends BaseRepository
         $userInfo = $this->setPromoter($userInfo);
         
         return Db::transaction(function () use ($userInfo) {
+            $integral = isset($userInfo['integral']) ? $userInfo['integral'] : 0;
+            unset($userInfo['integral']);
             $user = $this->dao->create($userInfo);
 
-            if(isset($userInfo['integral']) && $userInfo['integral'] > 0) {
-                $this->changeIntegral($user['uid'], $user['uid'], 1, $userInfo['integral'], [
+            if($integral > 0) {
+                $this->changeIntegral($user['uid'], $user['uid'], 1, $integral, [
                     'title' => '会员首次登录',
                     'mark' => '用户注册会员后所获得的积分',
                     'bill_type' => 'register',
