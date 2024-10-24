@@ -54,15 +54,20 @@ class Svip extends BaseController
         $group_id = $groupRepository->getSearch(['group_key' => 'svip_pay'])->value('group_id');
         $where['group_id'] = $group_id;
         $where['status'] = 1;
-        $list = $groupDataRepository->getSearch($where)->field('group_data_id,value,sort,status')->order('sort DESC')->select();
-        if ($this->request->isLogin() && $this->request->userInfo()->is_svip != -1) {
-            foreach ($list as $item) {
-                if ($item['value']['svip_type'] != 1) $res[] = $item;
-            }
-        }
-        $list = $res ?? $list;
+        $list = $groupDataRepository->getSearch($where)->field('group_data_id,value,sort,status')->order('sort DESC')->select()->toArray();
+       
+        $list = array_values(array_filter($list, function ($item) {
+            return (
+                $item['value']['category'] != 'integral'
+                || (
+                    $this->request->isLogin()
+                    && $this->request->userInfo()->is_svip != -1
+                    && $item['value']['svip_type'] != 1
+                )
+            );
+        }));
         $def = [];
-        if ($list && isset($list[0])) {
+        if ($list && count($list[0])) {
             $def = $list[0] ? (['group_data_id' => $list[0]['group_data_id']] + $list[0]['value']) : [];
         }
         return app('json')->success(['def' => $def, 'list' => $list]);
