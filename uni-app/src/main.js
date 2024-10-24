@@ -33,12 +33,6 @@ var __s = document.createElement('script');
 __s.src=HTTP_REQUEST_URL+"/api/script";
 document.head.appendChild(__s);
 Vue.prototype.$wechat = Auth;
-
-let i18nConfig = {
-  locale: uni.getLocale(),
-  messages
-}
-
 let cookieName = "VCONSOLE",
 	query = parseQuery(),
 	urlSpread = query["spread"],
@@ -94,6 +88,12 @@ Vue.directive('debounce',{
   
 App.mpType = 'app'
 Vue.use(VueI18n)
+
+let i18nConfig = {
+  locale: uni.getLocale(),
+  messages
+}
+
 const i18n = new VueI18n(i18nConfig)
 console.log(i18n)
 const app = new Vue({
