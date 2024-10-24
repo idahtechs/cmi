@@ -1,7 +1,7 @@
 <template>
   <c-page login-required>
     <template #nav>
-      <custom-nav bg-color="transparent" />
+      <custom-nav bg-color="var(--page-bg)" />
     </template>
 
     <view class="flex justify-content-between gap-12 flex-wrap py-28 px-20">

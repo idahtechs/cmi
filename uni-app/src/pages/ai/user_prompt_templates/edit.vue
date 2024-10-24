@@ -1,5 +1,5 @@
 <template>
-  <c-page login-required @ready="onPageReady">
+  <c-page flex login-required @ready="onPageReady">
     <template #nav>
       <custom-nav bg-color="transparent" :title="navTitle" />
     </template>
