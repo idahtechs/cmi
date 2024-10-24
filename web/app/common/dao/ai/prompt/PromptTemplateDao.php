@@ -39,6 +39,8 @@ class PromptTemplateDao extends BaseDao
             $query->where('uid', 'in', $uids);
         })->when(isset($where['status']) && $where['status']!== '', function ($query) use ($where) {
             $query->where('status', $where['status']);
+        })->when(isset($where['type']) && $where['type']!== '', function ($query) use ($where) {
+            $query->where('type', $where['type']);
         })
         ->order('sort ASC, create_time DESC');
     }

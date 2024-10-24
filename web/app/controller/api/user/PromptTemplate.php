@@ -78,8 +78,10 @@ class PromptTemplate extends BaseController
 
     public function lst()
     {
+        $data = $this->request->params([['type', '']]);
         [$page, $limit] = $this->getPage();
         $where = ['uids' => [0, $this->uid], 'is_del' => 0, 'status' => 1];
+        if ($data['type']) $where['type'] = $data['type'];
         $hidden = ['admin_id'];
         $res = $this->repository->lst($where, $page, $limit, $hidden);
         return app('json')->success($res);
