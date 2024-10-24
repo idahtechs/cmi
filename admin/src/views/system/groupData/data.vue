@@ -19,7 +19,7 @@
           :min-width="item.minWidth"
         >
           <template slot-scope="scope">
-            <div v-if="['img','image','pic'].indexOf(item.key) > -1 || item.key.indexOf('pic') > -1 || item.key.indexOf('img') > -1 || item.key.indexOf('image') > -1 || item.key.indexOf('banner') > -1" class="demo-image__preview">
+            <div v-if="item.isImage" class="demo-image__preview">
               <div v-if="Array.isArray(scope.row[item.key])">
                 <span v-for="(item,index) in scope.row[item.key]" :key="index">
                     <el-image 
@@ -28,14 +28,14 @@
                     />
                 </span>
               </div>
-              <div v-else>        
+              <div v-else-if="scope.row[item.key]">        
                   <el-image 
                     style="width: 36px; height: 36px"
                     :src="scope.row[item.key]"
                 />
               </div>  
             </div>
-            <span v-else>{{ scope.row[item.key] }}</span>
+            <span v-else>{{ item.isOption ? item.optionsMap[scope.row[item.key]] : scope.row[item.key] }}</span>
             
           </template>
         </el-table-column>
@@ -97,6 +97,15 @@ import {
 } from '@/api/system'
 import { roterPre } from '@/settings'
 import { mapGetters } from 'vuex'
+
+const optionsStringToMap = (optionStr) => {
+  return optionStr.split('\n').filter(Boolean).reduce((map, item) => {
+    const [value, key] = item.split(':')
+    map[value] = `${key} (${value})`
+    return map
+  }, {})
+}
+
 export default {
   name: 'Data',
   data() {
@@ -126,14 +135,15 @@ export default {
       if(this.groupDetail.fields)
         this.groupDetail.fields.forEach((val) => {
         colums.push({
-          title: val
-            .name,
-          key:
-          val.field,
-          minWidth:
-            80
+          title: val.name,
+          key: val.field,
+          minWidth: 80,
+          optionsMap: ['radio', 'checkbox', 'select'].includes(val.type) ? optionsStringToMap(val.param) : {},
+          isOption: ['radio', 'checkbox', 'select'].includes(val.type),
+          isImage: ['image', 'images'].includes(val.type)
         })
       })
+      console.log(colums)
       colums.push(
         {
           title: '添加时间',
