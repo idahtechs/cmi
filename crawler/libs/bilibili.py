@@ -47,6 +47,7 @@ def get_bilibili_info(bv_id: str):
     for audio in audios:
         audio_urls = utils.append_or_extend(audio_urls, audio["base_url"])
         audio_urls = utils.append_or_extend(audio_urls, audio["backup_url"])
+    audio_urls = [e for e in audio_urls if e.strip() != ""]
 
     info = BilibiliInfo(
         author=data1["owner"]["name"],

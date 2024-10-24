@@ -33,7 +33,6 @@ def get_xhs_info(note_id: str):
     if info:
         return info
 
-    current_app.logger.error(f"get_xhs_info {note_id=}")
     ret = tikhub.get("/api/v1/xiaohongshu/web/get_note_info_v2", {"note_id": note_id})
 
     # 不确定会不会有多个 note
@@ -48,6 +47,7 @@ def get_xhs_info(note_id: str):
             if vv:
                 video_urls = utils.append_or_extend(video_urls, vv["master_url"])
                 video_urls = utils.append_or_extend(video_urls, vv["backup_urls"])
+    video_urls = [e for e in video_urls if e.strip() != ""]
 
     info = XhsInfo(
         author=ret["data"]["data"][0]["user"]["name"],
