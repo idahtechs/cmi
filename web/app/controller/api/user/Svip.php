@@ -191,15 +191,19 @@ class Svip extends BaseController
                 $item[$k] = $v;
             }
             $isFree = $item['price'] <= 0;
+            $isNoIntegral = $item['category'] != 'integral';
             $useIsTrial = $this->request->isLogin() && $this->request->userInfo()->is_svip != -1;
             $typeIsTrial = $item['svip_type'] == 1;
-            $item['unset'] = ($isFree || ($useIsTrial && $typeIsTrial));
+            $item['unset'] = ($isNoIntegral || $isFree || ($useIsTrial && $typeIsTrial));
 
             return $item;
         });
 
         foreach ($list as $item) {
-            if (!$item['unset']) $res[] = $item;
+            if (!$item['unset']) {
+                unset($item['unset']);
+                $res[] = $item;
+            }
         }
 
         return app('json')->success(['count' => count($res), 'list' => $res]);
