@@ -73,14 +73,14 @@ class ToolsRepository extends BaseRepository
         ], $this->timeout);
 
         if (!$res) {
-            throw new ValidateException('验证失败，请重试！');
+            throw new ValidateException('提取失败，请重试！');
         }
 
         $result = json_decode($res, true);
 
         if ($result['code'] != 0) {
-            Log::error("调用 $checkApi 返回结果：" . $res);
-            throw new ValidateException('请填写正确的链接后重试！');
+            Log::error("调用 $checkApi 错误信息：" . $result['err']);
+            throw new ValidateException('提取失败，请使用其他链接重试！');
         }
         
         if ($result['duration'] > $this->minuteLimit * 60 * 1000) {
@@ -147,8 +147,8 @@ class ToolsRepository extends BaseRepository
         $result = json_decode($res, true);
 
         if ($result['code'] != 0) {
-            Log::error("调用 $apiUrl 返回失败：" . $res);
-            throw new ValidateException('请填写正确的链接后重试！');
+            Log::error("调用 $apiUrl 返回失败：" . $result['err']);
+            throw new ValidateException('提取失败，请使用其他链接重试！');
         }
 
         return $result;
